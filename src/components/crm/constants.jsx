@@ -1,0 +1,114 @@
+// Pipeline states in exact order
+export const PIPELINE_STATES = [
+  { id: 'nuevo_paciente', label: 'Nuevo paciente', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+  { id: 'contactado', label: 'Contactado', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+  { id: 'cita_agendada', label: 'Cita agendada', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+  { id: 'cita_realizada', label: 'Cita realizada', color: 'bg-violet-100 text-violet-800 border-violet-200' },
+  { id: 'presupuesto_entregado', label: 'Presupuesto entregado', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+  { id: 'en_negociacion', label: 'En negociación', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+  { id: 'rechazado', label: 'RECHAZADO', color: 'bg-gray-200 text-gray-600 border-gray-300', isRejected: true },
+  { id: 'aceptado_pendiente_pago', label: 'Aceptado pendiente de pago', color: 'bg-lime-100 text-lime-800 border-lime-200' },
+  { id: 'pagado', label: 'Pagado', color: 'bg-green-100 text-green-800 border-green-200' },
+  { id: 'pendiente_cita', label: 'Pendiente de cita', color: 'bg-teal-100 text-teal-800 border-teal-200' },
+  { id: 'citado', label: 'Citado', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+  { id: 'en_tratamiento', label: 'En tratamiento', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', isClosed: true }
+];
+
+export const TREATMENTS = [
+  { id: 'Implantes', label: 'Implantes', color: 'bg-rose-100 text-rose-700' },
+  { id: 'Ortodoncia', label: 'Ortodoncia', color: 'bg-sky-100 text-sky-700' },
+  { id: 'Estética', label: 'Estética', color: 'bg-fuchsia-100 text-fuchsia-700' },
+  { id: 'General', label: 'General', color: 'bg-slate-100 text-slate-700' }
+];
+
+export const SOURCES = [
+  { id: 'walk_in', label: 'Walk-in' },
+  { id: 'web', label: 'Web' },
+  { id: 'referido', label: 'Referido' },
+  { id: 'campana', label: 'Campaña' },
+  { id: 'redes_sociales', label: 'Redes sociales' },
+  { id: 'otro', label: 'Otro' }
+];
+
+export const PRIORITIES = [
+  { id: 'baja', label: 'Baja', color: 'bg-slate-100 text-slate-600' },
+  { id: 'media', label: 'Media', color: 'bg-yellow-100 text-yellow-700' },
+  { id: 'alta', label: 'Alta', color: 'bg-red-100 text-red-700' }
+];
+
+export const REJECTION_REASONS = [
+  { id: 'precio', label: 'Precio' },
+  { id: 'tiempo', label: 'Tiempo' },
+  { id: 'competencia', label: 'Competencia' },
+  { id: 'no_interesado', label: 'No interesado' },
+  { id: 'sin_financiacion', label: 'Sin financiación' },
+  { id: 'otro', label: 'Otro' }
+];
+
+export const ACTION_TYPES = [
+  { id: 'llamada', label: 'Llamada', icon: 'Phone' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: 'MessageCircle' },
+  { id: 'email', label: 'Email', icon: 'Mail' },
+  { id: 'cita', label: 'Cita', icon: 'Calendar' },
+  { id: 'seguimiento', label: 'Seguimiento', icon: 'UserCheck' },
+  { id: 'otro', label: 'Otro', icon: 'MoreHorizontal' }
+];
+
+export const ROLES = {
+  admin: { label: 'Administrador', canEdit: true, canCreate: true, canMove: true, canExport: true, canConfig: true, canEditBudget: true },
+  comercial: { label: 'Comercial', canEdit: true, canCreate: true, canMove: true, canExport: false, canConfig: false, canEditBudget: true },
+  recepcion: { label: 'Recepción', canEdit: true, canCreate: true, canMove: true, canExport: false, canConfig: false, canEditBudget: false },
+  solo_lectura: { label: 'Solo lectura', canEdit: false, canCreate: false, canMove: false, canExport: false, canConfig: false, canEditBudget: false }
+};
+
+export const getStateById = (id) => PIPELINE_STATES.find(s => s.id === id);
+export const getTreatmentById = (id) => TREATMENTS.find(t => t.id === id);
+export const getSourceById = (id) => SOURCES.find(s => s.id === id);
+export const getPriorityById = (id) => PRIORITIES.find(p => p.id === id);
+export const getRejectionReasonById = (id) => REJECTION_REASONS.find(r => r.id === id);
+export const getActionTypeById = (id) => ACTION_TYPES.find(a => a.id === id);
+
+// Active states for metrics (excludes rejected and in treatment)
+export const ACTIVE_STATES = PIPELINE_STATES.filter(s => !s.isRejected && !s.isClosed).map(s => s.id);
+
+// Business rules for state transitions
+export const STATE_REQUIREMENTS = {
+  presupuesto_entregado: { requiresBudget: true, message: 'Se requiere un presupuesto para pasar a este estado' },
+  aceptado_pendiente_pago: { requiresBudget: true, message: 'Se requiere un presupuesto para aceptar el tratamiento' },
+  pagado: { requiresBudget: true, message: 'Se requiere un presupuesto para marcar como pagado' },
+  rechazado: { requiresRejectionReason: true, message: 'Se requiere un motivo de rechazo' }
+};
+
+export const formatCurrency = (amount, currency = 'EUR') => {
+  if (amount === null || amount === undefined) return '—';
+  return new Intl.NumberFormat('es-ES', { style: 'currency', currency }).format(amount);
+};
+
+export const formatDate = (date) => {
+  if (!date) return '—';
+  return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+export const formatDateTime = (date) => {
+  if (!date) return '—';
+  return new Date(date).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
+export const isOverdue = (date) => {
+  if (!date) return false;
+  return new Date(date) < new Date();
+};
+
+export const isToday = (date) => {
+  if (!date) return false;
+  const today = new Date();
+  const d = new Date(date);
+  return d.toDateString() === today.toDateString();
+};
+
+export const daysSince = (date) => {
+  if (!date) return null;
+  const now = new Date();
+  const d = new Date(date);
+  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+};
