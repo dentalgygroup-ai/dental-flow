@@ -7,7 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePermissions } from '../components/crm/usePermissions';
+import SystemConfigManager from '../components/crm/SystemConfigManager';
+import UserManagement from '../components/crm/UserManagement';
 
 export default function Settings() {
   const [daysNoMovement, setDaysNoMovement] = useState(7);
@@ -25,6 +28,16 @@ export default function Settings() {
   const { data: config = [], refetch: refetchConfig } = useQuery({
     queryKey: ['appConfig'],
     queryFn: () => base44.entities.AppConfig.list()
+  });
+
+  const { data: systemConfig = [], refetch: refetchSystemConfig } = useQuery({
+    queryKey: ['systemConfig'],
+    queryFn: () => base44.entities.SystemConfig.list()
+  });
+
+  const { data: users = [], refetch: refetchUsers } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
   });
 
   const permissions = usePermissions(currentUser);
@@ -109,9 +122,13 @@ export default function Settings() {
     );
   }
 
+  const treatments = systemConfig.filter(c => c.config_type === 'treatment' && c.is_active);
+  const rejectionReasons = systemConfig.filter(c => c.config_type === 'rejection_reason' && c.is_active);
+  const sources = systemConfig.filter(c => c.config_type === 'source' && c.is_active);
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gray-100 rounded-lg">
@@ -125,96 +142,110 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Alert thresholds */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Umbrales de alerta</CardTitle>
-            <CardDescription>
-              Configura los días para mostrar alertas visuales en las tarjetas de pacientes
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="daysNoMovement">
-                Días sin movimiento para alerta
-              </Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  id="daysNoMovement"
-                  type="number"
-                  min="1"
-                  max="90"
-                  value={daysNoMovement}
-                  onChange={(e) => setDaysNoMovement(e.target.value)}
-                  className="w-24"
-                />
-                <span className="text-sm text-gray-500">días</span>
-              </div>
-              <p className="text-xs text-gray-400">
-                Se mostrará un indicador ámbar en pacientes sin actividad durante este tiempo
-              </p>
-            </div>
+        <Tabs defaultValue="general" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="system">Sistema</TabsTrigger>
+            <TabsTrigger value="users">Usuarios</TabsTrigger>
+          </TabsList>
 
-            <div className="space-y-2">
-              <Label htmlFor="daysInNegotiation">
-                Días en negociación para alerta
-              </Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  id="daysInNegotiation"
-                  type="number"
-                  min="1"
-                  max="90"
-                  value={daysInNegotiation}
-                  onChange={(e) => setDaysInNegotiation(e.target.value)}
-                  className="w-24"
-                />
-                <span className="text-sm text-gray-500">días</span>
-              </div>
-              <p className="text-xs text-gray-400">
-                Se mostrará un indicador para pacientes en estado "En negociación" durante más de este tiempo
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          <TabsContent value="general" className="space-y-6">
+            {/* Alert thresholds */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Umbrales de alerta</CardTitle>
+                <CardDescription>
+                  Configura los días para mostrar alertas visuales en las tarjetas de pacientes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="daysNoMovement">
+                    Días sin movimiento para alerta
+                  </Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="daysNoMovement"
+                      type="number"
+                      min="1"
+                      max="90"
+                      value={daysNoMovement}
+                      onChange={(e) => setDaysNoMovement(e.target.value)}
+                      className="w-24"
+                    />
+                    <span className="text-sm text-gray-500">días</span>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Se mostrará un indicador ámbar en pacientes sin actividad durante este tiempo
+                  </p>
+                </div>
 
-        {/* Info cards */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Opciones del sistema</CardTitle>
-            <CardDescription>
-              Las siguientes opciones están configuradas por defecto
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 text-sm">Tratamientos</h4>
-              <p className="text-xs text-gray-500 mt-1">
-                Implantes, Ortodoncia, Estética, General
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 text-sm">Motivos de rechazo</h4>
-              <p className="text-xs text-gray-500 mt-1">
-                Precio, Tiempo, Competencia, No interesado, Sin financiación, Otro
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 text-sm">Fuentes de captación</h4>
-              <p className="text-xs text-gray-500 mt-1">
-                Walk-in, Web, Referido, Campaña, Redes sociales, Otro
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="daysInNegotiation">
+                    Días en negociación para alerta
+                  </Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="daysInNegotiation"
+                      type="number"
+                      min="1"
+                      max="90"
+                      value={daysInNegotiation}
+                      onChange={(e) => setDaysInNegotiation(e.target.value)}
+                      className="w-24"
+                    />
+                    <span className="text-sm text-gray-500">días</span>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Se mostrará un indicador para pacientes en estado "En negociación" durante más de este tiempo
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Save button */}
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={isSaving} className="gap-2">
-            <Save className="w-4 h-4" />
-            {isSaving ? 'Guardando...' : 'Guardar configuración'}
-          </Button>
-        </div>
+            {/* Save button */}
+            <div className="flex justify-end">
+              <Button onClick={handleSave} disabled={isSaving} className="gap-2">
+                <Save className="w-4 h-4" />
+                {isSaving ? 'Guardando...' : 'Guardar configuración'}
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="system" className="space-y-6">
+            <SystemConfigManager
+              configType="treatment"
+              title="Tratamientos"
+              description="Gestiona los tipos de tratamiento disponibles"
+              items={treatments}
+              onRefresh={refetchSystemConfig}
+            />
+            
+            <SystemConfigManager
+              configType="rejection_reason"
+              title="Motivos de rechazo"
+              description="Gestiona los motivos por los que un paciente rechaza el tratamiento"
+              items={rejectionReasons}
+              onRefresh={refetchSystemConfig}
+            />
+            
+            <SystemConfigManager
+              configType="source"
+              title="Fuentes de captación"
+              description="Gestiona las fuentes de dónde provienen los pacientes"
+              items={sources}
+              onRefresh={refetchSystemConfig}
+            />
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <UserManagement 
+              users={users}
+              onRefresh={refetchUsers}
+              currentUser={currentUser}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -246,13 +246,12 @@ export default function Dashboard() {
         />
 
         {/* Charts and tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <StateAmountsChart patients={filteredPatients} />
-          <NextActionsTable 
-            patients={filteredPatients} 
-            onPatientClick={setSelectedPatient}
-          />
-        </div>
+        <StateAmountsChart patients={filteredPatients} />
+        
+        <NextActionsTable 
+          patients={filteredPatients} 
+          onPatientClick={setSelectedPatient}
+        />
 
         <ResponsibleStats patients={filteredPatients} users={users} />
 
