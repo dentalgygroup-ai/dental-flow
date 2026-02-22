@@ -16,6 +16,7 @@ import {
 import FilterBar from '../components/crm/FilterBar';
 import PatientDrawer from '../components/crm/PatientDrawer';
 import NewPatientModal from '../components/crm/NewPatientModal';
+import CalendarExport from '../components/crm/CalendarExport';
 import { 
   getStateById, 
   getTreatmentById, 
@@ -265,6 +266,7 @@ export default function Patients() {
             </p>
           </div>
           <div className="flex gap-3">
+            <CalendarExport patients={filteredPatients} variant="outline" />
             {permissions.canExport && (
               <Button variant="outline" onClick={handleExport} className="gap-2">
                 <Download className="w-4 h-4" />

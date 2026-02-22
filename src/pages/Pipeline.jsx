@@ -10,6 +10,7 @@ import FilterBar from '../components/crm/FilterBar';
 import PatientDrawer from '../components/crm/PatientDrawer';
 import NewPatientModal from '../components/crm/NewPatientModal';
 import StatusChangeModal from '../components/crm/StatusChangeModal';
+import CalendarExport from '../components/crm/CalendarExport';
 import { PIPELINE_STATES, STATE_REQUIREMENTS } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 
@@ -250,12 +251,15 @@ export default function Pipeline() {
                 {filteredPatients.length} pacientes en seguimiento
               </p>
             </div>
-            {permissions.canCreate && (
-              <Button onClick={() => setShowNewPatient(true)} className="gap-2">
-                <Plus className="w-4 h-4" />
-                Nuevo paciente
-              </Button>
-            )}
+            <div className="flex gap-3">
+              <CalendarExport patients={filteredPatients} variant="outline" />
+              {permissions.canCreate && (
+                <Button onClick={() => setShowNewPatient(true)} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Nuevo paciente
+                </Button>
+              )}
+            </div>
           </div>
           
           <FilterBar

@@ -8,6 +8,8 @@ import ResponsibleStats from '../components/crm/ResponsibleStats';
 import StateAmountsChart from '../components/crm/StateAmountsChart';
 import FilterBar from '../components/crm/FilterBar';
 import PatientDrawer from '../components/crm/PatientDrawer';
+import RequiresAttentionList from '../components/crm/RequiresAttentionList';
+import CalendarExport from '../components/crm/CalendarExport';
 import { ACTIVE_STATES, formatCurrency } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 
@@ -48,7 +50,18 @@ export default function Dashboard() {
     enabled: !!selectedPatient
   });
 
+  const { data: config = [] } = useQuery({
+    queryKey: ['appConfig'],
+    queryFn: () => base44.entities.AppConfig.list()
+  });
+
   const permissions = usePermissions(currentUser);
+
+  // Parse config
+  const configValues = useMemo(() => ({
+    days_no_movement: config.find(c => c.config_key === 'days_no_movement')?.config_value || 7,
+    days_in_negotiation: config.find(c => c.config_key === 'days_in_negotiation')?.config_value || 14
+  }), [config]);
 
   // Filter patients
   const filteredPatients = useMemo(() => {
@@ -165,6 +178,7 @@ export default function Dashboard() {
               Resumen ejecutivo de tu pipeline comercial
             </p>
           </div>
+          <CalendarExport patients={filteredPatients} variant="outline" />
         </div>
 
         {/* Filters */}
@@ -222,6 +236,14 @@ export default function Dashboard() {
             icon={Euro}
           />
         </div>
+
+        {/* Requires Attention */}
+        <RequiresAttentionList 
+          patients={filteredPatients}
+          onPatientClick={setSelectedPatient}
+          config={configValues}
+          limit={10}
+        />
 
         {/* Charts and tables */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

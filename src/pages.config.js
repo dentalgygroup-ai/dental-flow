@@ -48,16 +48,16 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Dashboard from './pages/Dashboard';
-import Pipeline from './pages/Pipeline';
 import Patients from './pages/Patients';
+import Pipeline from './pages/Pipeline';
 import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Dashboard": Dashboard,
-    "Pipeline": Pipeline,
     "Patients": Patients,
+    "Pipeline": Pipeline,
     "Settings": Settings,
 }
 
