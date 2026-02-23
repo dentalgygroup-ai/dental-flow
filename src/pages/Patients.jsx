@@ -89,7 +89,7 @@ export default function Patients() {
       if (filters.assigned_to && p.assigned_to !== filters.assigned_to) return false;
       if (filters.treatments?.length > 0 && !filters.treatments.some(t => p.treatments?.includes(t))) return false;
       if (filters.source && p.source !== filters.source) return false;
-      if (filters.priority && p.priority !== filters.priority) return false;
+      if (filters.patient_type && p.patient_type !== filters.patient_type) return false;
       if (filters.budget_min && (p.budget_amount || 0) < parseFloat(filters.budget_min)) return false;
       if (filters.budget_max && (p.budget_amount || 0) > parseFloat(filters.budget_max)) return false;
       return true;

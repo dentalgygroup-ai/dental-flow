@@ -32,7 +32,7 @@ export default function NewPatientModal({
     email: '',
     treatments: [],
     source: '',
-    priority: 'media',
+    patient_type: 'primera_visita',
     assigned_to: currentUser?.email || '',
     assigned_to_name: currentUser?.full_name || '',
     status: 'nuevo_paciente'
@@ -77,7 +77,7 @@ export default function NewPatientModal({
       email: '',
       treatments: [],
       source: '',
-      priority: 'media',
+      patient_type: 'primera_visita',
       assigned_to: currentUser?.email || '',
       assigned_to_name: currentUser?.full_name || '',
       status: 'nuevo_paciente'
@@ -200,7 +200,7 @@ export default function NewPatientModal({
             )}
           </div>
 
-          {/* Source and Priority */}
+          {/* Source and Patient Type */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm">Fuente</Label>
@@ -220,16 +220,16 @@ export default function NewPatientModal({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-sm">Prioridad</Label>
+              <Label className="text-sm">Tipo de paciente *</Label>
               <Select
-                value={formData.priority}
-                onValueChange={(value) => handleChange('priority', value)}
+                value={formData.patient_type}
+                onValueChange={(value) => handleChange('patient_type', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PRIORITIES.map(p => (
+                  {PATIENT_TYPES.map(p => (
                     <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
                   ))}
                 </SelectContent>

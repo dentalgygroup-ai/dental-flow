@@ -125,6 +125,7 @@ export default function Settings() {
   const treatments = systemConfig.filter(c => c.config_type === 'treatment' && c.is_active);
   const rejectionReasons = systemConfig.filter(c => c.config_type === 'rejection_reason' && c.is_active);
   const sources = systemConfig.filter(c => c.config_type === 'source' && c.is_active);
+  const patientTypes = systemConfig.filter(c => c.config_type === 'patient_type' && c.is_active);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
@@ -234,6 +235,14 @@ export default function Settings() {
               title="Fuentes de captación"
               description="Gestiona las fuentes de dónde provienen los pacientes"
               items={sources}
+              onRefresh={refetchSystemConfig}
+            />
+
+            <SystemConfigManager
+              configType="patient_type"
+              title="Tipos de paciente"
+              description="Gestiona los tipos de paciente disponibles"
+              items={patientTypes}
               onRefresh={refetchSystemConfig}
             />
           </TabsContent>
