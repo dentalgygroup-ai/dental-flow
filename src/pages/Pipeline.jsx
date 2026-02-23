@@ -274,7 +274,7 @@ export default function Pipeline() {
           <FilterBar
             filters={filters}
             onFilterChange={setFilters}
-            users={users}
+            users={activeResponsibles}
             showStateFilter={false}
           />
         </div>
