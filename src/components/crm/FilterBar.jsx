@@ -102,7 +102,7 @@ export default function FilterBar({
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
             {users.map(user => (
-              <SelectItem key={user.email} value={user.email}>{user.full_name}</SelectItem>
+              <SelectItem key={user.id || user.email} value={user.id || user.email}>{user.name || user.full_name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
