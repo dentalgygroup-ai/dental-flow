@@ -3,8 +3,8 @@ import { User, TrendingUp } from 'lucide-react';
 import { ACTIVE_STATES, formatCurrency } from './constants';
 
 export default function ResponsibleStats({ patients, users }) {
-  const stats = users.map(user => {
-    const userPatients = patients.filter(p => p.assigned_to === user.email);
+  const stats = users.map(resp => {
+    const userPatients = patients.filter(p => p.assigned_to === resp.id);
     const activePatients = userPatients.filter(p => ACTIVE_STATES.includes(p.status));
     const inNegotiation = userPatients.filter(p => p.status === 'en_negociacion');
     const paid = userPatients.filter(p => p.status === 'pagado');
@@ -17,7 +17,7 @@ export default function ResponsibleStats({ patients, users }) {
     const closeRatio = totalClosed > 0 ? ((paid.length / totalClosed) * 100).toFixed(0) : '—';
 
     return {
-      user,
+      resp,
       activeCount: activePatients.length,
       negotiationCount: inNegotiation.length,
       negotiationAmount,
