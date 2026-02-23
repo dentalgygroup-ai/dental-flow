@@ -52,6 +52,38 @@ export default function Settings() {
     if (daysInNegotiationConfig) setDaysInNegotiation(daysInNegotiationConfig.config_value);
   }, [config]);
 
+  // Seed default patient types if not present
+  useEffect(() => {
+    if (!systemConfig || systemConfig.length === 0) return;
+
+    const defaultPatientTypes = [
+      { value: 'primera_visita', label: 'Primera visita' },
+      { value: 'old_contact',   label: 'Contacto antiguo' },
+      { value: 'referencia',    label: 'Referencia' },
+      { value: 'ampliacion',    label: 'Ampliación de tratamiento' },
+    ];
+
+    const existingValues = systemConfig
+      .filter(c => c.config_type === 'patient_type')
+      .map(c => c.value);
+
+    const missing = defaultPatientTypes.filter(pt => !existingValues.includes(pt.value));
+
+    if (missing.length > 0) {
+      Promise.all(
+        missing.map((pt, i) =>
+          base44.entities.SystemConfig.create({
+            config_type: 'patient_type',
+            value: pt.value,
+            label: pt.label,
+            is_active: true,
+            order: i,
+          })
+        )
+      ).then(() => refetchSystemConfig());
+    }
+  }, [systemConfig]);
+
   const handleSave = async () => {
     if (!permissions.canConfig) {
       toast({
