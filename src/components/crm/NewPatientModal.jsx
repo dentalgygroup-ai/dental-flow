@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { TREATMENTS, SOURCES, PRIORITIES } from './constants';
+import { TREATMENTS, SOURCES, PATIENT_TYPES } from './constants';
 
 export default function NewPatientModal({ 
   isOpen, 

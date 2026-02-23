@@ -64,7 +64,7 @@ export const ROLES = {
 export const getStateById = (id) => PIPELINE_STATES.find(s => s.id === id);
 export const getTreatmentById = (id) => TREATMENTS.find(t => t.id === id);
 export const getSourceById = (id) => SOURCES.find(s => s.id === id);
-export const getPriorityById = (id) => PRIORITIES.find(p => p.id === id);
+export const getPatientTypeById = (id) => PATIENT_TYPES.find(p => p.id === id);
 export const getRejectionReasonById = (id) => REJECTION_REASONS.find(r => r.id === id);
 export const getActionTypeById = (id) => ACTION_TYPES.find(a => a.id === id);
 
