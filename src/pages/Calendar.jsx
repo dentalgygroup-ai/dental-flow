@@ -264,31 +264,33 @@ export default function CalendarPage() {
                   </div>
                   
                   <div className="space-y-1">
-                    {dayActions.map(patient => {
-                      const actionType = getActionTypeById(patient.next_action_type);
-                      const state = getStateById(patient.status);
-                      const overdue = isOverdue(patient.next_action_date);
+                    {dayActions.map((event, eIdx) => {
+                      const { patient, label, color } = event;
+                      const overdue = event.date < new Date();
+                      const borderColor = overdue ? 'border-red-400' : 'border-l-2';
                       
                       return (
                         <button
-                          key={patient.id}
+                          key={`${patient.id}-${eIdx}`}
                           onClick={() => setSelectedPatient(patient)}
-                          className={`w-full text-left p-2 rounded text-xs hover:bg-gray-50 border-l-2 ${
-                            overdue ? 'border-red-500 bg-red-50' : 'border-blue-500 bg-blue-50'
-                          }`}
+                          className={`w-full text-left p-2 rounded text-xs border-l-2 ${
+                            overdue ? 'border-red-400 bg-red-50' : `border-blue-400 ${color || 'bg-blue-50'}`
+                          } hover:opacity-80`}
                         >
                           <div className="font-medium truncate">
                             {patient.first_name} {patient.last_name}
                           </div>
-                          <div className="text-gray-600 truncate">
-                            {actionType?.label}
+                          <div className="truncate capitalize">
+                            {label}
                           </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <User className="w-3 h-3" />
-                            <span className="truncate text-gray-500">
-                              {patient.assigned_to_name}
-                            </span>
-                          </div>
+                          {patient.assigned_to_name && (
+                            <div className="flex items-center gap-1 mt-1">
+                              <User className="w-3 h-3" />
+                              <span className="truncate text-gray-500">
+                                {patient.assigned_to_name}
+                              </span>
+                            </div>
+                          )}
                         </button>
                       );
                     })}
