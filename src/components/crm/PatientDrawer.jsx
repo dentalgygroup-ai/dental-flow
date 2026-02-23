@@ -60,34 +60,10 @@ export default function PatientDrawer({
   };
 
   const handleStatusChange = (newStatus) => {
-    const requirements = STATE_REQUIREMENTS[newStatus];
-    
-    if (requirements?.requiresBudget && (!formData.budget_amount || formData.budget_amount <= 0)) {
-      setValidationError(requirements.message);
-      return;
-    }
-    
-    if (requirements?.requiresRejectionReason && !formData.rejection_reason) {
-      setValidationError(requirements.message);
-      return;
-    }
-    
     handleChange('status', newStatus);
   };
 
   const handleSave = () => {
-    const requirements = STATE_REQUIREMENTS[formData.status];
-    
-    if (requirements?.requiresBudget && (!formData.budget_amount || formData.budget_amount <= 0)) {
-      setValidationError(requirements.message);
-      return;
-    }
-    
-    if (requirements?.requiresRejectionReason && !formData.rejection_reason) {
-      setValidationError(requirements.message);
-      return;
-    }
-
     onSave(formData);
   };
 
