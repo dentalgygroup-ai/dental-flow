@@ -73,11 +73,53 @@ export const getActionTypeById = (id) => ACTION_TYPES.find(a => a.id === id);
 export const ACTIVE_STATES = PIPELINE_STATES.filter(s => !s.isRejected && !s.isClosed).map(s => s.id);
 
 // Business rules for state transitions
+// Each entry lists the fields that must be collected when moving TO that state FROM specific source states
 export const STATE_REQUIREMENTS = {
-  presupuesto_entregado: { requiresBudget: true, message: 'Se requiere un presupuesto para pasar a este estado' },
-  aceptado_pendiente_pago: { requiresBudget: true, message: 'Se requiere un presupuesto para aceptar el tratamiento' },
-  pagado: { requiresBudget: true, message: 'Se requiere un presupuesto para marcar como pagado' },
-  rechazado: { requiresRejectionReason: true, message: 'Se requiere un motivo de rechazo' }
+  // contactado -> cita_agendada: fecha de la cita
+  cita_agendada: {
+    fromStates: ['contactado'],
+    fields: [{ key: 'appointment_date', label: 'Fecha de la cita', type: 'datetime', required: true }],
+    message: 'Indica la fecha de la cita agendada'
+  },
+  // cita_agendada -> cita_realizada: fecha de seguimiento
+  cita_realizada: {
+    fromStates: ['cita_agendada'],
+    fields: [{ key: 'follow_up_date', label: 'Fecha de seguimiento', type: 'datetime', required: true }],
+    message: 'Indica la fecha de seguimiento'
+  },
+  // cita_realizada -> presupuesto_entregado: importe + tratamientos
+  presupuesto_entregado: {
+    fromStates: ['cita_realizada'],
+    fields: [
+      { key: 'budget_amount', label: 'Importe del presupuesto (€)', type: 'number', required: true },
+      { key: 'treatments', label: 'Tratamientos presupuestados', type: 'treatments', required: true }
+    ],
+    message: 'Introduce el importe y los tratamientos presupuestados'
+  },
+  // presupuesto_entregado -> en_negociacion: fecha de seguimiento
+  en_negociacion: {
+    fromStates: ['presupuesto_entregado'],
+    fields: [{ key: 'follow_up_date', label: 'Fecha de seguimiento', type: 'datetime', required: true }],
+    message: 'Indica la fecha de seguimiento'
+  },
+  // presupuesto_entregado / en_negociacion -> rechazado: motivo
+  rechazado: {
+    fromStates: ['presupuesto_entregado', 'en_negociacion'],
+    fields: [{ key: 'rejection_reason', label: 'Motivo del rechazo', type: 'rejection_reason', required: true }],
+    message: 'Indica el motivo del rechazo'
+  },
+  // presupuesto_entregado / en_negociacion -> aceptado_pendiente_pago: fecha seguimiento
+  aceptado_pendiente_pago: {
+    fromStates: ['presupuesto_entregado', 'en_negociacion'],
+    fields: [{ key: 'follow_up_date', label: 'Fecha de seguimiento', type: 'datetime', required: true }],
+    message: 'Indica la fecha de seguimiento'
+  },
+  // presupuesto_entregado / en_negociacion / aceptado_pendiente_pago -> pagado: fecha cita tratamiento
+  pagado: {
+    fromStates: ['presupuesto_entregado', 'en_negociacion', 'aceptado_pendiente_pago'],
+    fields: [{ key: 'treatment_appointment_date', label: 'Fecha de cita de tratamiento', type: 'datetime', required: true }],
+    message: 'Indica la fecha de la cita de tratamiento'
+  }
 };
 
 export const formatCurrency = (amount, currency = 'EUR') => {
