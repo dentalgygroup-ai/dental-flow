@@ -58,10 +58,12 @@ export default function Patients() {
     queryFn: () => base44.entities.Patient.list('-created_date')
   });
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
+  const { data: responsibles = [] } = useQuery({
+    queryKey: ['responsibles'],
+    queryFn: () => base44.entities.Responsible.list('name')
   });
+
+  const activeResponsibles = responsibles.filter(r => r.is_active);
 
   const { data: actions = [] } = useQuery({
     queryKey: ['patientActions', selectedPatient?.id],
