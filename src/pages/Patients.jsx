@@ -443,7 +443,7 @@ export default function Patients() {
             onSave={handleSavePatient}
             onAddAction={handleAddAction}
             actions={actions}
-            users={users}
+            users={activeResponsibles}
             permissions={permissions}
           />
         )}
@@ -452,7 +452,7 @@ export default function Patients() {
           isOpen={showNewPatient}
           onClose={() => setShowNewPatient(false)}
           onSave={handleCreatePatient}
-          users={users}
+          users={activeResponsibles}
           currentUser={currentUser}
         />
       </div>
