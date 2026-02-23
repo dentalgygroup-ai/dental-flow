@@ -102,23 +102,18 @@ export default function CalendarPage() {
     return days;
   }, [currentDate, viewMode]);
 
-  // Group actions by date
+  // Group events by date
   const actionsByDate = useMemo(() => {
     const grouped = {};
     
-    patientsWithActions.forEach(patient => {
-      const date = new Date(patient.next_action_date);
-      const dateKey = date.toDateString();
-      
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = [];
-      }
-      
-      grouped[dateKey].push(patient);
+    calendarEvents.forEach(event => {
+      const dateKey = event.date.toDateString();
+      if (!grouped[dateKey]) grouped[dateKey] = [];
+      grouped[dateKey].push(event);
     });
     
     return grouped;
-  }, [patientsWithActions]);
+  }, [calendarEvents]);
 
   const handlePrevious = () => {
     const newDate = new Date(currentDate);
