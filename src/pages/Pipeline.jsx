@@ -99,6 +99,15 @@ export default function Pipeline() {
     return grouped;
   }, [filteredPatients]);
 
+  // Check if a transition requires additional data
+  const transitionNeedsData = (patient, newStatus) => {
+    const requirements = STATE_REQUIREMENTS[newStatus];
+    if (!requirements) return false;
+    // Only apply if coming from one of the defined fromStates
+    if (requirements.fromStates && !requirements.fromStates.includes(patient.status)) return false;
+    return requirements.fields && requirements.fields.length > 0;
+  };
+
   // Handle drag end
   const handleDragEnd = async (result) => {
     if (!result.destination || !permissions.canMove) return;
@@ -109,15 +118,8 @@ export default function Pipeline() {
 
     if (!patient || patient.status === newStatus) return;
 
-    // Check business rules
-    const requirements = STATE_REQUIREMENTS[newStatus];
-    
-    if (requirements?.requiresBudget && (!patient.budget_amount || patient.budget_amount <= 0)) {
-      setStatusChangeModal({ isOpen: true, patient, targetStatus: newStatus });
-      return;
-    }
-
-    if (requirements?.requiresRejectionReason && !patient.rejection_reason) {
+    // Check if transition requires extra data
+    if (transitionNeedsData(patient, newStatus)) {
       setStatusChangeModal({ isOpen: true, patient, targetStatus: newStatus });
       return;
     }
