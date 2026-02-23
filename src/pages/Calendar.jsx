@@ -44,7 +44,32 @@ export default function CalendarPage() {
 
   const permissions = usePermissions(currentUser);
 
-  // Filter patients with next actions
+  // Build all calendar events from multiple date fields
+  const calendarEvents = useMemo(() => {
+    const events = [];
+
+    patients.forEach(patient => {
+      const name = `${patient.first_name} ${patient.last_name}`;
+
+      if (patient.appointment_date) {
+        events.push({ patient, date: new Date(patient.appointment_date), label: 'Cita', color: 'bg-purple-100 text-purple-800 border-purple-200', type: 'cita' });
+      }
+      if (patient.follow_up_date) {
+        events.push({ patient, date: new Date(patient.follow_up_date), label: 'Seguimiento', color: 'bg-amber-100 text-amber-800 border-amber-200', type: 'seguimiento' });
+      }
+      if (patient.treatment_appointment_date) {
+        events.push({ patient, date: new Date(patient.treatment_appointment_date), label: 'Cita tratamiento', color: 'bg-green-100 text-green-800 border-green-200', type: 'cita_tratamiento' });
+      }
+      if (patient.next_action_date && patient.next_action_type) {
+        // Avoid duplicating if same date as other events
+        events.push({ patient, date: new Date(patient.next_action_date), label: patient.next_action_type, color: 'bg-blue-100 text-blue-800 border-blue-200', type: 'next_action' });
+      }
+    });
+
+    return events;
+  }, [patients]);
+
+  // Keep for header count
   const patientsWithActions = useMemo(() => {
     return patients.filter(p => p.next_action_date && p.next_action_type);
   }, [patients]);
