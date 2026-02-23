@@ -268,7 +268,7 @@ export default function Dashboard() {
           <FilterBar
             filters={filters}
             onFilterChange={setFilters}
-            users={users}
+            users={activeResponsibles}
             showStateFilter={true}
           />
         </div>
