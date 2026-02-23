@@ -33,8 +33,8 @@ export default function NewPatientModal({
     treatments: [],
     source: '',
     patient_type: 'primera_visita',
-    assigned_to: currentUser?.email || '',
-    assigned_to_name: currentUser?.full_name || '',
+    assigned_to: '',
+    assigned_to_name: '',
     status: 'nuevo_paciente'
   });
   const [errors, setErrors] = useState({});
