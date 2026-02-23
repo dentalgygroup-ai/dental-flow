@@ -288,7 +288,7 @@ export default function Patients() {
         <FilterBar
           filters={filters}
           onFilterChange={setFilters}
-          users={users}
+          users={activeResponsibles}
           showStateFilter={true}
         />
 
