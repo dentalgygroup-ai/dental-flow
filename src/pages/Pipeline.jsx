@@ -314,7 +314,7 @@ export default function Pipeline() {
         isOpen={showNewPatient}
         onClose={() => setShowNewPatient(false)}
         onSave={handleCreatePatient}
-        users={users}
+        users={activeResponsibles}
         currentUser={currentUser}
       />
 
