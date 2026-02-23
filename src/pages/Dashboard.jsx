@@ -357,7 +357,7 @@ export default function Dashboard() {
             onSave={handleSavePatient}
             onAddAction={handleAddAction}
             actions={actions}
-            users={users}
+            users={activeResponsibles}
             permissions={permissions}
           />
         )}
