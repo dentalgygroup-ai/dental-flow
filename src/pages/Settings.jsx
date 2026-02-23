@@ -215,6 +215,10 @@ export default function Settings() {
             </div>
           </TabsContent>
 
+          <TabsContent value="responsibles" className="space-y-6">
+            <ResponsibleManager />
+          </TabsContent>
+
           <TabsContent value="system" className="space-y-6">
             <SystemConfigManager
               configType="treatment"
