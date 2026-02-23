@@ -17,10 +17,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { 
-  PIPELINE_STATES, TREATMENTS, SOURCES, PRIORITIES, 
+  PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES, 
   ACTION_TYPES, REJECTION_REASONS, STATE_REQUIREMENTS,
   formatCurrency, formatDateTime, getStateById, getTreatmentById,
-  getActionTypeById, getPriorityById, getSourceById, getRejectionReasonById
+  getActionTypeById, getPatientTypeById, getSourceById, getRejectionReasonById
 } from './constants';
 
 export default function PatientDrawer({ 
@@ -335,20 +335,20 @@ export default function PatientDrawer({
                 </div>
               </div>
 
-              {/* Priority and Source */}
+              {/* Patient Type and Source */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-xs text-gray-500">Prioridad</Label>
+                  <Label className="text-xs text-gray-500">Tipo de paciente</Label>
                   <Select
-                    value={formData.priority || 'media'}
-                    onValueChange={(value) => handleChange('priority', value)}
+                    value={formData.patient_type || 'primera_visita'}
+                    onValueChange={(value) => handleChange('patient_type', value)}
                     disabled={!canEdit}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {PRIORITIES.map(p => (
+                      {PATIENT_TYPES.map(p => (
                         <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
                       ))}
                     </SelectContent>

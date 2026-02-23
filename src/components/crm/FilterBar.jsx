@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { PIPELINE_STATES, TREATMENTS, SOURCES, PRIORITIES } from './constants';
+import { PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES } from './constants';
 
 export default function FilterBar({ 
   filters, 
@@ -34,7 +34,7 @@ export default function FilterBar({
     filters.assigned_to,
     filters.treatments?.length > 0,
     filters.source,
-    filters.priority,
+    filters.patient_type,
     filters.budget_min,
     filters.budget_max
   ].filter(Boolean).length;
@@ -46,7 +46,7 @@ export default function FilterBar({
       assigned_to: '',
       treatments: [],
       source: '',
-      priority: '',
+      patient_type: '',
       budget_min: '',
       budget_max: ''
     });
@@ -162,19 +162,19 @@ export default function FilterBar({
                 </Select>
               </div>
 
-              {/* Priority */}
+              {/* Patient Type */}
               <div className="space-y-2">
-                <Label className="text-xs text-gray-500">Prioridad</Label>
+                <Label className="text-xs text-gray-500">Tipo de paciente</Label>
                 <Select
-                  value={filters.priority || 'all'}
-                  onValueChange={(value) => onFilterChange({ ...filters, priority: value === 'all' ? '' : value })}
+                  value={filters.patient_type || 'all'}
+                  onValueChange={(value) => onFilterChange({ ...filters, patient_type: value === 'all' ? '' : value })}
                 >
                   <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Todas" />
+                    <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    {PRIORITIES.map(p => (
+                    <SelectItem value="all">Todos</SelectItem>
+                    {PATIENT_TYPES.map(p => (
                       <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
                     ))}
                   </SelectContent>

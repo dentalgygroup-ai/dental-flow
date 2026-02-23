@@ -24,7 +24,7 @@ export default function StateAmountsChart({ patients }) {
     
     return {
       id: state.id,
-      name: state.label.length > 12 ? state.label.substring(0, 12) + '...' : state.label,
+      name: state.label,
       fullName: state.label,
       count: statePatients.length,
       amount: totalAmount,
@@ -60,8 +60,8 @@ export default function StateAmountsChart({ patients }) {
             <YAxis 
               type="category" 
               dataKey="name" 
-              width={100}
-              tick={{ fontSize: 11 }}
+              width={160}
+              tick={{ fontSize: 10 }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="amount" radius={[0, 4, 4, 0]}>
