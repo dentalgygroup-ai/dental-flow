@@ -241,9 +241,9 @@ export default function PatientDrawer({
                 <Select
                   value={formData.assigned_to || ''}
                   onValueChange={(value) => {
-                    const user = users.find(u => u.email === value);
+                    const resp = users.find(u => u.id === value);
                     handleChange('assigned_to', value);
-                    handleChange('assigned_to_name', user?.full_name || '');
+                    handleChange('assigned_to_name', resp?.name || '');
                   }}
                   disabled={!canEdit}
                 >
@@ -251,9 +251,9 @@ export default function PatientDrawer({
                     <SelectValue placeholder="Asignar responsable" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map(user => (
-                      <SelectItem key={user.email} value={user.email}>
-                        {user.full_name}
+                    {users.map(resp => (
+                      <SelectItem key={resp.id} value={resp.id}>
+                        {resp.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
