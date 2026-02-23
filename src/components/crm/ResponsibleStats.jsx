@@ -62,16 +62,16 @@ export default function ResponsibleStats({ patients, users }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {stats.map(({ user, activeCount, negotiationCount, negotiationAmount, paidCount, closeRatio }) => (
-              <tr key={user.email} className="hover:bg-gray-50">
+            {stats.map(({ resp, activeCount, negotiationCount, negotiationAmount, paidCount, closeRatio }) => (
+              <tr key={resp.id} className="hover:bg-gray-50">
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-medium text-gray-600">
-                        {user.full_name?.charAt(0) || '?'}
+                        {resp.name?.charAt(0) || '?'}
                       </span>
                     </div>
-                    <span className="font-medium text-gray-900">{user.full_name}</span>
+                    <span className="font-medium text-gray-900">{resp.name}</span>
                   </div>
                 </td>
                 <td className="py-3 px-4 text-center">
