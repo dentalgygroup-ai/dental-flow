@@ -332,7 +332,7 @@ export default function Dashboard() {
         {/* Charts and Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <StateAmountsChart patients={filteredPatients} />
-          <ResponsibleStats patients={filteredPatients} users={users} />
+          <ResponsibleStats patients={filteredPatients} users={activeResponsibles} />
         </div>
 
         {/* Requires Attention */}
