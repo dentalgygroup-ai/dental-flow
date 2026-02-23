@@ -305,7 +305,7 @@ export default function Pipeline() {
           onSave={handleSavePatient}
           onAddAction={handleAddAction}
           actions={actions}
-          users={users}
+          users={activeResponsibles}
           permissions={permissions}
         />
       )}
