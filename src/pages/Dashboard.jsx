@@ -121,27 +121,30 @@ export default function Dashboard() {
     // Active patients
     const activePatients = filteredPatients.filter(p => ACTIVE_STATES.includes(p.status));
     
-    // Budget delivered (presupuesto_entregado, en_negociacion, or beyond)
-    const budgetDeliveredStatuses = ['presupuesto_entregado', 'en_negociacion', 'aceptado_pendiente_pago', 'pagado', 'rechazado'];
+    // Presupuestado = Aceptado + Rechazado + En seguimiento (todos los estados desde presupuesto entregado en adelante)
+    const budgetDeliveredStatuses = [
+      'presupuesto_entregado', 'en_negociacion', 'rechazado',
+      'aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'
+    ];
     let budgetDelivered = filteredPatients.filter(p => budgetDeliveredStatuses.includes(p.status));
     if (onlyNewInPeriod) {
       budgetDelivered = budgetDelivered.filter(isCreatedInPeriod);
     }
-    
-    // Accepted/Paid
+
+    // Aceptado = aceptado_pendiente_pago + pagado + pendiente_cita + citado + en_tratamiento
     const acceptedStatuses = ['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'];
     let accepted = filteredPatients.filter(p => acceptedStatuses.includes(p.status));
     if (onlyNewInPeriod) {
       accepted = accepted.filter(isCreatedInPeriod);
     }
-    
-    // Rejected
+
+    // Rechazado = solo rechazado
     let rejected = filteredPatients.filter(p => p.status === 'rechazado');
     if (onlyNewInPeriod) {
       rejected = rejected.filter(isCreatedInPeriod);
     }
-    
-    // In follow-up (presupuesto_entregado or en_negociacion, not yet accepted or rejected)
+
+    // En seguimiento = presupuesto_entregado + en_negociacion
     const followUpStatuses = ['presupuesto_entregado', 'en_negociacion'];
     let inFollowUp = filteredPatients.filter(p => followUpStatuses.includes(p.status));
     if (onlyNewInPeriod) {
