@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePermissions } from '../components/crm/usePermissions';
 import SystemConfigManager from '../components/crm/SystemConfigManager';
 import UserManagement from '../components/crm/UserManagement';
+import ResponsibleManager from '../components/crm/ResponsibleManager';
 
 export default function Settings() {
   const [daysNoMovement, setDaysNoMovement] = useState(7);
