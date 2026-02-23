@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Users, Handshake, FileText, CheckCircle, TrendingUp, Euro, Wallet } from 'lucide-react';
+import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock } from 'lucide-react';
 import KPICard from '../components/crm/KPICard';
 import NextActionsTable from '../components/crm/NextActionsTable';
 import ResponsibleStats from '../components/crm/ResponsibleStats';
@@ -10,6 +10,7 @@ import FilterBar from '../components/crm/FilterBar';
 import PatientDrawer from '../components/crm/PatientDrawer';
 import RequiresAttentionList from '../components/crm/RequiresAttentionList';
 import CalendarExport from '../components/crm/CalendarExport';
+import DateFilter from '../components/crm/DateFilter';
 import { ACTIVE_STATES, formatCurrency } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 
@@ -21,10 +22,21 @@ export default function Dashboard() {
     assigned_to: '',
     treatments: [],
     source: '',
-    priority: '',
+    patient_type: '',
     budget_min: '',
     budget_max: ''
   });
+  
+  // Initialize date range to current month
+  const getCurrentMonthRange = () => {
+    const now = new Date();
+    const from = new Date(now.getFullYear(), now.getMonth(), 1);
+    const to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    return { from, to };
+  };
+  
+  const [dateRange, setDateRange] = useState(getCurrentMonthRange());
+  const [onlyNewInPeriod, setOnlyNewInPeriod] = useState(false);
 
   // Fetch data
   const { data: currentUser } = useQuery({
@@ -63,9 +75,17 @@ export default function Dashboard() {
     days_in_negotiation: config.find(c => c.config_key === 'days_in_negotiation')?.config_value || 14
   }), [config]);
 
-  // Filter patients
+  // Filter patients by date range and other filters
   const filteredPatients = useMemo(() => {
     return patients.filter(p => {
+      // Date range filter
+      if (dateRange?.from && dateRange?.to) {
+        const createdDate = new Date(p.created_date);
+        if (createdDate < dateRange.from || createdDate > dateRange.to) {
+          return false;
+        }
+      }
+      
       if (filters.search) {
         const search = filters.search.toLowerCase();
         const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
@@ -84,34 +104,76 @@ export default function Dashboard() {
       if (filters.budget_max && (p.budget_amount || 0) > parseFloat(filters.budget_max)) return false;
       return true;
     });
-  }, [patients, filters]);
+  }, [patients, filters, dateRange]);
+
+  // Helper to check if patient was created in period
+  const isCreatedInPeriod = (patient) => {
+    if (!dateRange?.from || !dateRange?.to) return true;
+    const created = new Date(patient.created_date);
+    return created >= dateRange.from && created <= dateRange.to;
+  };
 
   // Calculate KPIs
   const kpis = useMemo(() => {
+    // All patients created in the period
+    const newPatients = filteredPatients.filter(p => isCreatedInPeriod(p));
+    
+    // Active patients
     const activePatients = filteredPatients.filter(p => ACTIVE_STATES.includes(p.status));
-    const inNegotiation = filteredPatients.filter(p => p.status === 'en_negociacion');
-    const budgetDelivered = filteredPatients.filter(p => p.status === 'presupuesto_entregado');
-    const paid = filteredPatients.filter(p => p.status === 'pagado');
-    const rejected = filteredPatients.filter(p => p.status === 'rechazado');
+    
+    // Budget delivered (presupuesto_entregado, en_negociacion, or beyond)
+    const budgetDeliveredStatuses = ['presupuesto_entregado', 'en_negociacion', 'aceptado_pendiente_pago', 'pagado', 'rechazado'];
+    let budgetDelivered = filteredPatients.filter(p => budgetDeliveredStatuses.includes(p.status));
+    if (onlyNewInPeriod) {
+      budgetDelivered = budgetDelivered.filter(isCreatedInPeriod);
+    }
+    
+    // Accepted/Paid
+    const acceptedStatuses = ['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'];
+    let accepted = filteredPatients.filter(p => acceptedStatuses.includes(p.status));
+    if (onlyNewInPeriod) {
+      accepted = accepted.filter(isCreatedInPeriod);
+    }
+    
+    // Rejected
+    let rejected = filteredPatients.filter(p => p.status === 'rechazado');
+    if (onlyNewInPeriod) {
+      rejected = rejected.filter(isCreatedInPeriod);
+    }
+    
+    // In follow-up (presupuesto_entregado or en_negociacion, not yet accepted or rejected)
+    const followUpStatuses = ['presupuesto_entregado', 'en_negociacion'];
+    let inFollowUp = filteredPatients.filter(p => followUpStatuses.includes(p.status));
+    if (onlyNewInPeriod) {
+      inFollowUp = inFollowUp.filter(isCreatedInPeriod);
+    }
 
-    const negotiationAmount = inNegotiation.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
-    const paidAmount = paid.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    // Calculate amounts
+    const budgetDeliveredAmount = budgetDelivered.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    const acceptedAmount = accepted.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    const rejectedAmount = rejected.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    const inFollowUpAmount = inFollowUp.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
     const activeAmount = activePatients.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
 
-    const totalClosed = paid.length + rejected.length;
-    const closeRatio = totalClosed > 0 ? ((paid.length / totalClosed) * 100).toFixed(1) : '—';
+    // Close ratio
+    const totalClosed = accepted.length + rejected.length;
+    const closeRatio = totalClosed > 0 ? ((accepted.length / totalClosed) * 100).toFixed(1) : '—';
 
     return {
-      activeCount: activePatients.length,
-      negotiationCount: inNegotiation.length,
+      newPatientsCount: newPatients.length,
       budgetDeliveredCount: budgetDelivered.length,
-      paidCount: paid.length,
-      closeRatio,
-      negotiationAmount,
-      paidAmount,
-      activeAmount
+      budgetDeliveredAmount,
+      acceptedCount: accepted.length,
+      acceptedAmount,
+      rejectedCount: rejected.length,
+      rejectedAmount,
+      inFollowUpCount: inFollowUp.length,
+      inFollowUpAmount,
+      activeCount: activePatients.length,
+      activeAmount,
+      closeRatio
     };
-  }, [filteredPatients]);
+  }, [filteredPatients, onlyNewInPeriod, dateRange]);
 
   // Handle patient update
   const handleSavePatient = async (updatedPatient) => {
@@ -168,75 +230,99 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard Comercial</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard Comercial</h1>
+            <p className="text-sm text-gray-600 mt-2">
               Resumen ejecutivo de tu pipeline comercial
             </p>
           </div>
-          <div className="flex justify-end">
-            <CalendarExport patients={filteredPatients} variant="outline" />
-          </div>
+          <CalendarExport patients={filteredPatients} variant="default" className="shadow-sm" />
         </div>
 
-        {/* Filters */}
-        <FilterBar
-          filters={filters}
-          onFilterChange={setFilters}
-          users={users}
-          showStateFilter={true}
-        />
+        {/* Date Filter */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <DateFilter
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            onlyNewInPeriod={onlyNewInPeriod}
+            onOnlyNewInPeriodChange={setOnlyNewInPeriod}
+          />
+        </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Standard Filters */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <FilterBar
+            filters={filters}
+            onFilterChange={setFilters}
+            users={users}
+            showStateFilter={true}
+          />
+        </div>
+
+        {/* Main KPIs - Period Based */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <KPICard
+            title="Nuevos clientes"
+            value={kpis.newPatientsCount}
+            icon={UserPlus}
+            subtitle="Altas en el período"
+          />
+          <KPICard
+            title="Presupuestado"
+            value={kpis.budgetDeliveredCount}
+            icon={FileText}
+            subtitle={formatCurrency(kpis.budgetDeliveredAmount)}
+          />
+          <KPICard
+            title="Aceptado"
+            value={kpis.acceptedCount}
+            icon={CheckCircle}
+            subtitle={formatCurrency(kpis.acceptedAmount)}
+          />
+          <KPICard
+            title="Rechazado"
+            value={kpis.rejectedCount}
+            icon={XCircle}
+            subtitle={formatCurrency(kpis.rejectedAmount)}
+          />
+          <KPICard
+            title="En seguimiento"
+            value={kpis.inFollowUpCount}
+            icon={Clock}
+            subtitle={formatCurrency(kpis.inFollowUpAmount)}
+          />
+        </div>
+
+        {/* Secondary KPIs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <KPICard
             title="Pacientes activos"
             value={kpis.activeCount}
             icon={Users}
+            subtitle="En pipeline actual"
           />
-          <KPICard
-            title="En negociación"
-            value={kpis.negotiationCount}
-            icon={Handshake}
-          />
-          <KPICard
-            title="Presupuestos entregados"
-            value={kpis.budgetDeliveredCount}
-            icon={FileText}
-          />
-          <KPICard
-            title="Cerrados pagados"
-            value={kpis.paidCount}
-            icon={CheckCircle}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard
             title="Ratio de cierre"
             value={kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—'}
             icon={TrendingUp}
-            subtitle="Pagados / (Pagados + Rechazados)"
-          />
-          <KPICard
-            title="Importe en negociación"
-            value={formatCurrency(kpis.negotiationAmount)}
-            icon={Wallet}
-          />
-          <KPICard
-            title="Importe cerrado"
-            value={formatCurrency(kpis.paidAmount)}
-            icon={Euro}
+            subtitle="Aceptados / Total cerrados"
           />
           <KPICard
             title="Importe potencial activo"
             value={formatCurrency(kpis.activeAmount)}
             icon={Euro}
+            subtitle="En pipeline"
           />
+        </div>
+
+        {/* Charts and Analysis */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <StateAmountsChart patients={filteredPatients} />
+          <ResponsibleStats patients={filteredPatients} users={users} />
         </div>
 
         {/* Requires Attention */}
@@ -246,16 +332,12 @@ export default function Dashboard() {
           config={configValues}
           limit={10}
         />
-
-        {/* Charts and tables */}
-        <StateAmountsChart patients={filteredPatients} />
         
+        {/* Next Actions */}
         <NextActionsTable 
           patients={filteredPatients} 
           onPatientClick={setSelectedPatient}
         />
-
-        <ResponsibleStats patients={filteredPatients} users={users} />
 
         {/* Patient Drawer */}
         {selectedPatient && (

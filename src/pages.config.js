@@ -47,20 +47,20 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
 import Pipeline from './pages/Pipeline';
 import Settings from './pages/Settings';
-import Calendar from './pages/Calendar';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "Calendar": Calendar,
     "Dashboard": Dashboard,
     "Patients": Patients,
     "Pipeline": Pipeline,
     "Settings": Settings,
-    "Calendar": Calendar,
 }
 
 export const pagesConfig = {
