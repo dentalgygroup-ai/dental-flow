@@ -139,23 +139,85 @@ export default function Pipeline() {
   const updatePatientStatus = async (patient, newStatus, additionalData = {}) => {
     const oldStatus = patient.status;
 
+    // Merge additionalData with existing patient data (never overwrite with undefined)
+    const cleanAdditional = Object.fromEntries(
+      Object.entries(additionalData).filter(([, v]) => v !== undefined && v !== null && v !== '')
+    );
+
     await base44.entities.Patient.update(patient.id, {
       status: newStatus,
       last_action_date: new Date().toISOString(),
-      ...additionalData
+      ...cleanAdditional
     });
 
-    // Log the change
-    await base44.entities.PatientAction.create({
-      patient_id: patient.id,
-      action_type: 'cambio_estado',
-      description: `Estado cambiado`,
-      performed_by: currentUser?.email,
-      performed_by_name: currentUser?.full_name,
-      old_value: oldStatus,
-      new_value: newStatus
-    });
+    // Log the state change
+    const logPromises = [
+      base44.entities.PatientAction.create({
+        patient_id: patient.id,
+        action_type: 'cambio_estado',
+        description: `Estado cambiado de "${PIPELINE_STATES.find(s => s.id === oldStatus)?.label}" a "${PIPELINE_STATES.find(s => s.id === newStatus)?.label}"`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+        old_value: oldStatus,
+        new_value: newStatus
+      })
+    ];
 
+    // Log appointment/follow-up dates as separate actions for history
+    if (cleanAdditional.appointment_date) {
+      logPromises.push(base44.entities.PatientAction.create({
+        patient_id: patient.id,
+        action_type: 'cita',
+        description: `Cita agendada para el ${new Date(cleanAdditional.appointment_date).toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+        new_value: cleanAdditional.appointment_date
+      }));
+    }
+    if (cleanAdditional.follow_up_date) {
+      logPromises.push(base44.entities.PatientAction.create({
+        patient_id: patient.id,
+        action_type: 'seguimiento',
+        description: `Seguimiento programado para el ${new Date(cleanAdditional.follow_up_date).toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+        new_value: cleanAdditional.follow_up_date
+      }));
+    }
+    if (cleanAdditional.treatment_appointment_date) {
+      logPromises.push(base44.entities.PatientAction.create({
+        patient_id: patient.id,
+        action_type: 'cita',
+        description: `Cita de tratamiento programada para el ${new Date(cleanAdditional.treatment_appointment_date).toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+        new_value: cleanAdditional.treatment_appointment_date
+      }));
+    }
+    if (cleanAdditional.budget_amount) {
+      logPromises.push(base44.entities.PatientAction.create({
+        patient_id: patient.id,
+        action_type: 'cambio_presupuesto',
+        description: `Presupuesto registrado: ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(cleanAdditional.budget_amount)}`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+        new_value: String(cleanAdditional.budget_amount)
+      }));
+    }
+    if (cleanAdditional.rejection_reason) {
+      logPromises.push(base44.entities.PatientAction.create({
+        patient_id: patient.id,
+        action_type: 'nota',
+        description: `Motivo de rechazo: ${cleanAdditional.rejection_reason}`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+        new_value: cleanAdditional.rejection_reason
+      }));
+    }
+
+    await Promise.all(logPromises);
+
+    queryClient.invalidateQueries({ queryKey: ['patientActions', patient.id] });
     refetchPatients();
     
     toast({
