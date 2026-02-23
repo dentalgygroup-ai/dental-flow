@@ -180,7 +180,8 @@ export default function CalendarExport({ patients, variant = 'default', classNam
       <DropdownMenuTrigger asChild>
         <Button variant={variant} className={`gap-2 ${className}`}>
           <Calendar className="w-4 h-4" />
-          Exportar a Calendario
+          <span className="hidden sm:inline">Exportar a Calendario</span>
+          <span className="sm:hidden">Calendario</span>
           <Download className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>

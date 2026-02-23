@@ -171,14 +171,16 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Dashboard Comercial</h1>
             <p className="text-sm text-gray-500 mt-1">
               Resumen ejecutivo de tu pipeline comercial
             </p>
           </div>
-          <CalendarExport patients={filteredPatients} variant="outline" />
+          <div className="flex justify-end">
+            <CalendarExport patients={filteredPatients} variant="outline" />
+          </div>
         </div>
 
         {/* Filters */}

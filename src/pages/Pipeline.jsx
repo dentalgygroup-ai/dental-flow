@@ -244,17 +244,17 @@ export default function Pipeline() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
         <div className="p-4 md:p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <div className="flex flex-col gap-4 mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Pipeline Comercial</h1>
               <p className="text-sm text-gray-500 mt-1">
                 {filteredPatients.length} pacientes en seguimiento
               </p>
             </div>
-            <div className="flex gap-3">
-              <CalendarExport patients={filteredPatients} variant="outline" />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <CalendarExport patients={filteredPatients} variant="outline" className="w-full sm:w-auto" />
               {permissions.canCreate && (
-                <Button onClick={() => setShowNewPatient(true)} className="gap-2">
+                <Button onClick={() => setShowNewPatient(true)} className="gap-2 w-full sm:w-auto">
                   <Plus className="w-4 h-4" />
                   Nuevo paciente
                 </Button>

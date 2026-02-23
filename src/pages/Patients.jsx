@@ -258,23 +258,23 @@ export default function Patients() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Pacientes</h1>
             <p className="text-sm text-gray-500 mt-1">
               {filteredPatients.length} pacientes
             </p>
           </div>
-          <div className="flex gap-3">
-            <CalendarExport patients={filteredPatients} variant="outline" />
+          <div className="flex flex-col sm:flex-row gap-3">
+            <CalendarExport patients={filteredPatients} variant="outline" className="w-full sm:w-auto" />
             {permissions.canExport && (
-              <Button variant="outline" onClick={handleExport} className="gap-2">
+              <Button variant="outline" onClick={handleExport} className="gap-2 w-full sm:w-auto">
                 <Download className="w-4 h-4" />
                 Exportar CSV
               </Button>
             )}
             {permissions.canCreate && (
-              <Button onClick={() => setShowNewPatient(true)} className="gap-2">
+              <Button onClick={() => setShowNewPatient(true)} className="gap-2 w-full sm:w-auto">
                 <Plus className="w-4 h-4" />
                 Nuevo paciente
               </Button>
