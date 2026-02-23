@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import { 
   PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES, 
-  ACTION_TYPES, REJECTION_REASONS, STATE_REQUIREMENTS,
+  ACTION_TYPES, REJECTION_REASONS,
   formatCurrency, formatDateTime, getStateById, getTreatmentById,
   getActionTypeById, getPatientTypeById, getSourceById, getRejectionReasonById
 } from './constants';
