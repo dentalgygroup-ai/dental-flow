@@ -17,56 +17,67 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { REJECTION_REASONS, STATE_REQUIREMENTS, getStateById, formatCurrency } from './constants';
+import { Badge } from '@/components/ui/badge';
+import { STATE_REQUIREMENTS, REJECTION_REASONS, getStateById } from './constants';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
-export default function StatusChangeModal({ 
-  isOpen, 
-  onClose, 
-  patient, 
+export default function StatusChangeModal({
+  isOpen,
+  onClose,
+  patient,
   targetStatus,
-  onConfirm 
+  onConfirm
 }) {
-  const [formData, setFormData] = useState({
-    budget_amount: patient?.budget_amount || '',
-    rejection_reason: patient?.rejection_reason || ''
+  const [formData, setFormData] = useState({});
+
+  const { data: systemConfig = [] } = useQuery({
+    queryKey: ['systemConfig'],
+    queryFn: () => base44.entities.SystemConfig.list()
   });
 
+  const treatmentOptions = systemConfig.filter(c => c.config_type === 'treatment' && c.is_active);
+  const rejectionOptions = systemConfig.filter(c => c.config_type === 'rejection_reason' && c.is_active);
+
   useEffect(() => {
-    if (patient) {
-      setFormData({
-        budget_amount: patient.budget_amount || '',
-        rejection_reason: patient.rejection_reason || ''
-      });
+    if (patient && targetStatus) {
+      setFormData({});
     }
-  }, [patient]);
+  }, [patient, targetStatus]);
 
   if (!patient || !targetStatus) return null;
 
   const requirements = STATE_REQUIREMENTS[targetStatus];
   const targetState = getStateById(targetStatus);
 
-  const needsBudget = requirements?.requiresBudget && (!patient.budget_amount || patient.budget_amount <= 0);
-  const needsRejectionReason = requirements?.requiresRejectionReason && !patient.rejection_reason;
+  // Determine which fields are needed (not already filled, or always collect for this transition)
+  const fields = requirements?.fields || [];
 
   const canProceed = () => {
-    if (needsBudget && (!formData.budget_amount || parseFloat(formData.budget_amount) <= 0)) {
-      return false;
-    }
-    if (needsRejectionReason && !formData.rejection_reason) {
-      return false;
-    }
-    return true;
+    return fields.every(field => {
+      if (!field.required) return true;
+      const val = formData[field.key];
+      if (field.type === 'treatments') {
+        return val && val.length > 0;
+      }
+      return val !== undefined && val !== '' && val !== null;
+    });
+  };
+
+  const handleToggleTreatment = (treatmentValue) => {
+    setFormData(prev => {
+      const current = prev.treatments || [];
+      return {
+        ...prev,
+        treatments: current.includes(treatmentValue)
+          ? current.filter(t => t !== treatmentValue)
+          : [...current, treatmentValue]
+      };
+    });
   };
 
   const handleConfirm = () => {
-    const updates = {};
-    if (needsBudget) {
-      updates.budget_amount = parseFloat(formData.budget_amount);
-    }
-    if (needsRejectionReason) {
-      updates.rejection_reason = formData.rejection_reason;
-    }
-    onConfirm(updates);
+    onConfirm(formData);
   };
 
   return (
@@ -78,52 +89,83 @@ export default function StatusChangeModal({
             Información requerida
           </DialogTitle>
           <DialogDescription>
-            Para mover a "{targetState?.label}" se requiere completar la siguiente información:
+            Para mover a <strong>"{targetState?.label}"</strong> completa la siguiente información:
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {needsBudget && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Importe del presupuesto *</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  value={formData.budget_amount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, budget_amount: e.target.value }))}
-                  placeholder="0.00"
-                  className="flex-1"
-                />
-                <span className="flex items-center px-3 bg-gray-100 rounded-md text-sm text-gray-600">
-                  EUR
-                </span>
-              </div>
-              <p className="text-xs text-gray-500">
-                {requirements?.message}
-              </p>
-            </div>
-          )}
+        <div className="space-y-4 py-2">
+          {fields.map(field => (
+            <div key={field.key} className="space-y-2">
+              <Label className="text-sm font-medium">
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </Label>
 
-          {needsRejectionReason && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Motivo de rechazo *</Label>
-              <Select
-                value={formData.rejection_reason}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, rejection_reason: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar motivo" />
-                </SelectTrigger>
-                <SelectContent>
-                  {REJECTION_REASONS.map(r => (
-                    <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500">
-                {requirements?.message}
-              </p>
+              {field.type === 'datetime' && (
+                <Input
+                  type="datetime-local"
+                  value={formData[field.key] || ''}
+                  onChange={e => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
+                />
+              )}
+
+              {field.type === 'number' && (
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    value={formData[field.key] || ''}
+                    onChange={e => setFormData(prev => ({ ...prev, [field.key]: parseFloat(e.target.value) }))}
+                    placeholder="0.00"
+                    className="flex-1"
+                  />
+                  <span className="flex items-center px-3 bg-gray-100 rounded-md text-sm text-gray-600">EUR</span>
+                </div>
+              )}
+
+              {field.type === 'treatments' && (
+                <div className="flex flex-wrap gap-2">
+                  {treatmentOptions.map(t => {
+                    const selected = (formData.treatments || []).includes(t.value);
+                    return (
+                      <Badge
+                        key={t.value}
+                        onClick={() => handleToggleTreatment(t.value)}
+                        className={`cursor-pointer select-none ${selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                      >
+                        {t.label}
+                      </Badge>
+                    );
+                  })}
+                  {treatmentOptions.length === 0 && (
+                    <p className="text-xs text-gray-400">No hay tratamientos configurados</p>
+                  )}
+                </div>
+              )}
+
+              {field.type === 'rejection_reason' && (
+                <Select
+                  value={formData[field.key] || ''}
+                  onValueChange={value => setFormData(prev => ({ ...prev, [field.key]: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar motivo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rejectionOptions.length > 0
+                      ? rejectionOptions.map(r => (
+                          <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                        ))
+                      : REJECTION_REASONS.map(r => (
+                          <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
+                        ))
+                    }
+                  </SelectContent>
+                </Select>
+              )}
             </div>
+          ))}
+
+          {requirements?.message && (
+            <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">{requirements.message}</p>
           )}
         </div>
 
@@ -131,8 +173,8 @@ export default function StatusChangeModal({
           <Button variant="outline" onClick={onClose} className="flex-1">
             Cancelar
           </Button>
-          <Button 
-            onClick={handleConfirm} 
+          <Button
+            onClick={handleConfirm}
             disabled={!canProceed()}
             className="flex-1"
           >
