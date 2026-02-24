@@ -69,6 +69,23 @@ export default function Tasks() {
     queryFn: () => base44.entities.Responsible.list('name')
   });
 
+  const { data: systemUsers = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
+  // Combined list for responsible selector
+  const allAssignees = useMemo(() => {
+    const activeResponsibles = responsibles.filter(r => r.is_active);
+    const userEmails = activeResponsibles.map(r => r.email).filter(Boolean);
+    return [
+      ...activeResponsibles.map(r => ({ id: r.id, name: r.name, type: 'responsible' })),
+      ...systemUsers
+        .filter(u => !userEmails.includes(u.email))
+        .map(u => ({ id: `user_${u.id}`, name: u.full_name || u.email, type: 'user' }))
+    ];
+  }, [responsibles, systemUsers]);
+
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
