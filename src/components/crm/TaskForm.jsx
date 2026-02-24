@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export default function TaskForm({ task, patients, responsibles, tasks, onSave, onCancel }) {
+export default function TaskForm({ task, patients, responsibles, systemUsers = [], tasks, onSave, onCancel }) {
   const [form, setForm] = useState({
     title: '',
     description: '',
