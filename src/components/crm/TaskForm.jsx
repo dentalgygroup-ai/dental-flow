@@ -221,8 +221,8 @@ export default function TaskForm({ task, patients, responsibles, systemUsers = [
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={null}>Sin asignar</SelectItem>
-              {responsibles.map(r => (
-                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+              {allAssignees.map(a => (
+                <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
