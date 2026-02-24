@@ -529,6 +529,28 @@ export default function PatientDrawer({
               </div>
 
               <div className="space-y-2">
+                <Label className="text-xs text-gray-500">Responsable asignado</Label>
+                <Select
+                  value={nextActionAssignedTo || ''}
+                  onValueChange={(value) => {
+                    const found = allAssignees.find(a => a.id === value);
+                    setNextActionAssignedTo(value);
+                    setNextActionAssignedToName(found?.name || '');
+                  }}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sin asignar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allAssignees.map(a => (
+                      <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
                 <Label className="text-xs text-gray-500">Notas</Label>
                 <Textarea
                   value={formData.next_action_notes || ''}
@@ -540,25 +562,51 @@ export default function PatientDrawer({
               </div>
 
               {canEdit && formData.next_action_type && formData.next_action_date && (
-                <Button 
-                  variant="outline" 
-                  className="w-full gap-2"
-                  onClick={() => {
-                    // Mark action as completed
-                    onAddAction({
-                      patient_id: patient.id,
-                      action_type: formData.next_action_type,
-                      description: `Acción completada: ${formData.next_action_notes || ''}`
-                    });
-                    handleChange('next_action_type', null);
-                    handleChange('next_action_date', null);
-                    handleChange('next_action_notes', '');
-                    handleChange('last_action_date', new Date().toISOString());
-                  }}
-                >
-                  <Check className="w-4 h-4" />
-                  Marcar como completada
-                </Button>
+                <div className="space-y-2">
+                  <Button 
+                    variant="outline"
+                    className="w-full gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+                    onClick={handleCreateNextActionTask}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Guardar como tarea
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full gap-2"
+                    onClick={handleCompleteNextAction}
+                  >
+                    <Check className="w-4 h-4" />
+                    Marcar como completada
+                  </Button>
+                </div>
+              )}
+
+              {/* Tareas vinculadas a este paciente */}
+              {patientTasks.length > 0 && (
+                <div className="pt-2 border-t">
+                  <p className="text-xs text-gray-500 mb-2 font-medium">Tareas del paciente</p>
+                  <div className="space-y-2">
+                    {patientTasks.slice(0, 5).map(task => (
+                      <div key={task.id} className={`flex items-start gap-2 p-2 rounded-lg text-xs ${
+                        task.status === 'completada' ? 'bg-green-50' : 
+                        task.status === 'cancelada' ? 'bg-gray-50' : 'bg-yellow-50'
+                      }`}>
+                        <div className={`w-2 h-2 rounded-full mt-0.5 flex-shrink-0 ${
+                          task.status === 'completada' ? 'bg-green-500' :
+                          task.status === 'cancelada' ? 'bg-gray-400' : 'bg-yellow-500'
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-800 truncate">{task.title}</p>
+                          <div className="flex items-center gap-1 text-gray-500 mt-0.5">
+                            {task.assigned_to_name && <span>{task.assigned_to_name}</span>}
+                            {task.due_date && <span>· {new Date(task.due_date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </TabsContent>
 
