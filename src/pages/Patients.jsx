@@ -457,6 +457,12 @@ export default function Patients() {
             onAddAction={handleAddAction}
             actions={actions}
             users={activeResponsibles}
+            systemUsers={users}
+            patientTasks={patientTasks}
+            onTasksChange={() => {
+              refetchPatientTasks();
+              queryClient.invalidateQueries({ queryKey: ['tasks'] });
+            }}
             permissions={permissions}
           />
         )}
