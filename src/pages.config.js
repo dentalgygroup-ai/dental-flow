@@ -52,6 +52,7 @@ import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
 import Pipeline from './pages/Pipeline';
 import Settings from './pages/Settings';
+import Tasks from './pages/Tasks';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "Patients": Patients,
     "Pipeline": Pipeline,
     "Settings": Settings,
+    "Tasks": Tasks,
 }
 
 export const pagesConfig = {
