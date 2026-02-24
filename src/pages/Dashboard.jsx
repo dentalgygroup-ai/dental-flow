@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock } from 'lucide-react';
 import KPICard from '../components/crm/KPICard';
