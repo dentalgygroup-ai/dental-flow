@@ -124,7 +124,7 @@ export const STATE_REQUIREMENTS = {
 
 export const formatCurrency = (amount, currency = 'EUR') => {
   if (amount === null || amount === undefined) return '—';
-  return new Intl.NumberFormat('es-ES', { style: 'currency', currency }).format(amount);
+  return new Intl.NumberFormat('es-ES', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
 };
 
 export const formatDate = (date) => {
