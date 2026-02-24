@@ -16,6 +16,7 @@ import { usePermissions } from '../components/crm/usePermissions';
 
 export default function Dashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
     search: '',
     status: '',
