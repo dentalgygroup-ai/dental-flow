@@ -93,6 +93,51 @@ export default function PatientDrawer({
     setShowNewAction(false);
   };
 
+  // Creates a Task from "Próxima acción" fields and syncs back to patient
+  const handleCreateNextActionTask = async () => {
+    if (!formData.next_action_type || !formData.next_action_date) return;
+    const task = await base44.entities.Task.create({
+      title: `${getActionTypeById(formData.next_action_type)?.label || formData.next_action_type} - ${patient.first_name} ${patient.last_name}`,
+      description: formData.next_action_notes || '',
+      task_type: formData.next_action_type,
+      patient_id: patient.id,
+      patient_name: `${patient.first_name} ${patient.last_name}`,
+      assigned_to: nextActionAssignedTo || null,
+      assigned_to_name: nextActionAssignedToName || null,
+      due_date: formData.next_action_date,
+      status: 'pendiente',
+      priority: 'media',
+      notes: formData.next_action_notes || ''
+    });
+    if (onTasksChange) onTasksChange();
+  };
+
+  // Mark the linked task as completed
+  const handleCompleteNextAction = async () => {
+    // Find the linked pending task
+    const linkedTask = patientTasks.find(
+      t => t.status !== 'completada' && t.status !== 'cancelada' && t.task_type === formData.next_action_type
+    );
+    if (linkedTask) {
+      await base44.entities.Task.update(linkedTask.id, {
+        status: 'completada',
+        completed_date: new Date().toISOString()
+      });
+    }
+    onAddAction({
+      patient_id: patient.id,
+      action_type: formData.next_action_type,
+      description: `Acción completada: ${formData.next_action_notes || ''}`
+    });
+    handleChange('next_action_type', null);
+    handleChange('next_action_date', null);
+    handleChange('next_action_notes', '');
+    handleChange('last_action_date', new Date().toISOString());
+    setNextActionAssignedTo('');
+    setNextActionAssignedToName('');
+    if (onTasksChange) onTasksChange();
+  };
+
   const currentState = getStateById(formData.status);
   const canEdit = permissions?.canEdit;
   const canEditBudget = permissions?.canEditBudget;
