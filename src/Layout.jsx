@@ -63,10 +63,12 @@ export default function Layout({ children, currentPageName }) {
       `}>
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">DC</span>
-            </div>
-            <span className="font-semibold text-gray-900">DentalCRM</span>
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c7eaa852fc152542c4acf/d41c2c0f7_logodentalflow.png"
+              alt="Dental Flow"
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+            <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 200 }} className="text-gray-900">Dental Flow</span>
           </div>
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
             <X className="w-5 h-5" />
