@@ -99,14 +99,15 @@ export default function Layout({ children, currentPageName }) {
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-1 bg-white border-r border-gray-200">
           {/* Logo */}
-          <div className="flex items-center gap-2 px-6 py-5 border-b">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold">DC</span>
-            </div>
-            <div>
-              <span className="font-semibold text-gray-900">DentalCRM</span>
-              <p className="text-xs text-gray-400">Gestión comercial</p>
-            </div>
+          <div className="flex items-center gap-3 px-6 py-5 border-b">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c7eaa852fc152542c4acf/d41c2c0f7_logodentalflow.png"
+              alt="Dental Flow"
+              className="w-10 h-10 rounded-xl object-cover"
+            />
+            <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 200, fontSize: '1.1rem', letterSpacing: '0.01em' }} className="text-gray-900">
+              Dental Flow
+            </span>
           </div>
 
           {/* Navigation */}
