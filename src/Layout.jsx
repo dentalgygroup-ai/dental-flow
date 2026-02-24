@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   LogOut,
-  User
+  User,
+  CheckSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
