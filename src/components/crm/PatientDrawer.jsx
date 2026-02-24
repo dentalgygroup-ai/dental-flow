@@ -56,6 +56,8 @@ export default function PatientDrawer({
   useEffect(() => {
     setFormData(patient || {});
     setValidationError('');
+    setNextActionAssignedTo('');
+    setNextActionAssignedToName('');
   }, [patient]);
 
   if (!patient) return null;
