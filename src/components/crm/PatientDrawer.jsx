@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { base44 } from '@/api/base44Client';
 import { 
   PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES, 
   ACTION_TYPES, REJECTION_REASONS,
@@ -30,6 +31,9 @@ export default function PatientDrawer({
   onAddAction,
   actions = [],
   users = [],
+  systemUsers = [],
+  patientTasks = [],
+  onTasksChange,
   permissions,
   isLoading = false
 }) {
@@ -38,6 +42,16 @@ export default function PatientDrawer({
   const [newAction, setNewAction] = useState({ action_type: '', description: '' });
   const [showNewAction, setShowNewAction] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [nextActionAssignedTo, setNextActionAssignedTo] = useState('');
+  const [nextActionAssignedToName, setNextActionAssignedToName] = useState('');
+
+  // Combined list of all possible assignees (responsibles + system users)
+  const allAssignees = [
+    ...users.map(r => ({ id: r.id, name: r.name, type: 'responsible' })),
+    ...systemUsers
+      .filter(u => !users.some(r => r.email === u.email))
+      .map(u => ({ id: `user_${u.id}`, name: u.full_name || u.email, type: 'user' }))
+  ];
 
   useEffect(() => {
     setFormData(patient || {});
