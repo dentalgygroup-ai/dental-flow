@@ -73,6 +73,19 @@ export default function Patients() {
     enabled: !!selectedPatient
   });
 
+  const { data: patientTasks = [], refetch: refetchPatientTasks } = useQuery({
+    queryKey: ['patientTasks', selectedPatient?.id],
+    queryFn: () => selectedPatient
+      ? base44.entities.Task.filter({ patient_id: selectedPatient.id }, '-created_date')
+      : [],
+    enabled: !!selectedPatient
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
   const permissions = usePermissions(currentUser);
 
   // Filter and sort patients
