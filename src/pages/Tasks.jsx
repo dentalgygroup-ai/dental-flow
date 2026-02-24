@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import TaskForm from '../components/crm/TaskForm';
-import TaskCard from '../components/crm/TaskCard';
-import TaskCalendarView from '../components/crm/TaskCalendarView';
+import TaskForm from '../components/crm/TaskForm.js';
+import TaskCard from '../components/crm/TaskCard.js';
+import TaskCalendarView from '../components/crm/TaskCalendarView.js';
 import { formatDate } from '../components/crm/constants';
 import {
   Select,
