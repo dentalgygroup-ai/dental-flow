@@ -28,6 +28,7 @@ const navigation = [
   { name: 'Dashboard', href: 'Dashboard', icon: LayoutDashboard },
   { name: 'Pipeline', href: 'Pipeline', icon: Kanban },
   { name: 'Pacientes', href: 'Patients', icon: Users },
+  { name: 'Tareas', href: 'Tasks', icon: CheckSquare },
   { name: 'Calendario', href: 'Calendar', icon: Calendar },
   { name: 'Configuración', href: 'Settings', icon: Settings },
 ];
