@@ -67,6 +67,14 @@ export default function Pipeline() {
     enabled: !!selectedPatient
   });
 
+  const { data: patientTasks = [], refetch: refetchPatientTasks } = useQuery({
+    queryKey: ['patientTasks', selectedPatient?.id],
+    queryFn: () => selectedPatient
+      ? base44.entities.Task.filter({ patient_id: selectedPatient.id }, '-created_date')
+      : [],
+    enabled: !!selectedPatient
+  });
+
   const permissions = usePermissions(currentUser);
 
   // Parse config
