@@ -248,6 +248,7 @@ export default function Tasks() {
             task={editingTask}
             patients={patients}
             responsibles={responsibles.filter(r => r.is_active)}
+            systemUsers={systemUsers}
             tasks={parentTasks}
             onSave={handleSaveTask}
             onCancel={() => { setShowForm(false); setEditingTask(null); }}
