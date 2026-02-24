@@ -47,6 +47,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&display=swap');`}</style>
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
