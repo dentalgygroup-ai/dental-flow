@@ -64,13 +64,28 @@ export default function TaskForm({ task, patients, responsibles, systemUsers = [
   };
 
   const handleResponsibleChange = (respId) => {
+    // Check in responsibles first, then systemUsers
     const resp = responsibles.find(r => r.id === respId);
-    setForm(prev => ({
-      ...prev,
-      assigned_to: respId,
-      assigned_to_name: resp ? resp.name : ''
-    }));
+    if (resp) {
+      setForm(prev => ({ ...prev, assigned_to: respId, assigned_to_name: resp.name }));
+      return;
+    }
+    // Check systemUsers (id stored as user_<id>)
+    const userId = respId.startsWith('user_') ? respId.slice(5) : respId;
+    const sysUser = systemUsers.find(u => u.id === userId || `user_${u.id}` === respId);
+    if (sysUser) {
+      setForm(prev => ({ ...prev, assigned_to: respId, assigned_to_name: sysUser.full_name || sysUser.email }));
+    }
   };
+
+  // Build combined assignee list
+  const respEmails = responsibles.map(r => r.email).filter(Boolean);
+  const allAssignees = [
+    ...responsibles.map(r => ({ id: r.id, name: r.name })),
+    ...systemUsers
+      .filter(u => !respEmails.includes(u.email))
+      .map(u => ({ id: `user_${u.id}`, name: u.full_name || u.email }))
+  ];
 
   const handleSubmit = () => {
     if (!form.title) return;
