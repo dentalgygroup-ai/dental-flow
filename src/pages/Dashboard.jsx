@@ -78,11 +78,6 @@ export default function Dashboard() {
     enabled: !!selectedPatient
   });
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
-  });
-
   const { data: config = [] } = useQuery({
     queryKey: ['appConfig'],
     queryFn: () => base44.entities.AppConfig.list()
