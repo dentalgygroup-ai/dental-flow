@@ -12,6 +12,7 @@ import { usePermissions } from '../components/crm/usePermissions';
 import SystemConfigManager from '../components/crm/SystemConfigManager';
 import UserManagement from '../components/crm/UserManagement';
 import ResponsibleManager from '../components/crm/ResponsibleManager';
+import SubscriptionManager from '../components/crm/SubscriptionManager';
 
 export default function Settings() {
   const [daysNoMovement, setDaysNoMovement] = useState(7);
