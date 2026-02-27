@@ -294,6 +294,20 @@ export default function Settings() {
               currentUser={currentUser}
             />
           </TabsContent>
+
+          <TabsContent value="subscription" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tu suscripción</CardTitle>
+                <CardDescription>
+                  Gestiona tu plan de Dental Flow CRM
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SubscriptionManager currentUser={currentUser} />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
