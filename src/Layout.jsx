@@ -15,6 +15,7 @@ import {
   User,
   CheckSquare
 } from 'lucide-react';
+import ClinicOnboarding from './components/crm/ClinicOnboarding';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
