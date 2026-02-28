@@ -88,10 +88,11 @@ export default function ClinicOnboarding({ currentUser }) {
 
         {/* Invited user notice */}
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-sm text-amber-800">
-          <Users className="w-4 h-4 mt-0.5 shrink-0" />
-          <p>
-            ¿Has sido invitado por otra clínica? El administrador de tu clínica debe asignarte desde su panel de <strong>Configuración → Clínica</strong>. Una vez vinculado, podrás acceder directamente.
-          </p>
+          <Users className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
+          <div className="space-y-1">
+            <p className="font-semibold">¿Te han invitado a una clínica?</p>
+            <p>Pide al administrador de tu clínica que te vincule desde <strong>Configuración → Clínica</strong>. En cuanto lo haga, podrás acceder directamente sin necesidad de crear una clínica nueva.</p>
+          </div>
         </div>
 
       </div>
