@@ -44,70 +44,12 @@ export default function UserManagement({ users, onRefresh, currentUser }) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Gestión de usuarios</CardTitle>
-            <CardDescription>
-              Invita y gestiona los usuarios del sistema
-            </CardDescription>
-          </div>
-          <Button 
-            variant="outline"
-            onClick={() => setShowInvite(!showInvite)}
-          >
-            <UserPlus className="w-4 h-4 mr-2" />
-            Invitar usuario
-          </Button>
-        </div>
+        <CardTitle>Gestión de usuarios</CardTitle>
+        <CardDescription>
+          Los usuarios se invitan desde la sección <strong>Clínica</strong>. Aquí puedes gestionar sus roles.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {showInvite && (
-          <div className="p-4 border rounded-lg bg-gray-50 space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Input
-                type="email"
-                placeholder="email@ejemplo.com"
-                value={inviteData.email}
-                onChange={(e) => setInviteData({ ...inviteData, email: e.target.value })}
-              />
-              <Select
-                value={inviteData.role}
-                onValueChange={(value) => setInviteData({ ...inviteData, role: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="comercial">Comercial</SelectItem>
-                  <SelectItem value="recepcion">Recepción</SelectItem>
-                  <SelectItem value="solo_lectura">Solo lectura</SelectItem>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                onClick={handleInvite}
-                disabled={isInviting}
-              >
-                <Check className="w-4 h-4 mr-1" />
-                {isInviting ? 'Enviando...' : 'Enviar invitación'}
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                onClick={() => {
-                  setShowInvite(false);
-                  setInviteData({ email: '', role: 'comercial' });
-                }}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        )}
-
         <div className="divide-y">
           {users.map((user) => {
             const roleInfo = ROLE_LABELS[user.role] || ROLE_LABELS.solo_lectura;
