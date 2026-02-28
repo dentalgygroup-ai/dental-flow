@@ -38,9 +38,14 @@ export default function Settings() {
     queryFn: () => base44.entities.SystemConfig.list()
   });
 
+  const clinicId = currentUser?.clinic_id;
+
   const { data: users = [], refetch: refetchUsers } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
+    queryKey: ['clinicUsers', clinicId],
+    queryFn: () => clinicId
+      ? base44.entities.User.filter({ clinic_id: clinicId })
+      : [],
+    enabled: !!clinicId,
   });
 
   const permissions = usePermissions(currentUser);
