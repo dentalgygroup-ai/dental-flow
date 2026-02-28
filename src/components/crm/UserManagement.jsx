@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { UserPlus, Mail, Shield, Trash2, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React from 'react';
+import { Mail, Shield } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -22,47 +20,7 @@ const ROLE_LABELS = {
 };
 
 export default function UserManagement({ users, onRefresh, currentUser }) {
-  const [showInvite, setShowInvite] = useState(false);
-  const [inviteData, setInviteData] = useState({ email: '', role: 'comercial' });
-  const [isInviting, setIsInviting] = useState(false);
   const { toast } = useToast();
-
-  const handleInvite = async () => {
-    if (!inviteData.email) {
-      toast({
-        title: "Error",
-        description: "Introduce un email",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsInviting(true);
-
-    try {
-      await base44.users.inviteUser(inviteData.email, inviteData.role);
-      
-      setInviteData({ email: '', role: 'comercial' });
-      setShowInvite(false);
-      
-      toast({
-        title: "Invitación enviada",
-        description: `Se ha enviado una invitación a ${inviteData.email}`,
-        duration: 3000
-      });
-
-      // Refresh users list
-      setTimeout(() => onRefresh(), 1000);
-    } catch (error) {
-      toast({
-        title: "Error al invitar",
-        description: error.message || "No se pudo enviar la invitación",
-        variant: "destructive"
-      });
-    } finally {
-      setIsInviting(false);
-    }
-  };
 
   const handleUpdateRole = async (user, newRole) => {
     if (user.email === currentUser?.email) {
