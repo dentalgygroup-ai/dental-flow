@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Building2, Loader2, Users } from 'lucide-react';
+import { Building2, Loader2, Users, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +12,15 @@ export default function ClinicOnboarding({ currentUser }) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Check if this user was already linked to a clinic by an admin
+  // but the currentUser object hasn't refreshed yet (edge case)
+  // If clinic_id exists, the Layout won't even render this component
+  // so here we only show to users genuinely without a clinic.
+
+  // Determine if user was invited (i.e., they are not the first user / admin creator).
+  // We use the role: invited users are assigned role 'user', clinic creators are 'admin'.
+  const wasInvited = currentUser?.role === 'user';
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -28,12 +37,57 @@ export default function ClinicOnboarding({ currentUser }) {
       clinic_id: clinic.id,
       clinic_name: clinic.name,
       is_clinic_owner: true,
+      role: 'admin',
     });
 
     toast({ title: '¡Clínica creada! Bienvenido a Dental Flow.', duration: 3000 });
     queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     setLoading(false);
   };
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+  };
+
+  if (wasInvited) {
+    // Show waiting screen for invited users
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center space-y-3">
+            <div className="flex justify-center">
+              <img
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c7eaa852fc152542c4acf/d41c2c0f7_logodentalflow.png"
+                alt="Dental Flow"
+                className="w-16 h-16 rounded-2xl object-cover shadow"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Bienvenido a Dental Flow</h1>
+            <p className="text-gray-500 text-sm">Hola, <strong>{currentUser?.full_name || currentUser?.email}</strong>.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5 text-center">
+            <div className="flex justify-center">
+              <div className="p-4 bg-amber-100 rounded-full">
+                <Clock className="w-8 h-8 text-amber-600" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="font-semibold text-gray-900 text-lg">Pendiente de vinculación</p>
+              <p className="text-sm text-gray-500">
+                El administrador de tu clínica debe vincularte desde <strong>Configuración → Clínica</strong>. 
+                En cuanto lo haga, podrás acceder a la aplicación.
+              </p>
+            </div>
+            <Button variant="outline" onClick={handleRefresh} className="gap-2">
+              <Loader2 className="w-4 h-4" />
+              Ya me han vinculado — Actualizar
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
@@ -91,7 +145,7 @@ export default function ClinicOnboarding({ currentUser }) {
           <Users className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
           <div className="space-y-1">
             <p className="font-semibold">¿Te han invitado a una clínica?</p>
-            <p>Pide al administrador de tu clínica que te vincule desde <strong>Configuración → Clínica</strong>. En cuanto lo haga, podrás acceder directamente sin necesidad de crear una clínica nueva.</p>
+            <p>Pide al administrador que te vincule desde <strong>Configuración → Clínica</strong>. En cuanto lo haga, podrás acceder directamente sin crear una clínica nueva.</p>
           </div>
         </div>
 
