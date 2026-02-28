@@ -58,24 +58,16 @@ export default function ClinicManager({ currentUser }) {
     // 1. Send invitation
     await base44.users.inviteUser(inviteEmail.trim(), 'user');
 
-    // 2. If user already exists in the system, link them to the clinic immediately
+    // 2. If user already exists in the system, link them to the clinic immediately via backend function
     const allUsers = await base44.entities.User.list();
     const existingUser = allUsers.find(u => u.email?.toLowerCase() === inviteEmail.trim().toLowerCase());
     if (existingUser && !existingUser.clinic_id) {
-      await base44.entities.User.update(existingUser.id, {
+      await base44.functions.invoke('linkUserToClinic', {
+        target_user_id: existingUser.id,
         clinic_id: clinicId,
         clinic_name: clinic.name,
-        is_clinic_owner: false,
       });
     }
-
-    // 3. Store pending invite so user gets auto-linked on first login
-    const pending = JSON.parse(localStorage.getItem('pending_clinic_invites') || '{}');
-    pending[inviteEmail.trim().toLowerCase()] = {
-      clinic_id: clinicId,
-      clinic_name: clinic.name,
-    };
-    localStorage.setItem('pending_clinic_invites', JSON.stringify(pending));
 
     toast({ title: `Invitación enviada a ${inviteEmail}`, duration: 3000 });
     setInviteEmail('');
