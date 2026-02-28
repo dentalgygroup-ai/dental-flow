@@ -297,12 +297,16 @@ export default function Settings() {
             />
           </TabsContent>
 
+          <TabsContent value="clinic" className="space-y-6">
+            <ClinicManager currentUser={currentUser} />
+          </TabsContent>
+
           <TabsContent value="subscription" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Tu suscripción</CardTitle>
                 <CardDescription>
-                  Gestiona tu plan de Dental Flow CRM
+                  Gestiona tu plan de Dental Flow CRM — licencia por clínica, hasta 4 usuarios
                 </CardDescription>
               </CardHeader>
               <CardContent>
