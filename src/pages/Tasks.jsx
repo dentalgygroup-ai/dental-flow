@@ -122,14 +122,14 @@ export default function Tasks() {
   }), [filteredTasks]);
 
   const handleSaveTask = async (data) => {
-    if (editingTask) {
+    if (editingTask?.id) {
       await base44.entities.Task.update(editingTask.id, data);
       toast({ title: 'Tarea actualizada', duration: 2000 });
     } else {
-      await base44.entities.Task.create(data);
+      await base44.entities.Task.create({ ...data, clinic_id: clinicId });
       toast({ title: 'Tarea creada', duration: 2000 });
     }
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['tasks', clinicId] });
     setShowForm(false);
     setEditingTask(null);
   };
