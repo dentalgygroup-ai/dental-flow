@@ -377,7 +377,7 @@ export default function Dashboard() {
             patientTasks={patientTasks}
             onTasksChange={() => {
               refetchPatientTasks();
-              queryClient.invalidateQueries({ queryKey: ['tasks'] });
+              queryClient.invalidateQueries({ queryKey: ['tasks', clinicId] });
             }}
             permissions={permissions}
           />
