@@ -32,18 +32,8 @@ export default function ClinicOnboarding({ currentUser }) {
     if (!name.trim()) return;
     setLoading(true);
     try {
-      const clinic = await base44.entities.Clinic.create({
-        name: name.trim(),
-        owner_email: currentUser.email,
-        max_users: 4,
-        subscription_status: 'none',
-      });
-
-      await base44.functions.invoke('linkUserToClinic', {
-        target_user_id: currentUser.id,
-        clinic_id: clinic.id,
-        clinic_name: clinic.name,
-      });
+      // Single backend function handles clinic creation + user linking via service role
+      await base44.functions.invoke('createMyClinic', { clinic_name: name.trim() });
 
       toast({ title: '¡Clínica creada! Bienvenido a Dental Flow.', duration: 3000 });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
@@ -51,7 +41,7 @@ export default function ClinicOnboarding({ currentUser }) {
       console.error('Error creando clínica:', error);
       toast({
         title: 'Error al crear la clínica',
-        description: error?.message || 'Por favor, inténtalo de nuevo.',
+        description: error?.response?.data?.error || error?.message || 'Por favor, inténtalo de nuevo.',
         variant: 'destructive',
       });
     } finally {
