@@ -28,17 +28,19 @@ export default function Settings() {
     queryFn: () => base44.auth.me()
   });
 
+  const clinicId = currentUser?.clinic_id;
+
   const { data: config = [], refetch: refetchConfig } = useQuery({
-    queryKey: ['appConfig'],
-    queryFn: () => base44.entities.AppConfig.list()
+    queryKey: ['appConfig', clinicId],
+    queryFn: () => clinicId ? base44.entities.AppConfig.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
 
   const { data: systemConfig = [], refetch: refetchSystemConfig } = useQuery({
-    queryKey: ['systemConfig'],
-    queryFn: () => base44.entities.SystemConfig.list()
+    queryKey: ['systemConfig', clinicId],
+    queryFn: () => clinicId ? base44.entities.SystemConfig.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
-
-  const clinicId = currentUser?.clinic_id;
 
   const { data: users = [], refetch: refetchUsers } = useQuery({
     queryKey: ['clinicUsers', clinicId],
