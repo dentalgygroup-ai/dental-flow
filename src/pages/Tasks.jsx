@@ -94,7 +94,7 @@ export default function Tasks() {
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
   });
 
   // Separate parent tasks and subtasks
