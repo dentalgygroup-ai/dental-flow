@@ -92,11 +92,6 @@ export default function Tasks() {
     ];
   }, [responsibles, systemUsers]);
 
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
-  });
-
   // Separate parent tasks and subtasks
   const parentTasks = useMemo(() => tasks.filter(t => !t.parent_task_id), [tasks]);
   const subtasksByParent = useMemo(() => {
