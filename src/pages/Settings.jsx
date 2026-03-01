@@ -114,6 +114,7 @@ export default function Settings() {
       });
     } else {
       await base44.entities.AppConfig.create({
+        clinic_id: clinicId,
         config_key: 'days_no_movement',
         config_value: parseInt(daysNoMovement),
         description: 'Días sin movimiento para alerta'
@@ -128,6 +129,7 @@ export default function Settings() {
       });
     } else {
       await base44.entities.AppConfig.create({
+        clinic_id: clinicId,
         config_key: 'days_in_negotiation',
         config_value: parseInt(daysInNegotiation),
         description: 'Días en negociación para alerta'
