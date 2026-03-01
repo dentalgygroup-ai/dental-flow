@@ -252,6 +252,7 @@ export default function Pipeline() {
   const handleCreatePatient = async (patientData) => {
     await base44.entities.Patient.create({
       ...patientData,
+      clinic_id: clinicId,
       last_action_date: new Date().toISOString()
     });
 
