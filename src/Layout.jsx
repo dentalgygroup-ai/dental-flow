@@ -86,7 +86,11 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&display=swap');`}</style>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Montserrat:wght@200;400;600&display=swap');
+        body, * { font-family: 'Inter', sans-serif; }
+        body, p, span, div, td, li, label, input, textarea, select { font-weight: 200; }
+      `}</style>
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
