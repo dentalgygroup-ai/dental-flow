@@ -54,6 +54,11 @@ export default function Tasks() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
   const clinicId = currentUser?.clinic_id;
 
   const { data: tasks = [], refetch: refetchTasks } = useQuery({
