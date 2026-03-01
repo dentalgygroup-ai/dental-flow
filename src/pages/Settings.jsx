@@ -49,8 +49,7 @@ export default function Settings() {
   });
 
   const permissions = usePermissions(currentUser);
-  const isClinicOwner = currentUser?.is_clinic_owner === true;
-  const canAccessSettings = permissions.canConfig || isClinicOwner;
+  const canAccessSettings = permissions.canConfig;
 
   // Load config values
   useEffect(() => {
