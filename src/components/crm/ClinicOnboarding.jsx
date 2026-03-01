@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Building2, Loader2, Users, Clock } from 'lucide-react';
+import { Building2, Loader2, Users, Clock, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,17 +10,39 @@ import { useQueryClient } from '@tanstack/react-query';
 export default function ClinicOnboarding({ currentUser }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [hasClinicInvite, setHasClinicInvite] = useState(false); // linked by admin but session not refreshed
+  const [view, setView] = useState('loading'); // 'loading' | 'invited' | 'create'
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Check if this user was already linked to a clinic by an admin
-  // but the currentUser object hasn't refreshed yet (edge case)
-  // If clinic_id exists, the Layout won't even render this component
-  // so here we only show to users genuinely without a clinic.
-
-  // Determine if user was invited (i.e., they are not the first user / admin creator).
-  // We use the role: invited users are assigned role 'user', clinic creators are 'admin'.
-  const wasInvited = currentUser?.role === 'user';
+  useEffect(() => {
+    // Check if the user's clinic_id was already set (session stale) by re-fetching
+    const checkStatus = async () => {
+      setChecking(true);
+      try {
+        const freshUser = await base44.auth.me();
+        if (freshUser?.clinic_id) {
+          // Already linked — refresh query so Layout picks it up
+          queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+          return;
+        }
+        // Determine view: if role is 'admin' they should create; 
+        // if 'user' they might be invited OR just registered.
+        // We always show the "create" form for admins, and for users we check
+        // if there's a pending invite by looking for a clinic listing them.
+        // Simplest UX: show both options for 'user' role, show only create for 'admin'.
+        if (freshUser?.role === 'admin') {
+          setView('create');
+        } else {
+          setView('choose');
+        }
+      } finally {
+        setChecking(false);
+      }
+    };
+    checkStatus();
+  }, []);
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -45,55 +67,30 @@ export default function ClinicOnboarding({ currentUser }) {
     setLoading(false);
   };
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+  const handleRefresh = async () => {
+    setLoading(true);
+    const freshUser = await base44.auth.me();
+    if (freshUser?.clinic_id) {
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+    } else {
+      toast({ title: 'Aún no estás vinculado', description: 'Pide al administrador que te vincule desde Configuración → Clínica.', duration: 4000 });
+    }
+    setLoading(false);
   };
 
-  if (wasInvited) {
-    // Show waiting screen for invited users
+  if (checking || view === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-3">
-            <div className="flex justify-center">
-              <img
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c7eaa852fc152542c4acf/d41c2c0f7_logodentalflow.png"
-                alt="Dental Flow"
-                className="w-16 h-16 rounded-2xl object-cover shadow"
-              />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Bienvenido a Dental Flow</h1>
-            <p className="text-gray-500 text-sm">Hola, <strong>{currentUser?.full_name || currentUser?.email}</strong>.</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5 text-center">
-            <div className="flex justify-center">
-              <div className="p-4 bg-amber-100 rounded-full">
-                <Clock className="w-8 h-8 text-amber-600" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <p className="font-semibold text-gray-900 text-lg">Pendiente de vinculación</p>
-              <p className="text-sm text-gray-500">
-                El administrador de tu clínica debe vincularte desde <strong>Configuración → Clínica</strong>. 
-                En cuanto lo haga, podrás acceder a la aplicación.
-              </p>
-            </div>
-            <Button variant="outline" onClick={handleRefresh} className="gap-2">
-              <Loader2 className="w-4 h-4" />
-              Ya me han vinculado — Actualizar
-            </Button>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-md space-y-6">
 
-        {/* Logo / Header */}
+        {/* Header */}
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <img
@@ -103,18 +100,20 @@ export default function ClinicOnboarding({ currentUser }) {
             />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Bienvenido a Dental Flow</h1>
-          <p className="text-gray-500 text-sm">Hola, <strong>{currentUser?.full_name || currentUser?.email}</strong>. Para empezar, crea tu clínica.</p>
+          <p className="text-gray-500 text-sm">
+            Hola, <strong>{currentUser?.full_name || currentUser?.email}</strong>.
+          </p>
         </div>
 
-        {/* Create clinic card */}
+        {/* Option: create new clinic */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-xl">
               <Building2 className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="font-semibold text-gray-900">Crea tu clínica</p>
-              <p className="text-xs text-gray-500">Serás el administrador y podrás invitar hasta 4 usuarios.</p>
+              <p className="font-semibold text-gray-900">Crear una nueva clínica</p>
+              <p className="text-xs text-gray-500">Serás el administrador y podrás invitar a tu equipo.</p>
             </div>
           </div>
 
@@ -140,13 +139,28 @@ export default function ClinicOnboarding({ currentUser }) {
           </Button>
         </div>
 
-        {/* Invited user notice */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-sm text-amber-800">
-          <Users className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
-          <div className="space-y-1">
-            <p className="font-semibold">¿Te han invitado a una clínica?</p>
-            <p>Pide al administrador que te vincule desde <strong>Configuración → Clínica</strong>. En cuanto lo haga, podrás acceder directamente sin crear una clínica nueva.</p>
+        {/* Option: already invited */}
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-amber-100 rounded-xl">
+              <Clock className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="font-semibold text-amber-900">¿Te han invitado a una clínica?</p>
+              <p className="text-xs text-amber-700">
+                El administrador te debe vincular desde <strong>Configuración → Clínica</strong>. Una vez hecho, pulsa el botón.
+              </p>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            className="w-full gap-2 border-amber-300 text-amber-800 hover:bg-amber-100"
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            Ya me han vinculado — Comprobar acceso
+          </Button>
         </div>
 
       </div>
