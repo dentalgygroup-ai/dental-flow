@@ -23,12 +23,13 @@ import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { useQuery } from '@tanstack/react-query';
 
-export default function ResponsibleManager() {
+export default function ResponsibleManager({ clinicId }) {
   const { toast } = useToast();
 
   const { data: responsibles = [], refetch } = useQuery({
-    queryKey: ['responsibles'],
-    queryFn: () => base44.entities.Responsible.list('name')
+    queryKey: ['responsibles', clinicId],
+    queryFn: () => clinicId ? base44.entities.Responsible.filter({ clinic_id: clinicId }, 'name') : [],
+    enabled: !!clinicId,
   });
 
   const [showForm, setShowForm] = useState(false);
