@@ -263,7 +263,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="responsibles" className="space-y-6">
-            <ResponsibleManager />
+            <ResponsibleManager clinicId={clinicId} />
           </TabsContent>
 
           <TabsContent value="system" className="space-y-6">
