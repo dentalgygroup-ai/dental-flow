@@ -36,6 +36,42 @@ const navigation = [
   { name: 'Configuración', href: 'Settings', icon: Settings },
 ];
 
+function ClinicGate({ currentUser, children }) {
+  const clinicId = currentUser?.clinic_id;
+
+  const { data: clinic } = useQuery({
+    queryKey: ['clinic', clinicId],
+    queryFn: async () => {
+      if (!clinicId) return null;
+      const clinics = await base44.entities.Clinic.filter({ id: clinicId });
+      return clinics[0] || null;
+    },
+    enabled: !!clinicId,
+    staleTime: 60_000,
+  });
+
+  if (!clinic) return children;
+
+  const isActiveSubscription = clinic.subscription_status === 'active';
+  const isTrialing = clinic.subscription_status === 'trialing';
+  const trialEnd = clinic.trial_end_date ? new Date(clinic.trial_end_date) : null;
+  const trialExpired = isTrialing && trialEnd && new Date() > trialEnd;
+
+  // Trial expired & not active → show paywall
+  if (trialExpired && !isActiveSubscription) {
+    return <TrialExpiredWall currentUser={currentUser} />;
+  }
+
+  return (
+    <>
+      {isTrialing && trialEnd && !trialExpired && (
+        <TrialBanner trialEndDate={trialEnd} />
+      )}
+      {children}
+    </>
+  );
+}
+
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
