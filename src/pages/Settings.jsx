@@ -83,6 +83,7 @@ export default function Settings() {
       Promise.all(
         missing.map((pt, i) =>
           base44.entities.SystemConfig.create({
+            clinic_id: clinicId,
             config_type: 'patient_type',
             value: pt.value,
             label: pt.label,
