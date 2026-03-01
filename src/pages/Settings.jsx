@@ -142,7 +142,7 @@ export default function Settings() {
     });
   };
 
-  if (!permissions.canConfig) {
+  if (!canAccessSettings) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <Card className="max-w-md w-full">
