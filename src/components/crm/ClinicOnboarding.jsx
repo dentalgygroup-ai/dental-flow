@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Building2, Loader2, Users, Clock, RefreshCw } from 'lucide-react';
+import { Building2, Loader2, Clock, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,31 +11,15 @@ export default function ClinicOnboarding({ currentUser }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [hasClinicInvite, setHasClinicInvite] = useState(false); // linked by admin but session not refreshed
-  const [view, setView] = useState('loading'); // 'loading' | 'invited' | 'create'
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Check if the user's clinic_id was already set (session stale) by re-fetching
     const checkStatus = async () => {
-      setChecking(true);
       try {
         const freshUser = await base44.auth.me();
         if (freshUser?.clinic_id) {
-          // Already linked — refresh query so Layout picks it up
           queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-          return;
-        }
-        // Determine view: if role is 'admin' they should create; 
-        // if 'user' they might be invited OR just registered.
-        // We always show the "create" form for admins, and for users we check
-        // if there's a pending invite by looking for a clinic listing them.
-        // Simplest UX: show both options for 'user' role, show only create for 'admin'.
-        if (freshUser?.role === 'admin') {
-          setView('create');
-        } else {
-          setView('choose');
         }
       } finally {
         setChecking(false);
@@ -47,38 +31,53 @@ export default function ClinicOnboarding({ currentUser }) {
   const handleCreate = async () => {
     if (!name.trim()) return;
     setLoading(true);
+    try {
+      const clinic = await base44.entities.Clinic.create({
+        name: name.trim(),
+        owner_email: currentUser.email,
+        max_users: 4,
+        subscription_status: 'none',
+      });
 
-    const clinic = await base44.entities.Clinic.create({
-      name: name.trim(),
-      owner_email: currentUser.email,
-      max_users: 4,
-      subscription_status: 'none',
-    });
+      await base44.functions.invoke('linkUserToClinic', {
+        target_user_id: currentUser.id,
+        clinic_id: clinic.id,
+        clinic_name: clinic.name,
+      });
 
-    await base44.auth.updateMe({
-      clinic_id: clinic.id,
-      clinic_name: clinic.name,
-      is_clinic_owner: true,
-      role: 'admin',
-    });
-
-    toast({ title: '¡Clínica creada! Bienvenido a Dental Flow.', duration: 3000 });
-    queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-    setLoading(false);
+      toast({ title: '¡Clínica creada! Bienvenido a Dental Flow.', duration: 3000 });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+    } catch (error) {
+      console.error('Error creando clínica:', error);
+      toast({
+        title: 'Error al crear la clínica',
+        description: error?.message || 'Por favor, inténtalo de nuevo.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRefresh = async () => {
     setLoading(true);
-    const freshUser = await base44.auth.me();
-    if (freshUser?.clinic_id) {
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-    } else {
-      toast({ title: 'Aún no estás vinculado', description: 'Pide al administrador que te vincule desde Configuración → Clínica.', duration: 4000 });
+    try {
+      const freshUser = await base44.auth.me();
+      if (freshUser?.clinic_id) {
+        queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      } else {
+        toast({
+          title: 'Aún no estás vinculado',
+          description: 'Pide al administrador que te vincule desde Configuración → Clínica.',
+          duration: 4000,
+        });
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  if (checking || view === 'loading') {
+  if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
@@ -124,7 +123,8 @@ export default function ClinicOnboarding({ currentUser }) {
               placeholder="Ej: Clínica Dental López"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+              onKeyDown={(e) => e.key === 'Enter' && !loading && handleCreate()}
+              disabled={loading}
             />
           </div>
 
