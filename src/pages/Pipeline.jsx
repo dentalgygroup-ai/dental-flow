@@ -387,7 +387,7 @@ export default function Pipeline() {
           patientTasks={patientTasks}
           onTasksChange={() => {
             refetchPatientTasks();
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['tasks', clinicId] });
           }}
           permissions={permissions}
         />
