@@ -212,10 +212,13 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Page content */}
         <main>
-          {currentUser && !currentUser.clinic_id
-            ? <ClinicOnboarding currentUser={currentUser} />
-            : children
-          }
+          {currentUser && !currentUser.clinic_id ? (
+            <ClinicOnboarding currentUser={currentUser} />
+          ) : (
+            <ClinicGate currentUser={currentUser}>
+              {children}
+            </ClinicGate>
+          )}
         </main>
       </div>
     </div>
