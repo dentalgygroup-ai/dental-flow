@@ -139,14 +139,14 @@ export default function Tasks() {
       status: 'completada',
       completed_date: new Date().toISOString()
     });
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['tasks', clinicId] });
     toast({ title: 'Tarea completada', duration: 2000 });
   };
 
   const handleDelete = async (task) => {
     if (!confirm(`¿Eliminar la tarea "${task.title}"?`)) return;
     await base44.entities.Task.delete(task.id);
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['tasks', clinicId] });
     toast({ title: 'Tarea eliminada', duration: 2000 });
   };
 
