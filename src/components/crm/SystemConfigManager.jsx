@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function SystemConfigManager({ configType, title, description, items, onRefresh }) {
+export default function SystemConfigManager({ configType, title, description, items, onRefresh, clinicId }) {
   const [newItem, setNewItem] = useState({ value: '', label: '' });
   const [showAdd, setShowAdd] = useState(false);
   const { toast } = useToast();
@@ -22,6 +22,7 @@ export default function SystemConfigManager({ configType, title, description, it
     }
 
     await base44.entities.SystemConfig.create({
+      clinic_id: clinicId,
       config_type: configType,
       value: newItem.value,
       label: newItem.label,
