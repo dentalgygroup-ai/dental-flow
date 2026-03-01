@@ -113,10 +113,10 @@ function dispatch(action) {
 function toast({ ...props }) {
   const id = genId();
 
-  const update = (props) =>
+  const update = (updatedProps) =>
     dispatch({
       type: actionTypes.UPDATE_TOAST,
-      toast: { ...props, id },
+      toast: { ...updatedProps, id },
     });
 
   const dismiss = () =>
@@ -128,6 +128,7 @@ function toast({ ...props }) {
       ...props,
       id,
       open: true,
+      onDismiss: dismiss,
       onOpenChange: (open) => {
         if (!open) dismiss();
       },
