@@ -84,8 +84,9 @@ export default function Dashboard() {
   });
 
   const { data: config = [] } = useQuery({
-    queryKey: ['appConfig'],
-    queryFn: () => base44.entities.AppConfig.list()
+    queryKey: ['appConfig', clinicId],
+    queryFn: () => clinicId ? base44.entities.AppConfig.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
 
   const permissions = usePermissions(currentUser);
