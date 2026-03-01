@@ -4,13 +4,11 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Must be authenticated (any role)
     const user = await base44.auth.me();
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // If user already has a clinic, don't allow creating another
     if (user.clinic_id) {
       return Response.json({ error: 'User already belongs to a clinic' }, { status: 400 });
     }
@@ -20,7 +18,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'clinic_name is required' }, { status: 400 });
     }
 
-    // Create the clinic
+    // Create the clinic using service role
     const clinic = await base44.asServiceRole.entities.Clinic.create({
       name: clinic_name.trim(),
       owner_email: user.email,
@@ -28,12 +26,11 @@ Deno.serve(async (req) => {
       subscription_status: 'none',
     });
 
-    // Link the user to the clinic and make them admin
+    // Link the user to the clinic - DO NOT update 'role' field (platform restriction)
     await base44.asServiceRole.entities.User.update(user.id, {
       clinic_id: clinic.id,
       clinic_name: clinic.name,
       is_clinic_owner: true,
-      role: 'admin',
     });
 
     return Response.json({ success: true, clinic });
