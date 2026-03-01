@@ -59,7 +59,7 @@ export default function ResponsibleManager({ clinicId }) {
       await base44.entities.Responsible.update(editingId, formData);
       toast({ title: 'Responsable actualizado', duration: 2000 });
     } else {
-      await base44.entities.Responsible.create({ ...formData, is_active: true });
+      await base44.entities.Responsible.create({ ...formData, clinic_id: clinicId, is_active: true });
       toast({ title: 'Responsable creado', duration: 2000 });
     }
     await refetch();
