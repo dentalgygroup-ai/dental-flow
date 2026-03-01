@@ -24,14 +24,18 @@ export default function CalendarPage() {
     queryFn: () => base44.auth.me()
   });
 
+  const clinicId = currentUser?.clinic_id;
+
   const { data: patients = [], refetch: refetchPatients } = useQuery({
-    queryKey: ['patients'],
-    queryFn: () => base44.entities.Patient.list('-created_date')
+    queryKey: ['patients', clinicId],
+    queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId }, '-created_date') : [],
+    enabled: !!clinicId,
   });
 
   const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
+    queryKey: ['clinicUsers', clinicId],
+    queryFn: () => clinicId ? base44.entities.User.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
 
   const { data: actions = [] } = useQuery({
