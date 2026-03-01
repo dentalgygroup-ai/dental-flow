@@ -54,24 +54,30 @@ export default function Tasks() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const clinicId = currentUser?.clinic_id;
+
   const { data: tasks = [], refetch: refetchTasks } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: () => base44.entities.Task.list('-created_date', 200)
+    queryKey: ['tasks', clinicId],
+    queryFn: () => clinicId ? base44.entities.Task.filter({ clinic_id: clinicId }, '-created_date') : [],
+    enabled: !!clinicId,
   });
 
   const { data: patients = [] } = useQuery({
-    queryKey: ['patients'],
-    queryFn: () => base44.entities.Patient.list('first_name', 200)
+    queryKey: ['patients', clinicId],
+    queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId }, 'first_name') : [],
+    enabled: !!clinicId,
   });
 
   const { data: responsibles = [] } = useQuery({
-    queryKey: ['responsibles'],
-    queryFn: () => base44.entities.Responsible.list('name')
+    queryKey: ['responsibles', clinicId],
+    queryFn: () => clinicId ? base44.entities.Responsible.filter({ clinic_id: clinicId }, 'name') : [],
+    enabled: !!clinicId,
   });
 
   const { data: systemUsers = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
+    queryKey: ['clinicUsers', clinicId],
+    queryFn: () => clinicId ? base44.entities.User.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
 
   // Combined list for responsible selector
