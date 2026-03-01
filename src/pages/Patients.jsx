@@ -86,8 +86,9 @@ export default function Patients() {
   });
 
   const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
+    queryKey: ['clinicUsers', clinicId],
+    queryFn: () => clinicId ? base44.entities.User.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
 
   const permissions = usePermissions(currentUser);
