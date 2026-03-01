@@ -45,19 +45,24 @@ export default function Dashboard() {
     queryFn: () => base44.auth.me()
   });
 
+  const clinicId = currentUser?.clinic_id;
+
   const { data: patients = [], refetch: refetchPatients } = useQuery({
-    queryKey: ['patients'],
-    queryFn: () => base44.entities.Patient.list('-created_date')
+    queryKey: ['patients', clinicId],
+    queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId }, '-created_date') : [],
+    enabled: !!clinicId,
   });
 
   const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
+    queryKey: ['clinicUsers', clinicId],
+    queryFn: () => clinicId ? base44.entities.User.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
   });
 
   const { data: responsibles = [] } = useQuery({
-    queryKey: ['responsibles'],
-    queryFn: () => base44.entities.Responsible.list('name')
+    queryKey: ['responsibles', clinicId],
+    queryFn: () => clinicId ? base44.entities.Responsible.filter({ clinic_id: clinicId }, 'name') : [],
+    enabled: !!clinicId,
   });
 
   const activeResponsibles = responsibles.filter(r => r.is_active);
