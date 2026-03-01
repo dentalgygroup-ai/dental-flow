@@ -19,11 +19,15 @@ Deno.serve(async (req) => {
     }
 
     // Create the clinic using service role
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + 7);
+
     const clinic = await base44.asServiceRole.entities.Clinic.create({
       name: clinic_name.trim(),
       owner_email: user.email,
       max_users: 4,
-      subscription_status: 'none',
+      subscription_status: 'trialing',
+      trial_end_date: trialEndDate.toISOString(),
     });
 
     // Link the user to the clinic - DO NOT update 'role' field (platform restriction)
