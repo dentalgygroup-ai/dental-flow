@@ -1,22 +1,40 @@
 import { useMemo } from 'react';
-import { ROLES } from './constants';
 
 export function usePermissions(user) {
   return useMemo(() => {
-    const role = user?.role || 'solo_lectura';
-    const permissions = ROLES[role] || ROLES.solo_lectura;
-    
+    // is_clinic_owner = full admin within the clinic
+    // Platform role 'admin' = super admin (developer)
+    const isOwner = user?.is_clinic_owner === true;
+    const isPlatformAdmin = user?.role === 'admin';
+    const isAdmin = isOwner || isPlatformAdmin;
+
+    if (isAdmin) {
+      return {
+        role: 'admin',
+        roleLabel: 'Administrador',
+        canEdit: true,
+        canCreate: true,
+        canMove: true,
+        canExport: true,
+        canConfig: true,
+        canEditBudget: true,
+        isAdmin: true,
+        isReadOnly: false,
+      };
+    }
+
+    // Regular clinic user: can use everything except config
     return {
-      role,
-      roleLabel: permissions.label,
-      canEdit: permissions.canEdit,
-      canCreate: permissions.canCreate,
-      canMove: permissions.canMove,
-      canExport: permissions.canExport,
-      canConfig: permissions.canConfig,
-      canEditBudget: permissions.canEditBudget,
-      isAdmin: role === 'admin',
-      isReadOnly: role === 'solo_lectura'
+      role: 'user',
+      roleLabel: 'Usuario',
+      canEdit: true,
+      canCreate: true,
+      canMove: true,
+      canExport: false,
+      canConfig: false,
+      canEditBudget: true,
+      isAdmin: false,
+      isReadOnly: false,
     };
-  }, [user?.role]);
+  }, [user?.is_clinic_owner, user?.role]);
 }
