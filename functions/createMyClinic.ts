@@ -66,6 +66,10 @@ Deno.serve(async (req) => {
       is_clinic_owner: true,
     });
 
+    // Seed master SystemConfig for the new clinic
+    const seedItems = MASTER_SYSTEM_CONFIG.map(item => ({ ...item, clinic_id: clinic.id }));
+    await base44.asServiceRole.entities.SystemConfig.bulkCreate(seedItems);
+
     return Response.json({ success: true, clinic });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
