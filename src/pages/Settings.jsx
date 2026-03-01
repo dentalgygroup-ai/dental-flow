@@ -273,6 +273,7 @@ export default function Settings() {
               description="Gestiona los tipos de tratamiento disponibles"
               items={treatments}
               onRefresh={refetchSystemConfig}
+              clinicId={clinicId}
             />
             
             <SystemConfigManager
@@ -281,6 +282,7 @@ export default function Settings() {
               description="Gestiona los motivos por los que un paciente rechaza el tratamiento"
               items={rejectionReasons}
               onRefresh={refetchSystemConfig}
+              clinicId={clinicId}
             />
             
             <SystemConfigManager
@@ -289,6 +291,7 @@ export default function Settings() {
               description="Gestiona las fuentes de dónde provienen los pacientes"
               items={sources}
               onRefresh={refetchSystemConfig}
+              clinicId={clinicId}
             />
 
             <SystemConfigManager
@@ -297,6 +300,7 @@ export default function Settings() {
               description="Gestiona los tipos de paciente disponibles"
               items={patientTypes}
               onRefresh={refetchSystemConfig}
+              clinicId={clinicId}
             />
           </TabsContent>
 
