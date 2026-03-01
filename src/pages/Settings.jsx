@@ -94,7 +94,7 @@ export default function Settings() {
   }, [systemConfig]);
 
   const handleSave = async () => {
-    if (!permissions.canConfig) {
+    if (!canAccessSettings) {
       toast({
         title: "Sin permisos",
         description: "Solo los administradores pueden cambiar la configuración",
