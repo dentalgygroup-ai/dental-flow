@@ -60,26 +60,20 @@ const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
 ));
 ToastAction.displayName = "ToastAction";
 
-const ToastClose = React.forwardRef(({ className, onClick, ...props }, ref) => {
-  const { dismiss } = useToastDismiss(props['data-id']);
-  return (
-    <button
-      ref={ref}
-      className={cn(
-        "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-100 transition-opacity hover:text-foreground focus:outline-none focus:ring-2 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
-        className
-      )}
-      toast-close=""
-      onClick={(e) => {
-        props.onDismiss?.();
-        onClick?.(e);
-      }}
-      {...props}
-    >
-      <X className="h-4 w-4" />
-    </button>
-  );
-});
+const ToastClose = React.forwardRef(({ className, onClick, ...props }, ref) => (
+  <button
+    ref={ref}
+    className={cn(
+      "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-100 transition-opacity hover:text-foreground focus:outline-none focus:ring-2 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+      className
+    )}
+    toast-close=""
+    onClick={onClick}
+    {...props}
+  >
+    <X className="h-4 w-4" />
+  </button>
+));
 ToastClose.displayName = "ToastClose";
 
 const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
