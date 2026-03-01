@@ -71,15 +71,25 @@ export default function SubscriptionManager({ currentUser }) {
   };
 
   const handleManageBilling = async () => {
+    // If no stripe_customer_id, the clinic is on a free trial and hasn't subscribed via Stripe yet
+    if (!clinic?.stripe_customer_id) {
+      toast({ title: 'Aún no tienes una suscripción activa de pago. Suscríbete primero para gestionar la facturación.', duration: 5000 });
+      return;
+    }
     setLoading(true);
-    const res = await base44.functions.invoke('stripeSubscription', {
-      action: 'portal',
-      clinic_id: clinicId,
-      return_url: window.location.href,
-    });
-    if (res.data.url) {
-      window.location.href = res.data.url;
-    } else {
+    try {
+      const res = await base44.functions.invoke('stripeSubscription', {
+        action: 'portal',
+        clinic_id: clinicId,
+        return_url: window.location.href,
+      });
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      } else {
+        toast({ title: 'Error al abrir el portal de facturación', variant: 'destructive' });
+        setLoading(false);
+      }
+    } catch (e) {
       toast({ title: 'Error al abrir el portal de facturación', variant: 'destructive' });
       setLoading(false);
     }
