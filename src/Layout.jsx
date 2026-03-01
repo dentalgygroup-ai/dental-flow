@@ -16,6 +16,8 @@ import {
   CheckSquare
 } from 'lucide-react';
 import ClinicOnboarding from './components/crm/ClinicOnboarding';
+import TrialBanner from './components/crm/TrialBanner';
+import TrialExpiredWall from './components/crm/TrialExpiredWall';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
