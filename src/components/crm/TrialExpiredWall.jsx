@@ -109,10 +109,10 @@ export default function TrialExpiredWall({ currentUser }) {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-3xl font-bold text-gray-900">124,50€</span>
+                <span className="text-3xl font-bold text-gray-900">149,50€</span>
                 <span className="text-gray-500 text-sm">/año</span>
               </div>
-              <p className="text-xs text-green-600 font-medium">Equivale a 10,37€/mes</p>
+              <p className="text-xs text-green-600 font-medium">Equivale a 12,45€/mes</p>
               <ul className="mt-3 space-y-1 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hasta 4 usuarios</li>
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Acceso completo al CRM</li>
