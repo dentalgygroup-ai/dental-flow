@@ -41,7 +41,6 @@ Deno.serve(async (req) => {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
-        trial_period_days: 7,
         metadata: { clinic_id: clinic.id },
       },
       success_url: return_url + '?session_id={CHECKOUT_SESSION_ID}',
