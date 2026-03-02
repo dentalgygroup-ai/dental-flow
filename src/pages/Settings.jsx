@@ -190,13 +190,13 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="responsibles">Responsables</TabsTrigger>
-            <TabsTrigger value="system">Sistema</TabsTrigger>
-            <TabsTrigger value="users">Usuarios</TabsTrigger>
-            <TabsTrigger value="clinic">Clínica</TabsTrigger>
-            <TabsTrigger value="subscription">Suscripción</TabsTrigger>
+          <TabsList className="flex flex-wrap h-auto gap-1 bg-muted p-1 rounded-lg">
+            <TabsTrigger value="general" className="flex-1 min-w-[80px]">General</TabsTrigger>
+            <TabsTrigger value="responsibles" className="flex-1 min-w-[100px]">Responsables</TabsTrigger>
+            <TabsTrigger value="system" className="flex-1 min-w-[80px]">Sistema</TabsTrigger>
+            <TabsTrigger value="users" className="flex-1 min-w-[80px]">Usuarios</TabsTrigger>
+            <TabsTrigger value="clinic" className="flex-1 min-w-[80px]">Clínica</TabsTrigger>
+            <TabsTrigger value="subscription" className="flex-1 min-w-[100px]">Suscripción</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-6">
