@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, Phone, Mail, Calendar, Clock, User, FileText, 
-  History, Bell, Save, Plus, Check, AlertCircle 
+  History, Bell, Save, Plus, Check, AlertCircle, CreditCard
 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -371,6 +372,40 @@ export default function PatientDrawer({
                   </Select>
                 </div>
               </div>
+
+              {/* Financiación — solo visible en estados aceptado/pagado */}
+              {['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
+                <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      id="financia_tratamiento"
+                      checked={!!formData.financia_tratamiento}
+                      onCheckedChange={(checked) => {
+                        handleChange('financia_tratamiento', !!checked);
+                        if (!checked) handleChange('gastos_financieros', null);
+                      }}
+                      disabled={!canEditBudget}
+                    />
+                    <Label htmlFor="financia_tratamiento" className="flex items-center gap-2 text-sm font-medium text-blue-800 cursor-pointer">
+                      <CreditCard className="w-4 h-4" />
+                      El paciente financia el tratamiento
+                    </Label>
+                  </div>
+                  {formData.financia_tratamiento && (
+                    <div className="space-y-1 pl-7">
+                      <Label className="text-xs text-gray-500">Gastos financieros (€)</Label>
+                      <Input
+                        type="number"
+                        value={formData.gastos_financieros || ''}
+                        onChange={(e) => handleChange('gastos_financieros', parseFloat(e.target.value) || null)}
+                        disabled={!canEditBudget}
+                        placeholder="0.00"
+                        className="w-40"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Patient Type and Source */}
               <div className="grid grid-cols-2 gap-4">

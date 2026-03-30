@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock } from 'lucide-react';
+import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock, CreditCard } from 'lucide-react';
 import KPICard from '../components/crm/KPICard';
 import NextActionsTable from '../components/crm/NextActionsTable';
 import ResponsibleStats from '../components/crm/ResponsibleStats';
@@ -184,6 +184,10 @@ export default function Dashboard() {
     const totalClosed = accepted.length + rejected.length;
     const closeRatio = totalClosed > 0 ? ((accepted.length / totalClosed) * 100).toFixed(1) : '—';
 
+    // Gastos financieros — pacientes aceptados que financian
+    const financedPatients = accepted.filter(p => p.financia_tratamiento);
+    const gastosFinancierosTotal = financedPatients.reduce((sum, p) => sum + (p.gastos_financieros || 0), 0);
+
     return {
       newPatientsCount: newPatients.length,
       budgetDeliveredCount: budgetDelivered.length,
@@ -196,7 +200,9 @@ export default function Dashboard() {
       inFollowUpAmount,
       activeCount: activePatients.length,
       activeAmount,
-      closeRatio
+      closeRatio,
+      financedCount: financedPatients.length,
+      gastosFinancierosTotal
     };
   }, [filteredPatients, onlyNewInPeriod, dateRange]);
 
@@ -323,7 +329,7 @@ export default function Dashboard() {
         </div>
 
         {/* Secondary KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <KPICard
             title="Pacientes activos"
             value={kpis.activeCount}
@@ -341,6 +347,12 @@ export default function Dashboard() {
             value={formatCurrency(kpis.activeAmount)}
             icon={Euro}
             subtitle="En pipeline"
+          />
+          <KPICard
+            title="Gastos financieros"
+            value={formatCurrency(kpis.gastosFinancierosTotal)}
+            icon={CreditCard}
+            subtitle={`${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}`}
           />
         </div>
 

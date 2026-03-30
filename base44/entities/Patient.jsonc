@@ -1,0 +1,165 @@
+{
+  "name": "Patient",
+  "type": "object",
+  "properties": {
+    "clinic_id": {
+      "type": "string",
+      "description": "ID de la cl\u00ednica a la que pertenece el paciente"
+    },
+    "first_name": {
+      "type": "string",
+      "description": "Nombre del paciente"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Apellidos del paciente"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono de contacto"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del paciente"
+    },
+    "treatments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tratamientos propuestos"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "nuevo_paciente",
+        "contactado",
+        "cita_agendada",
+        "cita_realizada",
+        "presupuesto_entregado",
+        "en_negociacion",
+        "rechazado",
+        "aceptado_pendiente_pago",
+        "pagado",
+        "pendiente_cita",
+        "citado",
+        "en_tratamiento"
+      ],
+      "default": "nuevo_paciente",
+      "description": "Estado en el pipeline"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "ID del responsable asignado"
+    },
+    "assigned_to_name": {
+      "type": "string",
+      "description": "Nombre del responsable asignado"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "walk_in",
+        "web",
+        "referido",
+        "campana",
+        "redes_sociales",
+        "otro"
+      ],
+      "description": "Fuente de captaci\u00f3n"
+    },
+    "patient_type": {
+      "type": "string",
+      "enum": [
+        "primera_visita",
+        "old_contact",
+        "referencia",
+        "ampliacion"
+      ],
+      "default": "primera_visita",
+      "description": "Tipo de paciente"
+    },
+    "budget_amount": {
+      "type": "number",
+      "description": "Importe del presupuesto"
+    },
+    "budget_currency": {
+      "type": "string",
+      "default": "EUR",
+      "description": "Moneda del presupuesto"
+    },
+    "financia_tratamiento": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica si el paciente financia el tratamiento"
+    },
+    "gastos_financieros": {
+      "type": "number",
+      "description": "Importe de los gastos financieros si financia el tratamiento"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Motivo de rechazo"
+    },
+    "appointment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de la cita (primera visita)"
+    },
+    "follow_up_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de seguimiento"
+    },
+    "treatment_appointment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de cita de tratamiento"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Etiquetas internas"
+    },
+    "internal_notes": {
+      "type": "string",
+      "description": "Observaciones internas"
+    },
+    "last_action_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de \u00faltima acci\u00f3n"
+    },
+    "next_action_type": {
+      "type": "string",
+      "enum": [
+        "llamada",
+        "whatsapp",
+        "email",
+        "cita",
+        "seguimiento",
+        "otro"
+      ],
+      "description": "Tipo de pr\u00f3xima acci\u00f3n"
+    },
+    "next_action_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de pr\u00f3xima acci\u00f3n"
+    },
+    "next_action_notes": {
+      "type": "string",
+      "description": "Notas de la pr\u00f3xima acci\u00f3n"
+    }
+  },
+  "required": [
+    "first_name",
+    "last_name",
+    "phone",
+    "status",
+    "patient_type"
+  ]
+}
