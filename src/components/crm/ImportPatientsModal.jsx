@@ -64,7 +64,7 @@ function parseDate(val) {
   return null;
 }
 
-function parseCSVLine(line) {
+function splitCSVLine(line, sep) {
   const result = [];
   let current = '';
   let inQuotes = false;
@@ -72,27 +72,73 @@ function parseCSVLine(line) {
     const ch = line[i];
     if (ch === '"') {
       inQuotes = !inQuotes;
-    } else if (ch === ',' && !inQuotes) {
-      result.push(current.trim());
+    } else if (ch === sep && !inQuotes) {
+      result.push(current.trim().replace(/^"|"$/g, ''));
       current = '';
     } else {
       current += ch;
     }
   }
-  result.push(current.trim());
+  result.push(current.trim().replace(/^"|"$/g, ''));
   return result;
 }
 
 function parseCSV(text) {
-  const lines = text.split('\n').filter(l => l.trim());
+  // Strip BOM
+  const clean = text.replace(/^\uFEFF/, '');
+  const lines = clean.split('\n').map(l => l.replace(/\r$/, '')).filter(l => l.trim());
   if (lines.length < 2) return [];
-  const headers = parseCSVLine(lines[0]).map(h => h.replace(/^"|"$/g, '').trim());
-  return lines.slice(1).map(line => {
-    const values = parseCSVLine(line).map(v => v.replace(/^"|"$/g, '').trim());
+
+  // Auto-detect separator: count ; vs , in first line
+  const firstLine = lines[0];
+  const sep = (firstLine.match(/;/g) || []).length >= (firstLine.match(/,/g) || []).length ? ';' : ',';
+
+  const rawHeaders = splitCSVLine(firstLine, sep);
+
+  // Check if line[1] contains canonical keys (first_name, last_name, etc.)
+  const line2 = splitCSVLine(lines[1], sep);
+  const line2IsCanonical = line2.filter(v => TEMPLATE_HEADERS.includes(v.trim())).length >= 3;
+
+  let headers, dataStart;
+  if (line2IsCanonical) {
+    // Template format: row0=labels, row1=canonical keys, row2+=data
+    headers = line2.map(v => v.trim());
+    dataStart = 2;
+  } else {
+    // Custom format: row0=labels (map them), row1+=data
+    headers = rawHeaders.map(h => {
+      const clean = h.toLowerCase().replace(/[^a-záéíóúüñ\s_]/gi, '').trim();
+      if (clean.startsWith('nombre') && !clean.includes('responsable') && !clean.includes('doctor')) return 'first_name';
+      if (clean.startsWith('apellidos') || clean.startsWith('apellido')) return 'last_name';
+      if (clean.startsWith('tel')) return 'phone';
+      if (clean.startsWith('email')) return 'email';
+      if (clean.startsWith('estado')) return 'status';
+      if (clean.startsWith('tipo')) return 'patient_type';
+      if (clean.startsWith('fuente')) return 'source';
+      if (clean.startsWith('tratamiento')) return 'treatments';
+      if (clean.startsWith('nombre') && clean.includes('responsable')) return 'assigned_to_name';
+      if (clean.startsWith('nombre') && clean.includes('doctor')) return 'doctor_name';
+      if (clean.startsWith('presupuesto')) return 'budget_amount';
+      if (clean.startsWith('moneda')) return 'budget_currency';
+      if (clean.startsWith('financia')) return 'financia_tratamiento';
+      if (clean.startsWith('gastos')) return 'gastos_financieros';
+      if (clean.startsWith('motivo')) return 'rejection_reason';
+      if (clean.startsWith('fecha cita tra') || clean.startsWith('fecha cita t')) return 'treatment_appointment_date';
+      if (clean.startsWith('fecha cita')) return 'appointment_date';
+      if (clean.startsWith('fecha seg')) return 'follow_up_date';
+      if (clean.startsWith('observ')) return 'internal_notes';
+      if (clean.startsWith('etiqueta')) return 'tags';
+      return null;
+    });
+    dataStart = 1;
+  }
+
+  return lines.slice(dataStart).map(line => {
+    const values = splitCSVLine(line, sep);
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = values[i] || ''; });
+    headers.forEach((h, i) => { if (h) obj[h] = values[i] || ''; });
     return obj;
-  });
+  }).filter(r => Object.values(r).some(v => v?.trim?.()));
 }
 
 function rowToPatient(row, clinicId) {
@@ -209,32 +255,57 @@ export default function ImportPatientsModal({ isOpen, onClose, clinicId, onImpor
         }
       });
       const rawRows = Array.isArray(result?.output) ? result.output : (result?.output?.rows || []);
-      // The Excel template has a "keys row" as the first data row (first_name, last_name, etc.)
-      // Detect and skip it if the first row's values match canonical field names
       if (rawRows.length > 0) {
+        // Check if first row values are canonical keys (template keys row)
         const firstRowValues = Object.values(rawRows[0]).map(v => String(v || '').trim());
         const isKeysRow = firstRowValues.filter(v => TEMPLATE_HEADERS.includes(v)).length >= 3;
-        rows = isKeysRow ? rawRows.slice(1) : rawRows;
-      }
-      // Remap from label-keyed objects to canonical field names
-      rows = rows.map(rawRow => {
-        const mapped = {};
-        for (const [key, val] of Object.entries(rawRow)) {
-          const cleanKey = key.trim();
-          // Already canonical
-          if (TEMPLATE_HEADERS.includes(cleanKey)) {
-            mapped[cleanKey] = val != null ? String(val).trim() : '';
-          } else {
-            // Try to map label -> canonical
-            const canonical = TEMPLATE_HEADERS.find(f => {
-              const label = (TEMPLATE_LABELS[f] || '').toLowerCase();
-              return label && cleanKey.toLowerCase().startsWith(label.split(' ')[0]);
-            });
-            if (canonical) mapped[canonical] = val != null ? String(val).trim() : '';
-          }
+        const dataRows = isKeysRow ? rawRows.slice(1) : rawRows;
+
+        // Build a mapping from the object keys (label columns) to canonical field names
+        // using the keys row if present, otherwise map by label
+        const excelKeys = Object.keys(rawRows[0]);
+        const keyMap = {};
+        if (isKeysRow) {
+          // firstRowValues[i] is the canonical name for excelKeys[i]
+          excelKeys.forEach((k, i) => { keyMap[k] = firstRowValues[i]; });
+        } else {
+          // Map by label matching
+          excelKeys.forEach(k => {
+            const cl = k.toLowerCase().replace(/[^a-záéíóúüñ\s_]/gi, '').trim();
+            if (cl.startsWith('nombre') && !cl.includes('responsable') && !cl.includes('doctor')) keyMap[k] = 'first_name';
+            else if (cl.startsWith('apellido')) keyMap[k] = 'last_name';
+            else if (cl.startsWith('tel')) keyMap[k] = 'phone';
+            else if (cl.startsWith('email')) keyMap[k] = 'email';
+            else if (cl.startsWith('estado')) keyMap[k] = 'status';
+            else if (cl.startsWith('tipo')) keyMap[k] = 'patient_type';
+            else if (cl.startsWith('fuente')) keyMap[k] = 'source';
+            else if (cl.startsWith('tratamiento')) keyMap[k] = 'treatments';
+            else if (cl.includes('responsable')) keyMap[k] = 'assigned_to_name';
+            else if (cl.includes('doctor')) keyMap[k] = 'doctor_name';
+            else if (cl.startsWith('presupuesto')) keyMap[k] = 'budget_amount';
+            else if (cl.startsWith('moneda')) keyMap[k] = 'budget_currency';
+            else if (cl.startsWith('financia')) keyMap[k] = 'financia_tratamiento';
+            else if (cl.startsWith('gastos')) keyMap[k] = 'gastos_financieros';
+            else if (cl.startsWith('motivo')) keyMap[k] = 'rejection_reason';
+            else if (cl.startsWith('fecha') && cl.includes('tra')) keyMap[k] = 'treatment_appointment_date';
+            else if (cl.startsWith('fecha') && cl.includes('cita')) keyMap[k] = 'appointment_date';
+            else if (cl.startsWith('fecha') && cl.includes('seg')) keyMap[k] = 'follow_up_date';
+            else if (cl.startsWith('observ')) keyMap[k] = 'internal_notes';
+            else if (cl.startsWith('etiqueta')) keyMap[k] = 'tags';
+          });
         }
-        return mapped;
-      }).filter(r => Object.values(r).some(v => v?.trim?.()));
+
+        rows = dataRows.map(rawRow => {
+          const mapped = {};
+          for (const [k, v] of Object.entries(rawRow)) {
+            const canonical = keyMap[k];
+            if (canonical && TEMPLATE_HEADERS.includes(canonical)) {
+              mapped[canonical] = v != null ? String(v).trim() : '';
+            }
+          }
+          return mapped;
+        }).filter(r => Object.values(r).some(v => v?.trim?.()));
+      }
     } else {
       // CSV
       const text = await file.text();
