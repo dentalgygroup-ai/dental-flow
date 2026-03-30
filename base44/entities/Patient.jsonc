@@ -6,6 +6,10 @@
       "type": "string",
       "description": "ID de la cl\u00ednica a la que pertenece el paciente"
     },
+    "historia_number": {
+      "type": "string",
+      "description": "N\u00famero de historial cl\u00ednico del paciente"
+    },
     "first_name": {
       "type": "string",
       "description": "Nombre del paciente"

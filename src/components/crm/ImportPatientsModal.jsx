@@ -7,7 +7,7 @@ import { base44 } from '@/api/base44Client';
 import { PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES } from './constants';
 
 const TEMPLATE_HEADERS = [
-  'first_name', 'last_name', 'phone', 'email',
+  'historia_number', 'first_name', 'last_name', 'phone', 'email',
   'status', 'patient_type', 'source',
   'treatments', 'assigned_to_name', 'doctor_name',
   'budget_amount', 'budget_currency',
@@ -18,6 +18,7 @@ const TEMPLATE_HEADERS = [
 ];
 
 const TEMPLATE_LABELS = {
+  historia_number: 'Nº Historial',
   first_name: 'Nombre *',
   last_name: 'Apellidos *',
   phone: 'Teléfono *',
@@ -41,7 +42,7 @@ const TEMPLATE_LABELS = {
 };
 
 const EXAMPLE_ROW = [
-  'Juan', 'García López', '600123456', 'juan@email.com',
+  '00123', 'Juan', 'García López', '600123456', 'juan@email.com',
   'nuevo_paciente', 'primera_visita', 'web',
   'Implantes;Ortodoncia', 'María Responsable', 'Dr. Pérez',
   '3500', 'EUR',
@@ -168,6 +169,7 @@ function rowToPatient(row, clinicId) {
 
   return {
     clinic_id: clinicId,
+    historia_number: row.historia_number?.trim() || undefined,
     first_name: row.first_name.trim(),
     last_name: row.last_name.trim(),
     phone: row.phone.trim(),

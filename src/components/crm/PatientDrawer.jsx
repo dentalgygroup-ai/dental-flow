@@ -217,6 +217,17 @@ export default function PatientDrawer({
           <div className="flex-1 overflow-y-auto p-4">
             {/* Resumen Tab */}
             <TabsContent value="resumen" className="mt-0 space-y-4">
+              {/* Historia number */}
+              <div className="space-y-2">
+                <Label className="text-xs text-gray-500">Nº Historial</Label>
+                <Input
+                  value={formData.historia_number || ''}
+                  onChange={(e) => handleChange('historia_number', e.target.value)}
+                  disabled={!canEdit}
+                  placeholder="Ej: 00123"
+                />
+              </div>
+
               {/* Contact info */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

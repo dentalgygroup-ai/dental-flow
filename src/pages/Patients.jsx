@@ -173,8 +173,9 @@ export default function Patients() {
       return;
     }
 
-    const headers = ['Nombre', 'Apellidos', 'Teléfono', 'Email', 'Tratamientos', 'Estado', 'Responsable', 'Presupuesto', 'Próxima acción', 'Última acción'];
+    const headers = ['Nº Historial', 'Nombre', 'Apellidos', 'Teléfono', 'Email', 'Tratamientos', 'Estado', 'Responsable', 'Presupuesto', 'Próxima acción', 'Última acción'];
     const rows = filteredPatients.map(p => [
+      p.historia_number || '',
       p.first_name,
       p.last_name,
       p.phone,
