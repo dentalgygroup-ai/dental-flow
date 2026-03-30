@@ -173,7 +173,7 @@ export default function Patients() {
       return;
     }
 
-    const headers = ['Nº Historial', 'Nombre', 'Apellidos', 'Teléfono', 'Email', 'Tratamientos', 'Estado', 'Responsable', 'Presupuesto', 'Próxima acción', 'Última acción'];
+    const headers = ['Nº Historial', 'Nombre', 'Apellidos', 'Teléfono', 'Email', 'Tratamientos', 'Estado', 'Responsable', 'Presupuesto entregado', 'Importe vendido', 'Próxima acción', 'Última acción'];
     const rows = filteredPatients.map(p => [
       p.historia_number || '',
       p.first_name,
@@ -184,6 +184,7 @@ export default function Patients() {
       getStateById(p.status)?.label || p.status,
       p.assigned_to_name || '',
       p.budget_amount || '',
+      p.sold_amount || '',
       p.next_action_date ? formatDate(p.next_action_date) : '',
       p.last_action_date ? formatDate(p.last_action_date) : ''
     ]);

@@ -386,7 +386,7 @@ export default function PatientDrawer({
               {/* Budget */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-xs text-gray-500">Presupuesto</Label>
+                  <Label className="text-xs text-gray-500">Presupuesto entregado</Label>
                   <Input
                     type="number"
                     value={formData.budget_amount || ''}
@@ -396,21 +396,31 @@ export default function PatientDrawer({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs text-gray-500">Moneda</Label>
-                  <Select
-                    value={formData.budget_currency || 'EUR'}
-                    onValueChange={(value) => handleChange('budget_currency', value)}
+                  <Label className="text-xs text-gray-500">Importe vendido</Label>
+                  <Input
+                    type="number"
+                    value={formData.sold_amount || ''}
+                    onChange={(e) => handleChange('sold_amount', parseFloat(e.target.value) || null)}
                     disabled={!canEditBudget}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="EUR">EUR</SelectItem>
-                      <SelectItem value="USD">USD</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    placeholder="0.00"
+                  />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-gray-500">Moneda</Label>
+                <Select
+                  value={formData.budget_currency || 'EUR'}
+                  onValueChange={(value) => handleChange('budget_currency', value)}
+                  disabled={!canEditBudget}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="USD">USD</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Financiación — solo visible en estados aceptado/pagado */}

@@ -94,7 +94,11 @@
     },
     "budget_amount": {
       "type": "number",
-      "description": "Importe del presupuesto"
+      "description": "Importe del presupuesto entregado al paciente"
+    },
+    "sold_amount": {
+      "type": "number",
+      "description": "Importe finalmente vendido/aceptado por el paciente"
     },
     "budget_currency": {
       "type": "string",

@@ -188,6 +188,13 @@ export default function Dashboard() {
     const inFollowUpAmount = inFollowUp.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
     const activeAmount = activePatients.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
 
+    // Sold amounts (importe vendido real)
+    const soldAmount = accepted.reduce((sum, p) => sum + (p.sold_amount ?? p.budget_amount ?? 0), 0);
+    const budgetWithSold = budgetDelivered.filter(p => p.budget_amount > 0);
+    const totalBudgetForRatio = budgetWithSold.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    const totalSoldForRatio = budgetWithSold.reduce((sum, p) => sum + (p.sold_amount ?? p.budget_amount ?? 0), 0);
+    const soldVsBudgetRatio = totalBudgetForRatio > 0 ? ((totalSoldForRatio / totalBudgetForRatio) * 100).toFixed(1) : '—';
+
     // Close ratio
     const totalClosed = accepted.length + rejected.length;
     const closeRatio = totalClosed > 0 ? ((accepted.length / totalClosed) * 100).toFixed(1) : '—';
@@ -202,6 +209,8 @@ export default function Dashboard() {
       budgetDeliveredAmount,
       acceptedCount: accepted.length,
       acceptedAmount,
+      soldAmount,
+      soldVsBudgetRatio,
       rejectedCount: rejected.length,
       rejectedAmount,
       inFollowUpCount: inFollowUp.length,
@@ -338,7 +347,7 @@ export default function Dashboard() {
         </div>
 
         {/* Secondary KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <KPICard
             title="Pacientes activos"
             value={kpis.activeCount}
@@ -350,6 +359,18 @@ export default function Dashboard() {
             value={kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—'}
             icon={TrendingUp}
             subtitle="Aceptados / Total cerrados"
+          />
+          <KPICard
+            title="Importe vendido"
+            value={formatCurrency(kpis.soldAmount)}
+            icon={Euro}
+            subtitle="Aceptados (importe real)"
+          />
+          <KPICard
+            title="% Venta / Presupuestado"
+            value={kpis.soldVsBudgetRatio !== '—' ? `${kpis.soldVsBudgetRatio}%` : '—'}
+            icon={TrendingUp}
+            subtitle="Vendido vs entregado"
           />
           <KPICard
             title="Importe potencial activo"
