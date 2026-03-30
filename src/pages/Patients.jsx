@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Download, ChevronUp, ChevronDown, Eye } from 'lucide-react';
+import { Plus, Download, ChevronUp, ChevronDown, Eye, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -17,6 +17,7 @@ import FilterBar from '../components/crm/FilterBar';
 import PatientDrawer from '../components/crm/PatientDrawer';
 import NewPatientModal from '../components/crm/NewPatientModal';
 import CalendarExport from '../components/crm/CalendarExport';
+import ImportPatientsModal from '../components/crm/ImportPatientsModal';
 import { 
   getStateById, 
   getTreatmentById, 
@@ -31,6 +32,7 @@ import { usePermissions } from '../components/crm/usePermissions';
 export default function Patients() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showNewPatient, setShowNewPatient] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [sortField, setSortField] = useState('next_action_date');
   const [sortOrder, setSortOrder] = useState('asc');
   const [filters, setFilters] = useState({
@@ -302,6 +304,12 @@ export default function Patients() {
                 Exportar CSV
               </Button>
             )}
+            {permissions.isAdmin && (
+              <Button variant="outline" onClick={() => setShowImport(true)} className="gap-2 w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50">
+                <Upload className="w-4 h-4" />
+                Importar pacientes
+              </Button>
+            )}
             {permissions.canCreate && (
               <Button onClick={() => setShowNewPatient(true)} className="gap-2 w-full sm:w-auto">
                 <Plus className="w-4 h-4" />
@@ -489,6 +497,16 @@ export default function Patients() {
           onSave={handleCreatePatient}
           users={activeResponsibles}
           currentUser={currentUser}
+        />
+
+        <ImportPatientsModal
+          isOpen={showImport}
+          onClose={() => setShowImport(false)}
+          clinicId={clinicId}
+          onImportComplete={() => {
+            refetchPatients();
+            toast({ title: "Importación completada", description: "Los pacientes han sido importados correctamente.", duration: 4000 });
+          }}
         />
       </div>
     </div>
