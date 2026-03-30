@@ -64,7 +64,37 @@ function parseDate(val) {
   return null;
 }
 
-function parseCSVLine(line) {
+// Map from label patterns to canonical field names
+const LABEL_TO_FIELD = {
+  'first_name': ['nombre', 'first_name'],
+  'last_name': ['apellidos', 'last_name'],
+  'phone': ['teléfono', 'telefono', 'phone'],
+  'email': ['email'],
+  'status': ['estado', 'status'],
+  'patient_type': ['tipo paciente', 'tipo_paciente', 'patient_type'],
+  'source': ['fuente', 'source'],
+  'treatments': ['tratamientos', 'treatments'],
+  'assigned_to_name': ['nombre del responsable', 'assigned_to_name'],
+  'doctor_name': ['nombre del doctor', 'doctor_name'],
+  'budget_amount': ['presupuesto', 'budget_amount'],
+  'budget_currency': ['moneda', 'budget_currency'],
+  'financia_tratamiento': ['financia tratamiento', 'financia_tratamiento'],
+  'gastos_financieros': ['gastos financieros', 'gastos_financieros'],
+  'rejection_reason': ['motivo rechazo', 'motivo_rechazo', 'rejection_reason'],
+  'appointment_date': ['fecha cita', 'appointment_date'],
+  'follow_up_date': ['fecha seguimiento', 'follow_up_date'],
+  'treatment_appointment_date': ['fecha cita tratamiento', 'treatment_appointment_date'],
+  'internal_notes': ['observaciones internas', 'internal_notes'],
+  'tags': ['etiquetas', 'tags'],
+};
+
+function detectSeparator(firstLine) {
+  const semicolons = (firstLine.match(/;/g) || []).length;
+  const commas = (firstLine.match(/,/g) || []).length;
+  return semicolons >= commas ? ';' : ',';
+}
+
+function splitLine(line, sep) {
   const result = [];
   let current = '';
   let inQuotes = false;
@@ -72,27 +102,55 @@ function parseCSVLine(line) {
     const ch = line[i];
     if (ch === '"') {
       inQuotes = !inQuotes;
-    } else if (ch === ',' && !inQuotes) {
-      result.push(current.trim());
+    } else if (ch === sep && !inQuotes) {
+      result.push(current.trim().replace(/^"|"$/g, ''));
       current = '';
     } else {
       current += ch;
     }
   }
-  result.push(current.trim());
+  result.push(current.trim().replace(/^"|"$/g, ''));
   return result;
 }
 
+function mapHeaderToField(header) {
+  const h = header.toLowerCase().trim();
+  // First try exact canonical match
+  if (TEMPLATE_HEADERS.includes(h)) return h;
+  // Then try label map
+  for (const [field, patterns] of Object.entries(LABEL_TO_FIELD)) {
+    if (patterns.some(p => h.startsWith(p) || h === p)) return field;
+  }
+  return null;
+}
+
 function parseCSV(text) {
-  const lines = text.split('\n').filter(l => l.trim());
+  const lines = text.split('\n').map(l => l.replace(/\r$/, '')).filter(l => l.trim());
   if (lines.length < 2) return [];
-  const headers = parseCSVLine(lines[0]).map(h => h.replace(/^"|"$/g, '').trim());
-  return lines.slice(1).map(line => {
-    const values = parseCSVLine(line).map(v => v.replace(/^"|"$/g, '').trim());
+
+  const sep = detectSeparator(lines[0]);
+  const rawHeaders = splitLine(lines[0], sep);
+  const headers = rawHeaders.map(mapHeaderToField);
+
+  // Check if second line looks like canonical keys (no spaces, no *)
+  // If so, use it as the real header row and skip it in data
+  let dataStart = 1;
+  const secondLineRaw = splitLine(lines[1], sep);
+  const secondLooksCanonical = secondLineRaw.every(v => !v.includes(' ') && !v.includes('*') && TEMPLATE_HEADERS.includes(v.trim()));
+  let finalHeaders = headers;
+  if (secondLooksCanonical) {
+    finalHeaders = secondLineRaw.map(v => v.trim());
+    dataStart = 2;
+  }
+
+  return lines.slice(dataStart).map(line => {
+    const values = splitLine(line, sep);
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = values[i] || ''; });
+    finalHeaders.forEach((h, i) => {
+      if (h) obj[h] = values[i] || '';
+    });
     return obj;
-  });
+  }).filter(r => Object.values(r).some(v => v?.trim?.()));
 }
 
 function rowToPatient(row, clinicId) {
@@ -210,32 +268,9 @@ export default function ImportPatientsModal({ isOpen, onClose, clinicId, onImpor
       });
       rows = Array.isArray(result?.output) ? result.output : (result?.output?.rows || []);
     } else {
-      // CSV
+      // CSV — auto-detects separator (;  or ,) and header format
       const text = await file.text();
-      const allRows = parseCSV(text);
-      // If first row is labels (contains *), skip it and use second row as keys
-      if (allRows.length > 0) {
-        const firstKey = Object.keys(allRows[0])[0];
-        // Check if headers are the label row (contains *) - then row[1] is actual keys
-        // Our template has: label row, key row, data rows
-        // We detect by checking if row values match TEMPLATE_HEADERS
-        const keys = Object.keys(allRows[0]);
-        const isLabelHeader = keys.some(k => k.includes('*') || k.includes('|'));
-        if (isLabelHeader && allRows.length >= 2) {
-          // allRows[0] is keys row mapped to label-keys, allRows[1...] are data
-          // Re-parse using second row as canonical keys
-          const lines = text.split('\n').filter(l => l.trim());
-          const canonicalHeaders = parseCSVLine(lines[1]).map(h => h.replace(/^"|"$/g, '').trim());
-          rows = lines.slice(2).map(line => {
-            const values = parseCSVLine(line).map(v => v.replace(/^"|"$/g, '').trim());
-            const obj = {};
-            canonicalHeaders.forEach((h, i) => { obj[h] = values[i] || ''; });
-            return obj;
-          }).filter(r => Object.values(r).some(v => v.trim?.()));
-        } else {
-          rows = allRows.filter(r => Object.values(r).some(v => v?.trim?.()));
-        }
-      }
+      rows = parseCSV(text);
     }
 
     setParsedRows(rows);
