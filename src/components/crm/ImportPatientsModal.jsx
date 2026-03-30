@@ -208,7 +208,33 @@ export default function ImportPatientsModal({ isOpen, onClose, clinicId, onImpor
           }
         }
       });
-      rows = Array.isArray(result?.output) ? result.output : (result?.output?.rows || []);
+      const rawRows = Array.isArray(result?.output) ? result.output : (result?.output?.rows || []);
+      // The Excel template has a "keys row" as the first data row (first_name, last_name, etc.)
+      // Detect and skip it if the first row's values match canonical field names
+      if (rawRows.length > 0) {
+        const firstRowValues = Object.values(rawRows[0]).map(v => String(v || '').trim());
+        const isKeysRow = firstRowValues.filter(v => TEMPLATE_HEADERS.includes(v)).length >= 3;
+        rows = isKeysRow ? rawRows.slice(1) : rawRows;
+      }
+      // Remap from label-keyed objects to canonical field names
+      rows = rows.map(rawRow => {
+        const mapped = {};
+        for (const [key, val] of Object.entries(rawRow)) {
+          const cleanKey = key.trim();
+          // Already canonical
+          if (TEMPLATE_HEADERS.includes(cleanKey)) {
+            mapped[cleanKey] = val != null ? String(val).trim() : '';
+          } else {
+            // Try to map label -> canonical
+            const canonical = TEMPLATE_HEADERS.find(f => {
+              const label = (TEMPLATE_LABELS[f] || '').toLowerCase();
+              return label && cleanKey.toLowerCase().startsWith(label.split(' ')[0]);
+            });
+            if (canonical) mapped[canonical] = val != null ? String(val).trim() : '';
+          }
+        }
+        return mapped;
+      }).filter(r => Object.values(r).some(v => v?.trim?.()));
     } else {
       // CSV
       const text = await file.text();
