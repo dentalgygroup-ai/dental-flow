@@ -12,6 +12,7 @@ import { usePermissions } from '../components/crm/usePermissions';
 import SystemConfigManager from '../components/crm/SystemConfigManager';
 import UserManagement from '../components/crm/UserManagement';
 import ResponsibleManager from '../components/crm/ResponsibleManager';
+import DoctorManager from '../components/crm/DoctorManager';
 import SubscriptionManager from '../components/crm/SubscriptionManager';
 import ClinicManager from '../components/crm/ClinicManager';
 
@@ -310,6 +311,7 @@ export default function Settings() {
               onRefresh={refetchUsers}
               currentUser={currentUser}
             />
+            <DoctorManager clinicId={clinicId} />
           </TabsContent>
 
           <TabsContent value="clinic" className="space-y-6">

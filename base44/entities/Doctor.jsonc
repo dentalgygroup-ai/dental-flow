@@ -1,0 +1,30 @@
+{
+  "name": "Doctor",
+  "type": "object",
+  "properties": {
+    "clinic_id": {
+      "type": "string",
+      "description": "ID de la cl\u00ednica a la que pertenece el doctor"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nombre del doctor/a"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Especialidades del doctor (ids de tratamientos)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si el doctor est\u00e1 activo"
+    }
+  },
+  "required": [
+    "name",
+    "clinic_id"
+  ]
+}

@@ -23,6 +23,7 @@ export default function FilterBar({
   filters, 
   onFilterChange, 
   users = [],
+  doctors = [],
   showStateFilter = true,
   compact = false 
 }) {
@@ -32,6 +33,7 @@ export default function FilterBar({
     filters.search,
     filters.status,
     filters.assigned_to,
+    filters.doctor_id,
     filters.treatments?.length > 0,
     filters.source,
     filters.patient_type,
@@ -44,6 +46,7 @@ export default function FilterBar({
       search: '',
       status: '',
       assigned_to: '',
+      doctor_id: '',
       treatments: [],
       source: '',
       patient_type: '',
@@ -106,6 +109,23 @@ export default function FilterBar({
             ))}
           </SelectContent>
         </Select>
+
+        {doctors.length > 0 && (
+          <Select
+            value={filters.doctor_id || 'all'}
+            onValueChange={(value) => onFilterChange({ ...filters, doctor_id: value === 'all' ? '' : value })}
+          >
+            <SelectTrigger className="w-[180px] h-10">
+              <SelectValue placeholder="Doctor/a" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los doctores</SelectItem>
+              {doctors.map(d => (
+                <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         {/* Advanced filters toggle */}
         <Popover open={showAdvanced} onOpenChange={setShowAdvanced}>

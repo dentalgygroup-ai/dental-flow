@@ -21,6 +21,7 @@ export default function Dashboard() {
     search: '',
     status: '',
     assigned_to: '',
+    doctor_id: '',
     treatments: [],
     source: '',
     patient_type: '',
@@ -62,6 +63,12 @@ export default function Dashboard() {
   const { data: responsibles = [] } = useQuery({
     queryKey: ['responsibles', clinicId],
     queryFn: () => clinicId ? base44.entities.Responsible.filter({ clinic_id: clinicId }, 'name') : [],
+    enabled: !!clinicId,
+  });
+
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors', clinicId],
+    queryFn: () => clinicId ? base44.entities.Doctor.filter({ clinic_id: clinicId }, 'name') : [],
     enabled: !!clinicId,
   });
 
@@ -119,6 +126,7 @@ export default function Dashboard() {
       }
       if (filters.status && p.status !== filters.status) return false;
       if (filters.assigned_to && p.assigned_to !== filters.assigned_to) return false;
+      if (filters.doctor_id && p.doctor_id !== filters.doctor_id) return false;
       if (filters.treatments?.length > 0 && !filters.treatments.some(t => p.treatments?.includes(t))) return false;
       if (filters.source && p.source !== filters.source) return false;
       if (filters.patient_type && p.patient_type !== filters.patient_type) return false;
@@ -290,6 +298,7 @@ export default function Dashboard() {
             filters={filters}
             onFilterChange={setFilters}
             users={activeResponsibles}
+            doctors={doctors.filter(d => d.is_active)}
             showStateFilter={true}
           />
         </div>
@@ -386,6 +395,7 @@ export default function Dashboard() {
             actions={actions}
             users={activeResponsibles}
             systemUsers={users}
+            doctors={doctors.filter(d => d.is_active)}
             patientTasks={patientTasks}
             onTasksChange={() => {
               refetchPatientTasks();

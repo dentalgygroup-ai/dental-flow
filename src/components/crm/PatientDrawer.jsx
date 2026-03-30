@@ -33,6 +33,7 @@ export default function PatientDrawer({
   actions = [],
   users = [],
   systemUsers = [],
+  doctors = [],
   patientTasks = [],
   onTasksChange,
   permissions,
@@ -321,6 +322,34 @@ export default function PatientDrawer({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Doctor — visible desde cita_agendada en adelante */}
+              {['cita_agendada','cita_realizada','presupuesto_entregado','en_negociacion','aceptado_pendiente_pago','pagado','pendiente_cita','citado','en_tratamiento'].includes(formData.status) && (
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Doctor/a asignado/a</Label>
+                  <Select
+                    value={formData.doctor_id || ''}
+                    onValueChange={(value) => {
+                      const doc = doctors.find(d => d.id === value);
+                      handleChange('doctor_id', value || null);
+                      handleChange('doctor_name', doc?.name || '');
+                    }}
+                    disabled={!canEdit}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Asignar doctor/a" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={null}>Sin asignar</SelectItem>
+                      {doctors.filter(d => d.is_active).map(doc => (
+                        <SelectItem key={doc.id} value={doc.id}>
+                          {doc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {/* Treatments */}
               <div className="space-y-2">

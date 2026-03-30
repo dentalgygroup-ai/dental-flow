@@ -21,6 +21,7 @@ export default function Pipeline() {
   const [filters, setFilters] = useState({
     search: '',
     assigned_to: '',
+    doctor_id: '',
     treatments: [],
     source: '',
     priority: '',
@@ -58,6 +59,12 @@ export default function Pipeline() {
   });
 
   const activeResponsibles = responsibles.filter(r => r.is_active);
+
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors', clinicId],
+    queryFn: () => clinicId ? base44.entities.Doctor.filter({ clinic_id: clinicId }, 'name') : [],
+    enabled: !!clinicId,
+  });
 
   const { data: config = [] } = useQuery({
     queryKey: ['appConfig', clinicId],
@@ -102,6 +109,7 @@ export default function Pipeline() {
         }
       }
       if (filters.assigned_to && p.assigned_to !== filters.assigned_to) return false;
+      if (filters.doctor_id && p.doctor_id !== filters.doctor_id) return false;
       if (filters.treatments?.length > 0 && !filters.treatments.some(t => p.treatments?.includes(t))) return false;
       if (filters.source && p.source !== filters.source) return false;
       if (filters.patient_type && p.patient_type !== filters.patient_type) return false;
@@ -352,6 +360,7 @@ export default function Pipeline() {
             filters={filters}
             onFilterChange={setFilters}
             users={activeResponsibles}
+            doctors={doctors.filter(d => d.is_active)}
             showStateFilter={false}
           />
         </div>
@@ -384,6 +393,7 @@ export default function Pipeline() {
           actions={actions}
           users={activeResponsibles}
           systemUsers={users}
+          doctors={doctors.filter(d => d.is_active)}
           patientTasks={patientTasks}
           onTasksChange={() => {
             refetchPatientTasks();

@@ -57,6 +57,14 @@
       "type": "string",
       "description": "Nombre del responsable asignado"
     },
+    "doctor_id": {
+      "type": "string",
+      "description": "ID del doctor asignado"
+    },
+    "doctor_name": {
+      "type": "string",
+      "description": "Nombre del doctor asignado"
+    },
     "source": {
       "type": "string",
       "enum": [
