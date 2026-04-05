@@ -14,6 +14,7 @@ import StatusChangeModal from '../components/crm/StatusChangeModal';
 import CalendarExport from '../components/crm/CalendarExport';
 import { PIPELINE_STATES, STATE_REQUIREMENTS } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Pipeline() {
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -90,6 +91,7 @@ export default function Pipeline() {
   });
 
   const permissions = usePermissions(currentUser);
+  const isMobile = useIsMobile();
 
   // Parse config
   const configValues = useMemo(() => ({
@@ -382,15 +384,24 @@ export default function Pipeline() {
       {/* Kanban board */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="p-4 md:p-6 overflow-x-auto">
-          <div className="flex gap-4 min-w-max pb-4">
+          {isMobile && (
+            <div className="flex justify-center items-center gap-1 text-gray-400 text-xs mb-2 animate-pulse">
+              <span>←</span> Desliza para ver más <span>→</span>
+            </div>
+          )}
+          <div
+            className="flex gap-4 min-w-max pb-4"
+            style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}
+          >
             {PIPELINE_STATES.map(state => (
-              <KanbanColumn
-                key={state.id}
-                state={state}
-                patients={patientsByStatus[state.id] || []}
-                onPatientClick={setSelectedPatient}
-                config={configValues}
-              />
+              <div key={state.id} style={{ scrollSnapAlign: 'start' }}>
+                <KanbanColumn
+                  state={state}
+                  patients={patientsByStatus[state.id] || []}
+                  onPatientClick={setSelectedPatient}
+                  config={configValues}
+                />
+              </div>
             ))}
           </div>
         </div>
