@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import confetti from 'canvas-confetti';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -241,6 +242,18 @@ export default function Pipeline() {
 
     queryClient.invalidateQueries({ queryKey: ['patientActions', patient.id] });
     refetchPatients();
+
+    if (newStatus === 'pagado') {
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#2563eb', '#16a34a', '#fbbf24', '#ffffff'],
+          disableForReducedMotion: true,
+        });
+      }, 300);
+    }
     
     toast({
       title: "Estado actualizado",

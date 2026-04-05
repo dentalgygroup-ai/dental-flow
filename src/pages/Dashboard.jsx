@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock, CreditCard } from 'lucide-react';
@@ -284,78 +285,55 @@ export default function Dashboard() {
         </div>
 
         {/* Main KPIs - Period Based */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <KPICard
-            title="Nuevos clientes"
-            value={kpis.newPatientsCount}
-            icon={UserPlus}
-            subtitle="Altas en el período"
-          />
-          <KPICard
-            title="Presupuestado"
-            value={kpis.budgetDeliveredCount}
-            icon={FileText}
-            subtitle={formatCurrency(kpis.budgetDeliveredAmount)}
-          />
-          <KPICard
-            title="Aceptado"
-            value={kpis.acceptedCount}
-            icon={CheckCircle}
-            subtitle={formatCurrency(kpis.acceptedAmount)}
-          />
-          <KPICard
-            title="Rechazado"
-            value={kpis.rejectedCount}
-            icon={XCircle}
-            subtitle={formatCurrency(kpis.rejectedAmount)}
-          />
-          <KPICard
-            title="En seguimiento"
-            value={kpis.inFollowUpCount}
-            icon={Clock}
-            subtitle={formatCurrency(kpis.inFollowUpAmount)}
-          />
-        </div>
+        {(() => {
+          const mainKpis = [
+            { title: "Nuevos clientes", value: kpis.newPatientsCount, icon: UserPlus, subtitle: "Altas en el período" },
+            { title: "Presupuestado", value: kpis.budgetDeliveredCount, icon: FileText, subtitle: formatCurrency(kpis.budgetDeliveredAmount) },
+            { title: "Aceptado", value: kpis.acceptedCount, icon: CheckCircle, subtitle: formatCurrency(kpis.acceptedAmount) },
+            { title: "Rechazado", value: kpis.rejectedCount, icon: XCircle, subtitle: formatCurrency(kpis.rejectedAmount) },
+            { title: "En seguimiento", value: kpis.inFollowUpCount, icon: Clock, subtitle: formatCurrency(kpis.inFollowUpAmount) },
+          ];
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {mainKpis.map((kpi, index) => (
+                <motion.div
+                  key={kpi.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.08 }}
+                >
+                  <KPICard title={kpi.title} value={kpi.value} icon={kpi.icon} subtitle={kpi.subtitle} />
+                </motion.div>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Secondary KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <KPICard
-            title="Pacientes activos"
-            value={kpis.activeCount}
-            icon={Users}
-            subtitle="En pipeline actual"
-          />
-          <KPICard
-            title="Ratio de cierre"
-            value={kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—'}
-            icon={TrendingUp}
-            subtitle="Aceptados / Total cerrados"
-          />
-          <KPICard
-            title="Importe vendido"
-            value={formatCurrency(kpis.soldAmount)}
-            icon={Euro}
-            subtitle="Aceptados (importe real)"
-          />
-          <KPICard
-            title="% Venta / Presupuestado"
-            value={kpis.soldVsBudgetRatio !== '—' ? `${kpis.soldVsBudgetRatio}%` : '—'}
-            icon={TrendingUp}
-            subtitle="Vendido vs entregado"
-          />
-          <KPICard
-            title="Importe potencial activo"
-            value={formatCurrency(kpis.activeAmount)}
-            icon={Euro}
-            subtitle="En pipeline"
-          />
-          <KPICard
-            title="Gastos financieros"
-            value={formatCurrency(kpis.gastosFinancierosTotal)}
-            icon={CreditCard}
-            subtitle={`${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}`}
-          />
-        </div>
+        {(() => {
+          const secondaryKpis = [
+            { title: "Pacientes activos", value: kpis.activeCount, icon: Users, subtitle: "En pipeline actual" },
+            { title: "Ratio de cierre", value: kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—', icon: TrendingUp, subtitle: "Aceptados / Total cerrados" },
+            { title: "Importe vendido", value: formatCurrency(kpis.soldAmount), icon: Euro, subtitle: "Aceptados (importe real)" },
+            { title: "% Venta / Presupuestado", value: kpis.soldVsBudgetRatio !== '—' ? `${kpis.soldVsBudgetRatio}%` : '—', icon: TrendingUp, subtitle: "Vendido vs entregado" },
+            { title: "Importe potencial activo", value: formatCurrency(kpis.activeAmount), icon: Euro, subtitle: "En pipeline" },
+            { title: "Gastos financieros", value: formatCurrency(kpis.gastosFinancierosTotal), icon: CreditCard, subtitle: `${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}` },
+          ];
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {secondaryKpis.map((kpi, index) => (
+                <motion.div
+                  key={kpi.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.4 + index * 0.08 }}
+                >
+                  <KPICard title={kpi.title} value={kpi.value} icon={kpi.icon} subtitle={kpi.subtitle} />
+                </motion.div>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Charts and Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
