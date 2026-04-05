@@ -1,9 +1,26 @@
 import React, { useMemo } from 'react';
-import { AlertTriangle, Calendar, Clock, User } from 'lucide-react';
+import { AlertTriangle, Calendar, Clock, User, Phone, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getStateById, daysSince } from './constants';
 
 export default function RequiresAttentionList({ patients, onPatientClick, config = {}, limit = 10 }) {
+  const handleQuickCall = (e, patient) => {
+    e.stopPropagation();
+    if (patient.phone) window.open(`tel:${patient.phone}`, '_self');
+  };
+
+  const handleQuickWhatsApp = (e, patient) => {
+    e.stopPropagation();
+    if (patient.phone) {
+      const message = encodeURIComponent(`Hola ${patient.first_name}, te contactamos desde la clínica dental para hacer seguimiento de tu caso.`);
+      window.open(`https://wa.me/${patient.phone.replace(/\D/g, '')}?text=${message}`, '_blank');
+    }
+  };
+
+  const handleQuickSchedule = (e, patient) => {
+    e.stopPropagation();
+    onPatientClick(patient);
+  };
   const { days_no_movement = 7 } = config;
 
   // Filter patients that need attention
@@ -175,16 +192,29 @@ export default function RequiresAttentionList({ patients, onPatientClick, config
                 </div>
               </div>
 
-              {/* Action suggestion */}
-              <div className="text-right">
-                <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full ${
-                  priority === 'high' 
-                    ? 'bg-red-100 text-red-700' 
-                    : 'bg-amber-100 text-amber-700'
-                }`}>
-                  <Calendar className="w-3 h-3" />
-                  Programar seguimiento
-                </span>
+              {/* Quick actions */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button
+                  onClick={(e) => handleQuickCall(e, patient)}
+                  className="p-1.5 rounded-full hover:bg-green-100 text-green-600 transition-colors"
+                  title="Llamar ahora"
+                >
+                  <Phone className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => handleQuickWhatsApp(e, patient)}
+                  className="p-1.5 rounded-full hover:bg-green-100 text-green-500 transition-colors"
+                  title="Enviar WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => handleQuickSchedule(e, patient)}
+                  className="p-1.5 rounded-full hover:bg-blue-100 text-blue-600 transition-colors"
+                  title="Programar seguimiento"
+                >
+                  <Calendar className="w-4 h-4" />
+                </button>
               </div>
             </button>
           );

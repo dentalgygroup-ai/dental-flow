@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock, CreditCard } from 'lucide-react';
@@ -237,6 +238,14 @@ export default function Dashboard() {
     };
   }, [filteredPatients, onlyNewInPeriod, dateRange]);
 
+  // Animated counters
+  const animatedNew = useAnimatedCounter(kpis.newPatientsCount);
+  const animatedBudgetCount = useAnimatedCounter(kpis.budgetDeliveredCount);
+  const animatedAcceptedCount = useAnimatedCounter(kpis.acceptedCount);
+  const animatedRejectedCount = useAnimatedCounter(kpis.rejectedCount);
+  const animatedFollowUpCount = useAnimatedCounter(kpis.inFollowUpCount);
+  const animatedActiveCount = useAnimatedCounter(kpis.activeCount);
+
   const { handleSavePatient: _handleSave, handleAddAction } = usePatientMutations({
     currentUser,
     refetchPatients,
@@ -287,11 +296,11 @@ export default function Dashboard() {
         {/* Main KPIs - Period Based */}
         {(() => {
           const mainKpis = [
-            { title: "Nuevos clientes", value: kpis.newPatientsCount, icon: UserPlus, subtitle: "Altas en el período" },
-            { title: "Presupuestado", value: kpis.budgetDeliveredCount, icon: FileText, subtitle: formatCurrency(kpis.budgetDeliveredAmount) },
-            { title: "Aceptado", value: kpis.acceptedCount, icon: CheckCircle, subtitle: formatCurrency(kpis.acceptedAmount) },
-            { title: "Rechazado", value: kpis.rejectedCount, icon: XCircle, subtitle: formatCurrency(kpis.rejectedAmount) },
-            { title: "En seguimiento", value: kpis.inFollowUpCount, icon: Clock, subtitle: formatCurrency(kpis.inFollowUpAmount) },
+            { title: "Nuevos clientes", value: animatedNew, icon: UserPlus, subtitle: "Altas en el período" },
+            { title: "Presupuestado", value: animatedBudgetCount, icon: FileText, subtitle: formatCurrency(kpis.budgetDeliveredAmount) },
+            { title: "Aceptado", value: animatedAcceptedCount, icon: CheckCircle, subtitle: formatCurrency(kpis.acceptedAmount) },
+            { title: "Rechazado", value: animatedRejectedCount, icon: XCircle, subtitle: formatCurrency(kpis.rejectedAmount) },
+            { title: "En seguimiento", value: animatedFollowUpCount, icon: Clock, subtitle: formatCurrency(kpis.inFollowUpAmount) },
           ];
           return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -312,7 +321,7 @@ export default function Dashboard() {
         {/* Secondary KPIs */}
         {(() => {
           const secondaryKpis = [
-            { title: "Pacientes activos", value: kpis.activeCount, icon: Users, subtitle: "En pipeline actual" },
+            { title: "Pacientes activos", value: animatedActiveCount, icon: Users, subtitle: "En pipeline actual" },
             { title: "Ratio de cierre", value: kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—', icon: TrendingUp, subtitle: "Aceptados / Total cerrados" },
             { title: "Importe vendido", value: formatCurrency(kpis.soldAmount), icon: Euro, subtitle: "Aceptados (importe real)" },
             { title: "% Venta / Presupuestado", value: kpis.soldVsBudgetRatio !== '—' ? `${kpis.soldVsBudgetRatio}%` : '—', icon: TrendingUp, subtitle: "Vendido vs entregado" },
