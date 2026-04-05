@@ -15,6 +15,26 @@ import { ACTIVE_STATES, formatCurrency } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 import { usePatientMutations } from '../hooks/usePatientMutations';
 
+const DATE_RANGE_KEY = 'dental_flow_date_range';
+
+const getCurrentMonthRange = () => {
+  const now = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
+  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  return { from, to };
+};
+
+const getInitialDateRange = () => {
+  try {
+    const stored = localStorage.getItem(DATE_RANGE_KEY);
+    if (stored) {
+      const { from, to } = JSON.parse(stored);
+      if (from && to) return { from: new Date(from), to: new Date(to) };
+    }
+  } catch (e) {}
+  return getCurrentMonthRange();
+};
+
 export default function Dashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const queryClient = useQueryClient();
@@ -30,15 +50,7 @@ export default function Dashboard() {
     budget_max: ''
   });
   
-  // Initialize date range to current month
-  const getCurrentMonthRange = () => {
-    const now = new Date();
-    const from = new Date(now.getFullYear(), now.getMonth(), 1);
-    const to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-    return { from, to };
-  };
-  
-  const [dateRange, setDateRange] = useState(getCurrentMonthRange());
+  const [dateRange, setDateRange] = useState(getInitialDateRange);
   const [onlyNewInPeriod, setOnlyNewInPeriod] = useState(false);
 
   // Fetch data
@@ -251,7 +263,10 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
           <DateFilter
             dateRange={dateRange}
-            onDateRangeChange={setDateRange}
+            onDateRangeChange={(range) => {
+              setDateRange(range);
+              localStorage.setItem(DATE_RANGE_KEY, JSON.stringify({ from: range.from.toISOString(), to: range.to.toISOString() }));
+            }}
             onlyNewInPeriod={onlyNewInPeriod}
             onOnlyNewInPeriodChange={setOnlyNewInPeriod}
           />
