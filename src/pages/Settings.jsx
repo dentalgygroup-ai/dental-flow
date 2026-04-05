@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePermissions } from '../components/crm/usePermissions';
+import { useSystemConfig } from '../hooks/useSystemConfig';
 import SystemConfigManager from '../components/crm/SystemConfigManager';
 import UserManagement from '../components/crm/UserManagement';
 import ResponsibleManager from '../components/crm/ResponsibleManager';
@@ -37,11 +38,7 @@ export default function Settings() {
     enabled: !!clinicId,
   });
 
-  const { data: systemConfig = [], refetch: refetchSystemConfig } = useQuery({
-    queryKey: ['systemConfig', clinicId],
-    queryFn: () => clinicId ? base44.entities.SystemConfig.filter({ clinic_id: clinicId }) : [],
-    enabled: !!clinicId,
-  });
+  const { systemConfig, treatments, rejectionReasons, sources, patientTypes, refetch: refetchSystemConfig } = useSystemConfig(clinicId);
 
   const { data: users = [], refetch: refetchUsers } = useQuery({
     queryKey: ['clinicUsers', clinicId],
@@ -169,10 +166,7 @@ export default function Settings() {
     );
   }
 
-  const treatments = systemConfig.filter(c => c.config_type === 'treatment' && c.is_active);
-  const rejectionReasons = systemConfig.filter(c => c.config_type === 'rejection_reason' && c.is_active);
-  const sources = systemConfig.filter(c => c.config_type === 'source' && c.is_active);
-  const patientTypes = systemConfig.filter(c => c.config_type === 'patient_type' && c.is_active);
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">

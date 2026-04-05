@@ -19,8 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { STATE_REQUIREMENTS, REJECTION_REASONS, getStateById } from './constants';
-import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { useSystemConfig } from '../../hooks/useSystemConfig';
 
 export default function StatusChangeModal({
   isOpen,
@@ -32,15 +31,7 @@ export default function StatusChangeModal({
 }) {
   const [formData, setFormData] = useState({});
 
-  const { data: systemConfig = [] } = useQuery({
-    queryKey: ['systemConfig', clinicId],
-    queryFn: () => clinicId ? base44.entities.SystemConfig.filter({ clinic_id: clinicId }) : [],
-    enabled: !!clinicId,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const treatmentOptions = systemConfig.filter(c => c.config_type === 'treatment' && c.is_active);
-  const rejectionOptions = systemConfig.filter(c => c.config_type === 'rejection_reason' && c.is_active);
+  const { treatments: treatmentOptions, rejectionReasons: rejectionOptions } = useSystemConfig(clinicId);
 
   useEffect(() => {
     if (patient && targetStatus) {

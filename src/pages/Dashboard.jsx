@@ -13,6 +13,7 @@ import CalendarExport from '../components/crm/CalendarExport';
 import DateFilter from '../components/crm/DateFilter';
 import { ACTIVE_STATES, formatCurrency } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
+import { usePatientMutations } from '../hooks/usePatientMutations';
 
 export default function Dashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -223,59 +224,14 @@ export default function Dashboard() {
     };
   }, [filteredPatients, onlyNewInPeriod, dateRange]);
 
-  // Handle patient update
-  const handleSavePatient = async (updatedPatient) => {
-    const oldPatient = selectedPatient;
-    
-    await base44.entities.Patient.update(updatedPatient.id, {
-      ...updatedPatient,
-      last_action_date: new Date().toISOString()
-    });
+  const { handleSavePatient: _handleSave, handleAddAction } = usePatientMutations({
+    currentUser,
+    refetchPatients,
+    selectedPatientId: selectedPatient?.id,
+    onClose: () => setSelectedPatient(null)
+  });
 
-    // Log status change if different
-    if (oldPatient.status !== updatedPatient.status) {
-      await base44.entities.PatientAction.create({
-        patient_id: updatedPatient.id,
-        action_type: 'cambio_estado',
-        description: `Estado cambiado de ${oldPatient.status} a ${updatedPatient.status}`,
-        performed_by: currentUser?.email,
-        performed_by_name: currentUser?.full_name,
-        old_value: oldPatient.status,
-        new_value: updatedPatient.status
-      });
-    }
-
-    // Log budget change if different
-    if (oldPatient.budget_amount !== updatedPatient.budget_amount) {
-      await base44.entities.PatientAction.create({
-        patient_id: updatedPatient.id,
-        action_type: 'cambio_presupuesto',
-        description: `Presupuesto actualizado`,
-        performed_by: currentUser?.email,
-        performed_by_name: currentUser?.full_name,
-        old_value: String(oldPatient.budget_amount || 0),
-        new_value: String(updatedPatient.budget_amount || 0)
-      });
-    }
-
-    refetchPatients();
-    setSelectedPatient(null);
-  };
-
-  // Handle add action
-  const handleAddAction = async (action) => {
-    await base44.entities.PatientAction.create({
-      ...action,
-      performed_by: currentUser?.email,
-      performed_by_name: currentUser?.full_name
-    });
-
-    await base44.entities.Patient.update(selectedPatient.id, {
-      last_action_date: new Date().toISOString()
-    });
-
-    refetchPatients();
-  };
+  const handleSavePatient = (updatedPatient) => _handleSave(selectedPatient, updatedPatient);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 p-4 md:p-6 lg:p-8">
