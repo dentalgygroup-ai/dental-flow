@@ -27,13 +27,16 @@ export default function StatusChangeModal({
   onClose,
   patient,
   targetStatus,
-  onConfirm
+  onConfirm,
+  clinicId
 }) {
   const [formData, setFormData] = useState({});
 
   const { data: systemConfig = [] } = useQuery({
-    queryKey: ['systemConfig'],
-    queryFn: () => base44.entities.SystemConfig.list()
+    queryKey: ['systemConfig', clinicId],
+    queryFn: () => clinicId ? base44.entities.SystemConfig.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
+    staleTime: 5 * 60 * 1000,
   });
 
   const treatmentOptions = systemConfig.filter(c => c.config_type === 'treatment' && c.is_active);

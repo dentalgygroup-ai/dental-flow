@@ -326,9 +326,9 @@ export default function ImportPatientsModal({ isOpen, onClose, clinicId, onImpor
           // allRows[0] is keys row mapped to label-keys, allRows[1...] are data
           // Re-parse using second row as canonical keys
           const lines = text.split('\n').filter(l => l.trim());
-          const canonicalHeaders = parseCSVLine(lines[1]).map(h => h.replace(/^"|"$/g, '').trim());
+          const canonicalHeaders = splitCSVLine(lines[1], ',').map(h => h.replace(/^"|"$/g, '').trim());
           rows = lines.slice(2).map(line => {
-            const values = parseCSVLine(line).map(v => v.replace(/^"|"$/g, '').trim());
+            const values = splitCSVLine(line, ',').map(v => v.replace(/^"|"$/g, '').trim());
             const obj = {};
             canonicalHeaders.forEach((h, i) => { obj[h] = values[i] || ''; });
             return obj;

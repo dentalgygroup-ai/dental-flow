@@ -417,6 +417,7 @@ export default function Pipeline() {
         patient={statusChangeModal.patient}
         targetStatus={statusChangeModal.targetStatus}
         onConfirm={handleStatusChangeConfirm}
+        clinicId={clinicId}
       />
     </div>
   );

@@ -13,16 +13,21 @@ Deno.serve(async (req) => {
 
   const { action, plan, clinic_id, return_url, cancel_url } = await req.json();
 
+  // Validate clinic ownership before any operation
+  const clinics = await base44.entities.Clinic.filter({ id: clinic_id });
+  const clinic = clinics[0];
+  if (!clinic) return Response.json({ error: 'Clínica no encontrada' }, { status: 404 });
+
+  const isPlatformAdmin = user.role === 'admin';
+  if (user.clinic_id !== clinic_id && !isPlatformAdmin) {
+    return Response.json({ error: 'No tienes acceso a esta clínica' }, { status: 403 });
+  }
+
   // Create Stripe Checkout Session for a clinic subscription
   if (action === 'create_checkout') {
     const priceId = plan === 'annual'
       ? Deno.env.get('STRIPE_PRICE_ID_ANNUAL')
       : Deno.env.get('STRIPE_PRICE_ID_MONTHLY');
-
-    // Get or create Stripe customer for the clinic
-    const clinics = await base44.entities.Clinic.filter({ id: clinic_id });
-    const clinic = clinics[0];
-    if (!clinic) return Response.json({ error: 'Clínica no encontrada' }, { status: 404 });
 
     let customerId = clinic.stripe_customer_id;
     if (!customerId) {
@@ -53,10 +58,6 @@ Deno.serve(async (req) => {
 
   // Get subscription status for a clinic
   if (action === 'status') {
-    const clinics = await base44.entities.Clinic.filter({ id: clinic_id });
-    const clinic = clinics[0];
-    if (!clinic) return Response.json({ error: 'Clínica no encontrada' }, { status: 404 });
-
     if (!clinic.stripe_subscription_id) {
       return Response.json({ subscription_status: clinic.subscription_status || 'none' });
     }
@@ -83,9 +84,7 @@ Deno.serve(async (req) => {
 
   // Cancel subscription
   if (action === 'cancel') {
-    const clinics = await base44.entities.Clinic.filter({ id: clinic_id });
-    const clinic = clinics[0];
-    if (!clinic?.stripe_subscription_id) return Response.json({ error: 'No hay suscripción activa' }, { status: 400 });
+    if (!clinic.stripe_subscription_id) return Response.json({ error: 'No hay suscripción activa' }, { status: 400 });
 
     await stripe.subscriptions.update(clinic.stripe_subscription_id, { cancel_at_period_end: true });
     return Response.json({ success: true });
@@ -93,9 +92,7 @@ Deno.serve(async (req) => {
 
   // Create billing portal session
   if (action === 'portal') {
-    const clinics = await base44.entities.Clinic.filter({ id: clinic_id });
-    const clinic = clinics[0];
-    if (!clinic?.stripe_customer_id) return Response.json({ error: 'No hay cliente en Stripe' }, { status: 400 });
+    if (!clinic.stripe_customer_id) return Response.json({ error: 'No hay cliente en Stripe' }, { status: 400 });
 
     const session = await stripe.billingPortal.sessions.create({
       customer: clinic.stripe_customer_id,
