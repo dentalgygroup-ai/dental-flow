@@ -1,6 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 // Master SystemConfig template (based on clinic 69a345beb72532b308e26959)
+const DEFAULT_MAX_USERS = parseInt(Deno.env.get('DEFAULT_MAX_USERS') || '4');
+
 const MASTER_SYSTEM_CONFIG = [
   // Treatments
   { config_type: 'treatment', value: 'Implantes',   label: 'Implantes',   is_active: true, order: 0 },
@@ -54,7 +56,7 @@ Deno.serve(async (req) => {
     const clinic = await base44.asServiceRole.entities.Clinic.create({
       name: clinic_name.trim(),
       owner_email: user.email,
-      max_users: 4,
+      max_users: DEFAULT_MAX_USERS,
       subscription_status: 'trialing',
       trial_end_date: trialEndDate.toISOString(),
     });
