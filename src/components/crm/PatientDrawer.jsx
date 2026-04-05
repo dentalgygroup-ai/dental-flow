@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, Phone, Mail, Calendar, Clock, User, FileText, 
-  History, Bell, Save, Plus, Check, AlertCircle, CreditCard
+  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link
 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,6 +47,21 @@ export default function PatientDrawer({
   const [validationError, setValidationError] = useState('');
   const [nextActionAssignedTo, setNextActionAssignedTo] = useState('');
   const [nextActionAssignedToName, setNextActionAssignedToName] = useState('');
+  const { toast } = useToast();
+
+  const sendPatientPortalLink = () => {
+    if (!patient?.phone) {
+      toast({ title: 'Este paciente no tiene teléfono registrado', duration: 2000 });
+      return;
+    }
+    const token = btoa(JSON.stringify({
+      patient_id: patient.id,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+    const portalUrl = `${window.location.origin}/patient-portal/${token}`;
+    const message = encodeURIComponent(`Hola ${patient.first_name}, puedes ver tu presupuesto y confirmar tu cita aquí: ${portalUrl}`);
+    window.open(`https://wa.me/${patient.phone.replace(/\D/g, '')}?text=${message}`, '_blank');
+  };
 
   // Combined list of all possible assignees (responsibles + system users)
   const allAssignees = [
@@ -170,7 +186,7 @@ export default function PatientDrawer({
         </div>
 
         {/* Quick actions */}
-        <div className="flex gap-2 p-4 border-b bg-white">
+        <div className="flex gap-2 p-4 border-b bg-white flex-wrap">
           <a href={`tel:${patient.phone}`} className="flex-1">
             <Button variant="outline" className="w-full gap-2" size="sm">
               <Phone className="w-4 h-4" />
@@ -183,6 +199,10 @@ export default function PatientDrawer({
               Email
             </Button>
           </a>
+          <Button variant="outline" className="flex-1 gap-2 text-green-700 border-green-200 hover:bg-green-50" size="sm" onClick={sendPatientPortalLink}>
+            <Link className="w-4 h-4" />
+            Portal WA
+          </Button>
         </div>
 
         {/* Validation error */}
