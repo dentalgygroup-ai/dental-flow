@@ -435,6 +435,22 @@ export default function PatientDrawer({
                 </div>
               </div>
 
+              {/* Totales cobro */}
+              {(formData.total_cobrado != null || formData.saldo_pendiente != null) && (
+                <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-0.5">Total cobrado</p>
+                    <p className="text-sm font-semibold text-green-700">{formatCurrency(formData.total_cobrado ?? 0)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 mb-0.5">Saldo pendiente</p>
+                    <p className={`text-sm font-semibold ${(formData.saldo_pendiente ?? 0) === 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                      {formatCurrency(formData.saldo_pendiente ?? 0)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Botón Aceptar presupuesto - en estado presupuesto_entregado o en_negociacion */}
               {['presupuesto_entregado', 'en_negociacion'].includes(formData.status) && canEdit && (
                 <Button

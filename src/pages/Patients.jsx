@@ -334,6 +334,14 @@ export default function Patients() {
                     </div>
                   </TableHead>
                   <TableHead 
+                    className="cursor-pointer hover:bg-gray-100 text-right"
+                    onClick={() => handleSort('saldo_pendiente')}
+                  >
+                    <div className="flex items-center gap-1 justify-end">
+                      Saldo pendiente <SortIcon field="saldo_pendiente" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
                     className="cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('next_action_date')}
                   >
@@ -422,6 +430,13 @@ export default function Patients() {
                           ) : (
                             formatCurrency(patient.budget_amount, patient.budget_currency)
                           )}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          {patient.saldo_pendiente != null ? (
+                            <span className={patient.saldo_pendiente === 0 ? 'text-green-600' : 'text-orange-600'}>
+                              {formatCurrency(patient.saldo_pendiente)}
+                            </span>
+                          ) : '—'}
                         </TableCell>
                         <TableCell>
                           {patient.next_action_date ? (
