@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Download, ChevronUp, ChevronDown, Eye, Upload } from 'lucide-react';
+import { Plus, Download, ChevronUp, ChevronDown, Eye, Upload, SplitSquareVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -36,6 +36,7 @@ export default function Patients() {
   const [showImport, setShowImport] = useState(false);
   const [sortField, setSortField] = useState('next_action_date');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [showPartialOnly, setShowPartialOnly] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
     status: '',
@@ -150,8 +151,17 @@ export default function Patients() {
       return 0;
     });
 
+    // Aceptaciones parciales: importe_aceptado existe y es inferior al budget_amount
+    if (showPartialOnly) {
+      result = result.filter(p => 
+        p.importe_aceptado != null && 
+        p.budget_amount != null && 
+        p.importe_aceptado < p.budget_amount
+      );
+    }
+
     return result;
-  }, [patients, filters, sortField, sortOrder]);
+  }, [patients, filters, sortField, sortOrder, showPartialOnly]);
 
   // Handle sort
   const handleSort = (field) => {
@@ -262,6 +272,15 @@ export default function Patients() {
                 Importar pacientes
               </Button>
             )}
+            <Button
+              variant={showPartialOnly ? "default" : "outline"}
+              onClick={() => setShowPartialOnly(v => !v)}
+              className={`gap-2 w-full sm:w-auto ${showPartialOnly ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'border-blue-200 text-blue-700 hover:bg-blue-50'}`}
+            >
+              <SplitSquareVertical className="w-4 h-4" />
+              Aceptaciones parciales
+              {showPartialOnly && <span className="ml-1 text-xs bg-white/20 rounded px-1">{filteredPatients.length}</span>}
+            </Button>
             {permissions.canCreate && (
               <Button onClick={() => setShowNewPatient(true)} className="gap-2 w-full sm:w-auto">
                 <Plus className="w-4 h-4" />
@@ -395,7 +414,14 @@ export default function Patients() {
                           {patient.assigned_to_name || '—'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {formatCurrency(patient.budget_amount, patient.budget_currency)}
+                          {patient.importe_aceptado != null && patient.budget_amount != null && patient.importe_aceptado < patient.budget_amount ? (
+                            <div className="flex flex-col items-end">
+                              <span className="text-blue-600">{formatCurrency(patient.importe_aceptado)}</span>
+                              <span className="text-xs text-gray-400 line-through">{formatCurrency(patient.budget_amount)}</span>
+                            </div>
+                          ) : (
+                            formatCurrency(patient.budget_amount, patient.budget_currency)
+                          )}
                         </TableCell>
                         <TableCell>
                           {patient.next_action_date ? (

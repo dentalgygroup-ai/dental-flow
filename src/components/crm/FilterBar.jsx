@@ -87,7 +87,7 @@ export default function FilterBar({
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los estados</SelectItem>
+              <SelectItem value="all">Estado</SelectItem>
               {PIPELINE_STATES.map(state => (
                 <SelectItem key={state.id} value={state.id}>{state.label}</SelectItem>
               ))}
@@ -103,7 +103,7 @@ export default function FilterBar({
             <SelectValue placeholder="Responsable" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">Responsable</SelectItem>
             {users.map(user => (
               <SelectItem key={user.id || user.email} value={user.id || user.email}>{user.name || user.full_name}</SelectItem>
             ))}
@@ -116,10 +116,10 @@ export default function FilterBar({
             onValueChange={(value) => onFilterChange({ ...filters, doctor_id: value === 'all' ? '' : value })}
           >
             <SelectTrigger className="w-[180px] h-10">
-              <SelectValue placeholder="Doctor/a" />
+              <SelectValue placeholder="Doctor" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los doctores</SelectItem>
+              <SelectItem value="all">Doctor</SelectItem>
               {doctors.map(d => (
                 <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
               ))}
