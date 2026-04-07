@@ -115,6 +115,8 @@ export default function Dashboard() {
     queryKey: ['payments', clinicId],
     queryFn: () => clinicId ? base44.entities.Payment.filter({ clinic_id: clinicId }) : [],
     enabled: !!clinicId,
+    retry: false,
+    staleTime: 30_000,
   });
 
   const permissions = usePermissions(currentUser);
@@ -357,7 +359,7 @@ export default function Dashboard() {
             { title: "Cobrado en el período", value: formatCurrency(cobradoEnPeriodo), icon: Wallet, subtitle: "Pagos registrados" },
           ];
           return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {secondaryKpis.map((kpi, index) => (
                 <motion.div
                   key={kpi.title}
