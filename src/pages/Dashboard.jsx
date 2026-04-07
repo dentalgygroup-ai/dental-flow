@@ -198,17 +198,23 @@ export default function Dashboard() {
 
     // Calculate amounts
     const budgetDeliveredAmount = budgetDelivered.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
-    const acceptedAmount = accepted.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    // Importe aceptado: usar importe_aceptado si existe, sino budget_amount
+    const acceptedAmount = accepted.reduce((sum, p) => sum + (p.importe_aceptado ?? p.budget_amount ?? 0), 0);
     const rejectedAmount = rejected.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
     const inFollowUpAmount = inFollowUp.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
     const activeAmount = activePatients.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
 
-    // Sold amounts (importe vendido real)
-    const soldAmount = accepted.reduce((sum, p) => sum + (p.sold_amount ?? p.budget_amount ?? 0), 0);
+    // Sold amounts (importe vendido real = importe_aceptado)
+    const soldAmount = accepted.reduce((sum, p) => sum + (p.importe_aceptado ?? p.budget_amount ?? 0), 0);
     const budgetWithSold = budgetDelivered.filter(p => p.budget_amount > 0);
     const totalBudgetForRatio = budgetWithSold.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
-    const totalSoldForRatio = budgetWithSold.reduce((sum, p) => sum + (p.sold_amount ?? p.budget_amount ?? 0), 0);
+    const totalSoldForRatio = budgetWithSold.reduce((sum, p) => sum + (p.importe_aceptado ?? p.budget_amount ?? 0), 0);
     const soldVsBudgetRatio = totalBudgetForRatio > 0 ? ((totalSoldForRatio / totalBudgetForRatio) * 100).toFixed(1) : '—';
+
+    // % Cierre sobre importe presupuestado: importe total aceptado / importe total presupuestado (de todos con presupuesto)
+    const allBudgetedAmount = budgetDelivered.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    const allAcceptedAmount = accepted.reduce((sum, p) => sum + (p.importe_aceptado ?? p.budget_amount ?? 0), 0);
+    const cierreImporteRatio = allBudgetedAmount > 0 ? ((allAcceptedAmount / allBudgetedAmount) * 100).toFixed(1) : '—';
 
     // Close ratio
     const totalClosed = accepted.length + rejected.length;
@@ -234,7 +240,10 @@ export default function Dashboard() {
       activeAmount,
       closeRatio,
       financedCount: financedPatients.length,
-      gastosFinancierosTotal
+      gastosFinancierosTotal,
+      cierreImporteRatio,
+      allAcceptedAmount,
+      allBudgetedAmount
     };
   }, [filteredPatients, onlyNewInPeriod, dateRange]);
 
@@ -323,8 +332,7 @@ export default function Dashboard() {
           const secondaryKpis = [
             { title: "Pacientes activos", value: animatedActiveCount, icon: Users, subtitle: "En pipeline actual" },
             { title: "Ratio de cierre", value: kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—', icon: TrendingUp, subtitle: "Aceptados / Total cerrados" },
-            { title: "Importe vendido", value: formatCurrency(kpis.soldAmount), icon: Euro, subtitle: "Aceptados (importe real)" },
-            { title: "% Venta / Presupuestado", value: kpis.soldVsBudgetRatio !== '—' ? `${kpis.soldVsBudgetRatio}%` : '—', icon: TrendingUp, subtitle: "Vendido vs entregado" },
+            { title: "% Cierre s/ presupuestado", value: kpis.cierreImporteRatio !== '—' ? `${kpis.cierreImporteRatio}%` : '—', icon: TrendingUp, subtitle: `${formatCurrency(kpis.allAcceptedAmount)} / ${formatCurrency(kpis.allBudgetedAmount)}` },
             { title: "Importe potencial activo", value: formatCurrency(kpis.activeAmount), icon: Euro, subtitle: "En pipeline" },
             { title: "Gastos financieros", value: formatCurrency(kpis.gastosFinancierosTotal), icon: CreditCard, subtitle: `${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}` },
           ];

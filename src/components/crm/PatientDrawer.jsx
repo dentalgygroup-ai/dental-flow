@@ -435,21 +435,8 @@ export default function PatientDrawer({
                 </div>
               </div>
 
-              {/* Importe aceptado (visible si existe) */}
-              {formData.importe_aceptado != null && (
-                <div className="p-3 bg-green-50 border border-green-100 rounded-lg flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                  <div>
-                    <span className="text-xs text-green-700 font-medium">Importe aceptado: </span>
-                    <span className="text-sm font-semibold text-green-800">
-                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(formData.importe_aceptado)}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Botón Aceptar presupuesto - solo en estado presupuesto_entregado */}
-              {formData.status === 'presupuesto_entregado' && canEdit && (
+              {/* Botón Aceptar presupuesto - en estado presupuesto_entregado o en_negociacion */}
+              {['presupuesto_entregado', 'en_negociacion'].includes(formData.status) && canEdit && (
                 <Button
                   variant="outline"
                   className="w-full gap-2 border-green-300 text-green-700 hover:bg-green-50"
@@ -458,6 +445,24 @@ export default function PatientDrawer({
                   <CheckCircle className="w-4 h-4" />
                   Aceptar presupuesto
                 </Button>
+              )}
+
+              {/* Importe aceptado editable - visible en estados aceptado en adelante */}
+              {['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Importe aceptado</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">€</span>
+                    <Input
+                      type="number"
+                      value={formData.importe_aceptado ?? ''}
+                      onChange={(e) => handleChange('importe_aceptado', parseFloat(e.target.value) || null)}
+                      disabled={!canEditBudget}
+                      placeholder="0.00"
+                      className="pl-7"
+                    />
+                  </div>
+                </div>
               )}
 
               {/* Financiación — solo visible en estados aceptado/pagado */}

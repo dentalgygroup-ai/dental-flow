@@ -118,7 +118,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
           <span className="text-sm font-semibold text-emerald-700">
             {formatCurrency(patient.budget_amount, 'EUR')}
           </span>
-          {patient.status === 'presupuesto_entregado' && (
+          {['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (
             <button
               onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
@@ -130,7 +130,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
         </div>
       )}
 
-      {patient.status === 'presupuesto_entregado' && (patient.budget_amount === null || patient.budget_amount === undefined) && (
+      {['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (patient.budget_amount === null || patient.budget_amount === undefined) && (
         <div className="mb-3">
           <button
             onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
