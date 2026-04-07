@@ -305,16 +305,16 @@ export default function PatientDrawer({
               <div className="space-y-2">
                 <Label className="text-xs text-gray-500">Estado</Label>
                 {/* Payment status indicator */}
-                {formData.status === 'aceptado_pendiente_pago' && (
+                {formData.status === 'aceptado_pendiente_pago' && (formData.saldo_pendiente ?? 0) > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
                     <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
-                    <span className="text-xs font-medium text-orange-700">{formatCurrency(formData.saldo_pendiente ?? 0)} pendientes</span>
+                    <span className="text-xs font-medium text-orange-700">{formatCurrency(formData.saldo_pendiente)} pendientes</span>
                   </div>
                 )}
-                {formData.status === 'pagado_parcialmente' && (
+                {formData.status === 'pagado_parcialmente' && (formData.saldo_pendiente ?? 0) > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
                     <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                    <span className="text-xs font-medium text-red-700">{formatCurrency(formData.saldo_pendiente ?? 0)} pendientes</span>
+                    <span className="text-xs font-medium text-red-700">{formatCurrency(formData.saldo_pendiente)} pendientes</span>
                   </div>
                 )}
                 {formData.status === 'pagado' && (

@@ -184,16 +184,16 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       )}
 
       {/* Payment status badge */}
-      {patient.status === 'aceptado_pendiente_pago' && (
+      {patient.status === 'aceptado_pendiente_pago' && (patient.saldo_pendiente ?? 0) > 0 && (
         <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-orange-50 border border-orange-200 rounded-lg">
           <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
-          <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente ?? 0)} pendientes</span>
+          <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
         </div>
       )}
-      {patient.status === 'pagado_parcialmente' && (
+      {patient.status === 'pagado_parcialmente' && (patient.saldo_pendiente ?? 0) > 0 && (
         <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-lg">
           <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-          <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente ?? 0)} pendientes</span>
+          <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
         </div>
       )}
       {patient.status === 'pagado' && (
