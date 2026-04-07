@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock, CreditCard } from 'lucide-react';
+import { UserPlus, FileText, CheckCircle, XCircle, TrendingUp, Euro, Users, Clock, CreditCard, Wallet } from 'lucide-react';
 import KPICard from '../components/crm/KPICard';
 import NextActionsTable from '../components/crm/NextActionsTable';
 import ResponsibleStats from '../components/crm/ResponsibleStats';
@@ -108,6 +108,12 @@ export default function Dashboard() {
   const { data: config = [] } = useQuery({
     queryKey: ['appConfig', clinicId],
     queryFn: () => clinicId ? base44.entities.AppConfig.filter({ clinic_id: clinicId }) : [],
+    enabled: !!clinicId,
+  });
+
+  const { data: payments = [] } = useQuery({
+    queryKey: ['payments', clinicId],
+    queryFn: () => clinicId ? base44.entities.Payment.filter({ clinic_id: clinicId }) : [],
     enabled: !!clinicId,
   });
 
@@ -248,6 +254,17 @@ export default function Dashboard() {
     };
   }, [filteredPatients, onlyNewInPeriod, dateRange]);
 
+  // Cobrado en el período
+  const cobradoEnPeriodo = useMemo(() => {
+    return payments
+      .filter(pay => {
+        if (!dateRange?.from || !dateRange?.to) return true;
+        const d = new Date(pay.payment_date);
+        return d >= dateRange.from && d <= dateRange.to;
+      })
+      .reduce((sum, pay) => sum + (pay.amount || 0), 0);
+  }, [payments, dateRange]);
+
   // Animated counters
   const animatedNew = useAnimatedCounter(kpis.newPatientsCount);
   const animatedBudgetCount = useAnimatedCounter(kpis.budgetDeliveredCount);
@@ -337,9 +354,10 @@ export default function Dashboard() {
             { title: "% Cierre s/ presupuestado", value: kpis.cierreImporteRatio !== '—' ? `${kpis.cierreImporteRatio}%` : '—', icon: TrendingUp, subtitle: `${formatCurrency(kpis.allAcceptedAmount)} / ${formatCurrency(kpis.allBudgetedAmount)}` },
             { title: "Importe potencial activo", value: formatCurrency(kpis.activeAmount), icon: Euro, subtitle: "En pipeline" },
             { title: "Gastos financieros", value: formatCurrency(kpis.gastosFinancierosTotal), icon: CreditCard, subtitle: `${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}` },
+            { title: "Cobrado en el período", value: formatCurrency(cobradoEnPeriodo), icon: Wallet, subtitle: "Pagos registrados" },
           ];
           return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
               {secondaryKpis.map((kpi, index) => (
                 <motion.div
                   key={kpi.title}
