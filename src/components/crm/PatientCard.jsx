@@ -1,5 +1,8 @@
-import React from 'react';
-import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle } from 'lucide-react';
+import AcceptBudgetModal from './AcceptBudgetModal';
+import { base44 } from '@/api/base44Client';
+import { useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { 
   getTreatmentById, 
@@ -13,6 +16,8 @@ import {
 
 export default function PatientCard({ patient, onClick, config = {} }) {
   const { days_no_movement = 7, days_in_negotiation = 14 } = config;
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const queryClient = useQueryClient();
   
   const fullName = `${patient.first_name} ${patient.last_name}`;
   const actionOverdue = isOverdue(patient.next_action_date);
@@ -22,6 +27,18 @@ export default function PatientCard({ patient, onClick, config = {} }) {
   const inNegotiationTooLong = patient.status === 'en_negociacion' && daysSinceAction !== null && daysSinceAction >= days_in_negotiation;
   
   const actionType = getActionTypeById(patient.next_action_type);
+
+  const handleAcceptBudget = async ({ importe_aceptado, markAsPaid }) => {
+    const newStatus = markAsPaid ? 'pagado' : 'aceptado_pendiente_pago';
+    await base44.entities.Patient.update(patient.id, {
+      importe_aceptado,
+      sold_amount: importe_aceptado,
+      status: newStatus,
+      last_action_date: new Date().toISOString()
+    });
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    setShowAcceptModal(false);
+  };
 
   return (
     <div
@@ -97,10 +114,31 @@ export default function PatientCard({ patient, onClick, config = {} }) {
 
       {/* Budget */}
       {patient.budget_amount !== null && patient.budget_amount !== undefined && (
-        <div className="mb-3">
+        <div className="mb-3 flex items-center justify-between gap-2">
           <span className="text-sm font-semibold text-emerald-700">
-            {formatCurrency(patient.budget_amount, patient.budget_currency)}
+            {formatCurrency(patient.budget_amount, 'EUR')}
           </span>
+          {patient.status === 'presupuesto_entregado' && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
+              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+            >
+              <CheckCircle className="w-3.5 h-3.5" />
+              Aceptar
+            </button>
+          )}
+        </div>
+      )}
+
+      {patient.status === 'presupuesto_entregado' && (patient.budget_amount === null || patient.budget_amount === undefined) && (
+        <div className="mb-3">
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
+            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+          >
+            <CheckCircle className="w-3.5 h-3.5" />
+            Aceptar presupuesto
+          </button>
         </div>
       )}
 
@@ -127,6 +165,12 @@ export default function PatientCard({ patient, onClick, config = {} }) {
           </div>
         )}
       </div>
+      <AcceptBudgetModal
+        isOpen={showAcceptModal}
+        onClose={() => setShowAcceptModal(false)}
+        patient={patient}
+        onConfirm={handleAcceptBudget}
+      />
     </div>
   );
 }

@@ -420,25 +420,17 @@ export default function PatientDrawer({
               </div>
 
               {/* Budget */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-xs text-gray-500">Presupuesto entregado</Label>
+              <div className="space-y-2">
+                <Label className="text-xs text-gray-500">Importe presupuestado</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">€</span>
                   <Input
                     type="number"
                     value={formData.budget_amount || ''}
                     onChange={(e) => handleChange('budget_amount', parseFloat(e.target.value) || null)}
                     disabled={!canEditBudget}
                     placeholder="0.00"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs text-gray-500">Importe vendido</Label>
-                  <Input
-                    type="number"
-                    value={formData.importe_aceptado ?? formData.sold_amount ?? ''}
-                    onChange={(e) => handleChange('sold_amount', parseFloat(e.target.value) || null)}
-                    disabled={!canEditBudget}
-                    placeholder="0.00"
+                    className="pl-7"
                   />
                 </div>
               </div>
@@ -450,7 +442,7 @@ export default function PatientDrawer({
                   <div>
                     <span className="text-xs text-green-700 font-medium">Importe aceptado: </span>
                     <span className="text-sm font-semibold text-green-800">
-                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: formData.budget_currency || 'EUR', minimumFractionDigits: 0 }).format(formData.importe_aceptado)}
+                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(formData.importe_aceptado)}
                     </span>
                   </div>
                 </div>
@@ -467,22 +459,6 @@ export default function PatientDrawer({
                   Aceptar presupuesto
                 </Button>
               )}
-              <div className="space-y-2">
-                <Label className="text-xs text-gray-500">Moneda</Label>
-                <Select
-                  value={formData.budget_currency || 'EUR'}
-                  onValueChange={(value) => handleChange('budget_currency', value)}
-                  disabled={!canEditBudget}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="EUR">EUR</SelectItem>
-                    <SelectItem value="USD">USD</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               {/* Financiación — solo visible en estados aceptado/pagado */}
               {['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
