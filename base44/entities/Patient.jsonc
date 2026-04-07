@@ -42,7 +42,6 @@
         "cita_agendada",
         "cita_realizada",
         "presupuesto_entregado",
-        "en_negociacion",
         "rechazado",
         "aceptado_pendiente_pago",
         "pagado_parcialmente",
