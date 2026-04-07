@@ -113,7 +113,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       </div>
 
       {/* Budget */}
-      {patient.budget_amount !== null && patient.budget_amount !== undefined && (
+      {patient.status !== 'cita_realizada' && patient.budget_amount !== null && patient.budget_amount !== undefined && (
         <div className="mb-3 flex items-center justify-between gap-2">
           <div className="flex flex-col">
             {patient.importe_aceptado != null && patient.importe_aceptado !== patient.budget_amount ? (
@@ -144,7 +144,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       )}
 
       {/* Importe aceptado para estados post-aceptación (sin budget_amount) */}
-      {patient.importe_aceptado != null && (patient.budget_amount === null || patient.budget_amount === undefined) && (
+      {patient.status !== 'cita_realizada' && patient.importe_aceptado != null && (patient.budget_amount === null || patient.budget_amount === undefined) && (
         <div className="mb-3">
           <span className="text-sm font-semibold text-blue-600">
             {formatCurrency(patient.importe_aceptado, 'EUR')}
@@ -152,7 +152,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
         </div>
       )}
 
-      {['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (patient.budget_amount === null || patient.budget_amount === undefined) && (
+      {patient.status !== 'cita_realizada' && ['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (patient.budget_amount === null || patient.budget_amount === undefined) && (
         <div className="mb-3">
           <button
             onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
