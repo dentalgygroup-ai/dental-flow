@@ -12,7 +12,7 @@ import PatientDrawer from '../components/crm/PatientDrawer';
 import NewPatientModal from '../components/crm/NewPatientModal';
 import StatusChangeModal from '../components/crm/StatusChangeModal';
 import CalendarExport from '../components/crm/CalendarExport';
-import { PIPELINE_STATES, STATE_REQUIREMENTS } from '../components/crm/constants';
+import { PIPELINE_STATES, STATE_REQUIREMENTS, ALLOWED_TRANSITIONS } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -149,6 +149,18 @@ export default function Pipeline() {
     const patient = patients.find(p => p.id === draggableId);
 
     if (!patient || patient.status === newStatus) return;
+
+    // Validate transition is allowed
+    const allowed = ALLOWED_TRANSITIONS[patient.status] || [];
+    if (!allowed.includes(newStatus)) {
+      toast({
+        title: "Transición no permitida",
+        description: `No se puede mover directamente de "${PIPELINE_STATES.find(s => s.id === patient.status)?.label}" a "${PIPELINE_STATES.find(s => s.id === newStatus)?.label}"`,
+        variant: "destructive",
+        duration: 3000
+      });
+      return;
+    }
 
     // Check if transition requires extra data
     if (transitionNeedsData(patient, newStatus)) {

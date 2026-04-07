@@ -3,19 +3,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { CheckCircle } from 'lucide-react';
 import { formatCurrency } from './constants';
 
 export default function AcceptBudgetModal({ isOpen, onClose, patient, onConfirm }) {
   const [importe, setImporte] = useState('');
-  const [markAsPaid, setMarkAsPaid] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen && patient) {
       setImporte(patient.budget_amount != null ? String(patient.budget_amount) : '');
-      setMarkAsPaid(false);
     }
   }, [isOpen, patient]);
 
@@ -23,7 +20,7 @@ export default function AcceptBudgetModal({ isOpen, onClose, patient, onConfirm 
     const importeNum = parseFloat(importe);
     if (!importe || isNaN(importeNum)) return;
     setLoading(true);
-    await onConfirm({ importe_aceptado: importeNum, markAsPaid });
+    await onConfirm({ importe_aceptado: importeNum });
     setLoading(false);
   };
 
@@ -55,21 +52,8 @@ export default function AcceptBudgetModal({ isOpen, onClose, patient, onConfirm 
             />
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
-            <Checkbox
-              id="markAsPaid"
-              checked={markAsPaid}
-              onCheckedChange={(checked) => setMarkAsPaid(!!checked)}
-            />
-            <Label htmlFor="markAsPaid" className="text-sm text-green-800 cursor-pointer font-medium">
-              Marcar como pagado directamente
-            </Label>
-          </div>
-
           <p className="text-xs text-gray-400">
-            {markAsPaid
-              ? '→ El paciente pasará al estado "Pagado"'
-              : '→ El paciente pasará a "Aceptado pendiente de pago"'}
+            → El estado se asignará automáticamente según los pagos registrados.
           </p>
         </div>
 

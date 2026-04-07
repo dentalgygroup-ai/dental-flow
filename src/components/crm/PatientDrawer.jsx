@@ -24,7 +24,8 @@ import {
   PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES, 
   ACTION_TYPES, REJECTION_REASONS,
   formatCurrency, formatDateTime, getStateById, getTreatmentById,
-  getActionTypeById, getPatientTypeById, getSourceById, getRejectionReasonById
+  getActionTypeById, getPatientTypeById, getSourceById, getRejectionReasonById,
+  getAllowedTargetStates, SYSTEM_ONLY_STATES
 } from './constants';
 
 export default function PatientDrawer({ 
@@ -103,14 +104,11 @@ export default function PatientDrawer({
     onSave(formData);
   };
 
-  const handleAcceptBudget = async ({ importe_aceptado, markAsPaid }) => {
-    const newStatus = markAsPaid ? 'pagado' : 'aceptado_pendiente_pago';
+  const handleAcceptBudget = async ({ importe_aceptado }) => {
     const updatedData = {
       ...formData,
       importe_aceptado,
       sold_amount: importe_aceptado,
-      status: newStatus,
-      last_action_date: new Date().toISOString()
     };
     setFormData(updatedData);
     setShowAcceptModal(false);
@@ -306,22 +304,51 @@ export default function PatientDrawer({
               {/* Status */}
               <div className="space-y-2">
                 <Label className="text-xs text-gray-500">Estado</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={handleStatusChange}
-                  disabled={!permissions?.canMove}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PIPELINE_STATES.map(state => (
-                      <SelectItem key={state.id} value={state.id}>
-                        {state.label}
+                {/* Payment status indicator */}
+                {formData.status === 'aceptado_pendiente_pago' && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+                    <span className="text-xs font-medium text-orange-700">{formatCurrency(formData.saldo_pendiente ?? 0)} pendientes</span>
+                  </div>
+                )}
+                {formData.status === 'pagado_parcialmente' && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+                    <span className="text-xs font-medium text-red-700">{formatCurrency(formData.saldo_pendiente ?? 0)} pendientes</span>
+                  </div>
+                )}
+                {formData.status === 'pagado' && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                    <span className="text-xs font-medium text-green-700">✓ Liquidado</span>
+                  </div>
+                )}
+                {SYSTEM_ONLY_STATES.includes(formData.status) ? (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500">
+                    Estado asignado automáticamente por el sistema
+                  </div>
+                ) : (
+                  <Select
+                    value={formData.status}
+                    onValueChange={handleStatusChange}
+                    disabled={!permissions?.canMove || getAllowedTargetStates(formData.status).length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {/* Current state always shown */}
+                      <SelectItem value={formData.status}>
+                        {getStateById(formData.status)?.label || formData.status} (actual)
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      {getAllowedTargetStates(formData.status).map(state => (
+                        <SelectItem key={state.id} value={state.id}>
+                          {state.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               {/* Rejection reason - only show if rejected */}
@@ -451,8 +478,8 @@ export default function PatientDrawer({
                 </div>
               )}
 
-              {/* Botón Aceptar presupuesto - en estado presupuesto_entregado o en_negociacion */}
-              {['presupuesto_entregado', 'en_negociacion'].includes(formData.status) && canEdit && (
+              {/* Botón Aceptar presupuesto - solo en estado presupuesto_entregado */}
+              {formData.status === 'presupuesto_entregado' && canEdit && (
                 <Button
                   variant="outline"
                   className="w-full gap-2 border-green-300 text-green-700 hover:bg-green-50"

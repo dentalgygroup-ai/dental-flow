@@ -28,13 +28,32 @@ export default function PatientCard({ patient, onClick, config = {} }) {
   
   const actionType = getActionTypeById(patient.next_action_type);
 
-  const handleAcceptBudget = async ({ importe_aceptado, markAsPaid }) => {
-    const newStatus = markAsPaid ? 'pagado' : 'aceptado_pendiente_pago';
+  const handleAcceptBudget = async ({ importe_aceptado }) => {
+    const totalCobrado = patient.total_cobrado || 0;
+    let newStatus;
+    if (totalCobrado <= 0) {
+      newStatus = 'aceptado_pendiente_pago';
+    } else if (totalCobrado < importe_aceptado) {
+      newStatus = 'pagado_parcialmente';
+    } else {
+      newStatus = 'pagado';
+    }
+    const saldoPendiente = Math.max(0, importe_aceptado - totalCobrado);
     await base44.entities.Patient.update(patient.id, {
       importe_aceptado,
       sold_amount: importe_aceptado,
       status: newStatus,
+      saldo_pendiente: saldoPendiente,
       last_action_date: new Date().toISOString()
+    });
+    await base44.entities.PatientAction.create({
+      patient_id: patient.id,
+      action_type: 'cambio_estado',
+      description: `Presupuesto aceptado · ${importe_aceptado}€ pendientes`,
+      performed_by: 'sistema',
+      performed_by_name: 'Sistema',
+      old_value: patient.status,
+      new_value: newStatus
     });
     queryClient.invalidateQueries({ queryKey: ['patients'] });
     setShowAcceptModal(false);
@@ -131,7 +150,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
               </span>
             )}
           </div>
-          {['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (
+          {patient.status === 'presupuesto_entregado' && (
             <button
               onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
@@ -152,7 +171,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
         </div>
       )}
 
-      {patient.status !== 'cita_realizada' && ['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (patient.budget_amount === null || patient.budget_amount === undefined) && (
+      {patient.status !== 'cita_realizada' && patient.status === 'presupuesto_entregado' && (patient.budget_amount === null || patient.budget_amount === undefined) && (
         <div className="mb-3">
           <button
             onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
@@ -161,6 +180,26 @@ export default function PatientCard({ patient, onClick, config = {} }) {
             <CheckCircle className="w-3.5 h-3.5" />
             Aceptar presupuesto
           </button>
+        </div>
+      )}
+
+      {/* Payment status badge */}
+      {patient.status === 'aceptado_pendiente_pago' && (
+        <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-orange-50 border border-orange-200 rounded-lg">
+          <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+          <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente ?? 0)} pendientes</span>
+        </div>
+      )}
+      {patient.status === 'pagado_parcialmente' && (
+        <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-lg">
+          <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+          <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente ?? 0)} pendientes</span>
+        </div>
+      )}
+      {patient.status === 'pagado' && (
+        <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-lg">
+          <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+          <span className="text-xs font-medium text-green-700">✓ Liquidado</span>
         </div>
       )}
 

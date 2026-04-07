@@ -63,6 +63,31 @@ export const ROLES = {
   solo_lectura: { label: 'Solo lectura', canEdit: false, canCreate: false, canMove: false, canExport: false, canConfig: false, canEditBudget: false }
 };
 
+// ── TRANSICIONES MANUALES PERMITIDAS ──
+// Estados exclusivos del sistema (no aparecen en selectores manuales)
+export const SYSTEM_ONLY_STATES = ['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado'];
+
+export const ALLOWED_TRANSITIONS = {
+  nuevo_paciente:              ['contactado'],
+  contactado:                  ['cita_agendada', 'rechazado'],
+  cita_agendada:               ['cita_realizada', 'rechazado'],
+  cita_realizada:              ['presupuesto_entregado', 'rechazado'],
+  presupuesto_entregado:       ['rechazado'],
+  rechazado:                   [],
+  aceptado_pendiente_pago:     ['pendiente_cita_tratamiento'],
+  pagado_parcialmente:         ['pendiente_cita_tratamiento'],
+  pagado:                      ['pendiente_cita_tratamiento'],
+  pendiente_cita_tratamiento:  ['citado_tratamiento'],
+  citado_tratamiento:          ['en_tratamiento'],
+  en_tratamiento:              [],
+};
+
+// Returns the list of states allowed as manual targets from a given current status
+export const getAllowedTargetStates = (currentStatus) => {
+  const targets = ALLOWED_TRANSITIONS[currentStatus] || [];
+  return PIPELINE_STATES.filter(s => targets.includes(s.id));
+};
+
 export const getStateById = (id) => PIPELINE_STATES.find(s => s.id === id);
 export const getTreatmentById = (id) => TREATMENTS.find(t => t.id === id);
 export const getSourceById = (id) => SOURCES.find(s => s.id === id);
