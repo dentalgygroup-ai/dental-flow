@@ -96,6 +96,10 @@
       "type": "number",
       "description": "Importe del presupuesto entregado al paciente"
     },
+    "importe_aceptado": {
+      "type": "number",
+      "description": "Importe aceptado por el paciente (puede diferir del presupuesto original)"
+    },
     "sold_amount": {
       "type": "number",
       "description": "Importe finalmente vendido/aceptado por el paciente"

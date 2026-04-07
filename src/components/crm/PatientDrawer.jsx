@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, Phone, Mail, Calendar, Clock, User, FileText, 
-  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link
+  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle
 } from 'lucide-react';
+import AcceptBudgetModal from './AcceptBudgetModal';
 import { useToast } from '@/components/ui/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -47,6 +48,7 @@ export default function PatientDrawer({
   const [validationError, setValidationError] = useState('');
   const [nextActionAssignedTo, setNextActionAssignedTo] = useState('');
   const [nextActionAssignedToName, setNextActionAssignedToName] = useState('');
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
   const { toast } = useToast();
 
   const sendPatientPortalLink = () => {
@@ -99,6 +101,20 @@ export default function PatientDrawer({
 
   const handleSave = () => {
     onSave(formData);
+  };
+
+  const handleAcceptBudget = async ({ importe_aceptado, markAsPaid }) => {
+    const newStatus = markAsPaid ? 'pagado' : 'aceptado_pendiente_pago';
+    const updatedData = {
+      ...formData,
+      importe_aceptado,
+      sold_amount: importe_aceptado,
+      status: newStatus,
+      last_action_date: new Date().toISOString()
+    };
+    setFormData(updatedData);
+    setShowAcceptModal(false);
+    onSave(updatedData);
   };
 
   const handleAddAction = () => {
@@ -419,13 +435,38 @@ export default function PatientDrawer({
                   <Label className="text-xs text-gray-500">Importe vendido</Label>
                   <Input
                     type="number"
-                    value={formData.sold_amount || ''}
+                    value={formData.importe_aceptado ?? formData.sold_amount ?? ''}
                     onChange={(e) => handleChange('sold_amount', parseFloat(e.target.value) || null)}
                     disabled={!canEditBudget}
                     placeholder="0.00"
                   />
                 </div>
               </div>
+
+              {/* Importe aceptado (visible si existe) */}
+              {formData.importe_aceptado != null && (
+                <div className="p-3 bg-green-50 border border-green-100 rounded-lg flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <div>
+                    <span className="text-xs text-green-700 font-medium">Importe aceptado: </span>
+                    <span className="text-sm font-semibold text-green-800">
+                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: formData.budget_currency || 'EUR', minimumFractionDigits: 0 }).format(formData.importe_aceptado)}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Botón Aceptar presupuesto - solo en estado presupuesto_entregado */}
+              {formData.status === 'presupuesto_entregado' && canEdit && (
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 border-green-300 text-green-700 hover:bg-green-50"
+                  onClick={() => setShowAcceptModal(true)}
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  Aceptar presupuesto
+                </Button>
+              )}
               <div className="space-y-2">
                 <Label className="text-xs text-gray-500">Moneda</Label>
                 <Select
@@ -746,6 +787,13 @@ export default function PatientDrawer({
           </div>
         )}
       </div>
+
+      <AcceptBudgetModal
+        isOpen={showAcceptModal}
+        onClose={() => setShowAcceptModal(false)}
+        patient={formData}
+        onConfirm={handleAcceptBudget}
+      />
     </div>
   );
 }
