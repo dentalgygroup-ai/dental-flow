@@ -211,10 +211,11 @@ export default function Dashboard() {
     const totalSoldForRatio = budgetWithSold.reduce((sum, p) => sum + (p.importe_aceptado ?? p.budget_amount ?? 0), 0);
     const soldVsBudgetRatio = totalBudgetForRatio > 0 ? ((totalSoldForRatio / totalBudgetForRatio) * 100).toFixed(1) : '—';
 
-    // % Cierre sobre importe presupuestado: importe total aceptado / importe total presupuestado (de todos con presupuesto)
-    const allBudgetedAmount = budgetDelivered.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    // % Cierre sobre importe presupuestado: importe aceptado / presupuesto original de los pacientes ACEPTADOS
     const allAcceptedAmount = accepted.reduce((sum, p) => sum + (p.importe_aceptado ?? p.budget_amount ?? 0), 0);
-    const cierreImporteRatio = allBudgetedAmount > 0 ? ((allAcceptedAmount / allBudgetedAmount) * 100).toFixed(1) : '—';
+    const allBudgetedOfAccepted = accepted.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    const allBudgetedAmount = allBudgetedOfAccepted; // kept for subtitle display
+    const cierreImporteRatio = allBudgetedOfAccepted > 0 ? ((allAcceptedAmount / allBudgetedOfAccepted) * 100).toFixed(1) : '—';
 
     // Close ratio
     const totalClosed = accepted.length + rejected.length;
@@ -319,6 +320,7 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}
+                  className="h-full"
                 >
                   <KPICard title={kpi.title} value={kpi.value} icon={kpi.icon} subtitle={kpi.subtitle} />
                 </motion.div>
@@ -337,13 +339,14 @@ export default function Dashboard() {
             { title: "Gastos financieros", value: formatCurrency(kpis.gastosFinancierosTotal), icon: CreditCard, subtitle: `${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}` },
           ];
           return (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {secondaryKpis.map((kpi, index) => (
                 <motion.div
                   key={kpi.title}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.4 + index * 0.08 }}
+                  className="h-full"
                 >
                   <KPICard title={kpi.title} value={kpi.value} icon={kpi.icon} subtitle={kpi.subtitle} />
                 </motion.div>

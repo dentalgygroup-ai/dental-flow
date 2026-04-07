@@ -11,7 +11,7 @@ export default function KPICard({
   className = ''
 }) {
   return (
-    <div className={`bg-white rounded-xl p-5 shadow-sm border border-gray-100 ${className}`}>
+    <div className={`bg-white rounded-xl p-5 shadow-sm border border-gray-100 h-full ${className}`}>
       <div className="flex items-start justify-between">
         <div className="space-y-1">
           <p className="text-sm font-medium text-gray-500">{title}</p>
