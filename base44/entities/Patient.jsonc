@@ -47,8 +47,8 @@
         "aceptado_pendiente_pago",
         "pagado_parcialmente",
         "pagado",
-        "pendiente_cita",
-        "citado",
+        "pendiente_cita_tratamiento",
+        "citado_tratamiento",
         "en_tratamiento"
       ],
       "default": "nuevo_paciente",
