@@ -22,14 +22,24 @@ Deno.serve(async (req) => {
     }
 
     const importeAceptado = patient.importe_aceptado ?? 0;
-    const saldoPendiente = importeAceptado - totalCobrado;
+    const saldoPendiente = Math.max(0, importeAceptado - totalCobrado);
 
-    await base44.asServiceRole.entities.Patient.update(patientId, {
+    // Determine if status should change to pagado_parcialmente
+    const pagadoStatuses = ['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'];
+    const updateData = {
       total_cobrado: totalCobrado,
       saldo_pendiente: saldoPendiente
-    });
+    };
 
-    return Response.json({ ok: true, total_cobrado: totalCobrado, saldo_pendiente: saldoPendiente });
+    if (pagadoStatuses.includes(patient.status) && totalCobrado > 0 && saldoPendiente > 0) {
+      updateData.status = 'pagado_parcialmente';
+    } else if (patient.status === 'pagado_parcialmente' && saldoPendiente <= 0) {
+      updateData.status = 'pagado';
+    }
+
+    await base44.asServiceRole.entities.Patient.update(patientId, updateData);
+
+    return Response.json({ ok: true, total_cobrado: totalCobrado, saldo_pendiente: saldoPendiente, status: updateData.status || patient.status });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

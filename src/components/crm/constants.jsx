@@ -8,6 +8,7 @@ export const PIPELINE_STATES = [
   { id: 'en_negociacion', label: 'En negociación', color: 'bg-orange-100 text-orange-800 border-orange-200' },
   { id: 'rechazado', label: 'RECHAZADO', color: 'bg-gray-200 text-gray-600 border-gray-300', isRejected: true },
   { id: 'aceptado_pendiente_pago', label: 'Aceptado pendiente de pago', color: 'bg-lime-100 text-lime-800 border-lime-200' },
+  { id: 'pagado_parcialmente', label: 'Pagado parcialmente', color: 'bg-blue-100 text-blue-800 border-blue-200' },
   { id: 'pagado', label: 'Pagado', color: 'bg-green-100 text-green-800 border-green-200' },
   { id: 'pendiente_cita', label: 'Pendiente de cita', color: 'bg-teal-100 text-teal-800 border-teal-200' },
   { id: 'citado', label: 'Citado', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
@@ -124,7 +125,7 @@ export const STATE_REQUIREMENTS = {
 
 export const formatCurrency = (amount, currency = 'EUR') => {
   if (amount === null || amount === undefined) return '—';
-  return new Intl.NumberFormat('es-ES', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+  return new Intl.NumberFormat('es-ES', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true }).format(amount);
 };
 
 export const formatDate = (date) => {

@@ -433,7 +433,11 @@ export default function Patients() {
                         </TableCell>
                         <TableCell className="text-right font-medium">
                           {patient.saldo_pendiente != null ? (
-                            <span className={patient.saldo_pendiente === 0 ? 'text-green-600' : 'text-orange-600'}>
+                            <span className={
+                              patient.saldo_pendiente === 0 ? 'text-green-600' :
+                              patient.status === 'pagado_parcialmente' ? 'text-blue-600 font-semibold' :
+                              'text-orange-600'
+                            }>
                               {formatCurrency(patient.saldo_pendiente)}
                             </span>
                           ) : '—'}

@@ -45,6 +45,7 @@
         "en_negociacion",
         "rechazado",
         "aceptado_pendiente_pago",
+        "pagado_parcialmente",
         "pagado",
         "pendiente_cita",
         "citado",

@@ -371,7 +371,7 @@ export default function PatientDrawer({
               </div>
 
               {/* Doctor — visible desde cita_agendada en adelante */}
-              {['cita_agendada','cita_realizada','presupuesto_entregado','en_negociacion','aceptado_pendiente_pago','pagado','pendiente_cita','citado','en_tratamiento'].includes(formData.status) && (
+              {['cita_agendada','cita_realizada','presupuesto_entregado','en_negociacion','aceptado_pendiente_pago','pagado_parcialmente','pagado','pendiente_cita','citado','en_tratamiento'].includes(formData.status) && (
                 <div className="space-y-2">
                   <Label className="text-xs text-gray-500">Doctor/a asignado/a</Label>
                   <Select
@@ -464,7 +464,7 @@ export default function PatientDrawer({
               )}
 
               {/* Importe aceptado editable - visible en estados aceptado en adelante */}
-              {['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
+              {['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
                 <div className="space-y-2">
                   <Label className="text-xs text-gray-500">Importe aceptado</Label>
                   <div className="relative">
@@ -482,7 +482,7 @@ export default function PatientDrawer({
               )}
 
               {/* Financiación — solo visible en estados aceptado/pagado */}
-              {['aceptado_pendiente_pago', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
+              {['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'].includes(formData.status) && (
                 <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
                   <div className="flex items-center gap-3">
                     <Checkbox
