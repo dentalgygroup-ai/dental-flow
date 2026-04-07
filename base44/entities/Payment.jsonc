@@ -1,0 +1,56 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "description": "ID del paciente al que pertenece el pago"
+    },
+    "patient_name": {
+      "type": "string",
+      "description": "Nombre completo del paciente (denormalizado)"
+    },
+    "clinic_id": {
+      "type": "string",
+      "description": "ID de la cl\u00ednica"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Importe cobrado en este pago"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha y hora del cobro"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "efectivo",
+        "tarjeta",
+        "transferencia",
+        "financiacion",
+        "otro"
+      ],
+      "default": "efectivo",
+      "description": "M\u00e9todo de pago"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas u observaci\u00f3n opcional del cobro"
+    },
+    "performed_by": {
+      "type": "string",
+      "description": "Email del usuario que registr\u00f3 el cobro"
+    },
+    "performed_by_name": {
+      "type": "string",
+      "description": "Nombre del usuario que registr\u00f3 el cobro"
+    }
+  },
+  "required": [
+    "patient_id",
+    "amount",
+    "payment_date"
+  ]
+}
