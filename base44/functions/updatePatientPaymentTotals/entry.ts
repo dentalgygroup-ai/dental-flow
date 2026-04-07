@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
     const saldoPendiente = Math.max(0, importeAceptado - totalCobrado);
 
     // Determine if status should change to pagado_parcialmente
-    const pagadoStatuses = ['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado', 'pendiente_cita', 'citado', 'en_tratamiento'];
+    const pagadoStatuses = ['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado', 'pendiente_cita_tratamiento', 'citado_tratamiento', 'en_tratamiento'];
     const updateData = {
       total_cobrado: totalCobrado,
       saldo_pendiente: saldoPendiente

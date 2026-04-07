@@ -10,8 +10,8 @@ export const PIPELINE_STATES = [
   { id: 'aceptado_pendiente_pago', label: 'Aceptado pendiente de pago', color: 'bg-lime-100 text-lime-800 border-lime-200' },
   { id: 'pagado_parcialmente', label: 'Pagado parcialmente', color: 'bg-blue-100 text-blue-800 border-blue-200' },
   { id: 'pagado', label: 'Pagado', color: 'bg-green-100 text-green-800 border-green-200' },
-  { id: 'pendiente_cita', label: 'Pendiente de cita', color: 'bg-teal-100 text-teal-800 border-teal-200' },
-  { id: 'citado', label: 'Citado', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+  { id: 'pendiente_cita_tratamiento', label: 'Pendiente de cita tratamiento', color: 'bg-teal-100 text-teal-800 border-teal-200' },
+  { id: 'citado_tratamiento', label: 'Citado tratamiento', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
   { id: 'en_tratamiento', label: 'En tratamiento', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', isClosed: true }
 ];
 
@@ -121,6 +121,7 @@ export const STATE_REQUIREMENTS = {
     fields: [{ key: 'treatment_appointment_date', label: 'Fecha de cita de tratamiento', type: 'datetime', required: true }],
     message: 'Indica la fecha de la cita de tratamiento'
   }
+  // Nota: pendiente_cita_tratamiento y citado_tratamiento son estados post-venta sin requisitos de transición definidos
 };
 
 export const formatCurrency = (amount, currency = 'EUR') => {
