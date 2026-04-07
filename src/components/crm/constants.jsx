@@ -1,18 +1,19 @@
 // Pipeline states in exact order
 export const PIPELINE_STATES = [
-  { id: 'nuevo_paciente', label: 'Nuevo paciente', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-  { id: 'contactado', label: 'Contactado', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
-  { id: 'cita_agendada', label: 'Cita agendada', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  { id: 'cita_realizada', label: 'Cita realizada', color: 'bg-violet-100 text-violet-800 border-violet-200' },
-  { id: 'presupuesto_entregado', label: 'Presupuesto entregado', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  { id: 'en_negociacion', label: 'En negociación', color: 'bg-orange-100 text-orange-800 border-orange-200' },
-  { id: 'rechazado', label: 'RECHAZADO', color: 'bg-gray-200 text-gray-600 border-gray-300', isRejected: true },
-  { id: 'aceptado_pendiente_pago', label: 'Aceptado pendiente de pago', color: 'bg-lime-100 text-lime-800 border-lime-200' },
-  { id: 'pagado_parcialmente', label: 'Pagado parcialmente', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-  { id: 'pagado', label: 'Pagado', color: 'bg-green-100 text-green-800 border-green-200' },
-  { id: 'pendiente_cita_tratamiento', label: 'Pendiente de cita tratamiento', color: 'bg-teal-100 text-teal-800 border-teal-200' },
-  { id: 'citado_tratamiento', label: 'Citado tratamiento', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
-  { id: 'en_tratamiento', label: 'En tratamiento', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', isClosed: true }
+  // ── FASE COMERCIAL ──
+  { id: 'nuevo_paciente',           label: 'Nuevo',              color: 'bg-blue-100 text-blue-800 border-blue-200',      fase: 'comercial' },
+  { id: 'contactado',               label: 'Contactado',         color: 'bg-indigo-100 text-indigo-800 border-indigo-200', fase: 'comercial' },
+  { id: 'cita_agendada',            label: 'Cita agendada',      color: 'bg-purple-100 text-purple-800 border-purple-200', fase: 'comercial' },
+  { id: 'cita_realizada',           label: 'Cita realizada',     color: 'bg-violet-100 text-violet-800 border-violet-200', fase: 'comercial' },
+  { id: 'presupuesto_entregado',    label: 'Presupuesto',        color: 'bg-amber-100 text-amber-800 border-amber-200',    fase: 'comercial' },
+  { id: 'rechazado',                label: 'Rechazado',          color: 'bg-gray-200 text-gray-600 border-gray-300',       fase: 'comercial', isRejected: true },
+  // ── FASE CLÍNICA ──
+  { id: 'aceptado_pendiente_pago',  label: 'Aceptado',           color: 'bg-orange-100 text-orange-800 border-orange-200', fase: 'clinica' },
+  { id: 'pagado_parcialmente',      label: 'Pago parcial',       color: 'bg-red-100 text-red-800 border-red-200',          fase: 'clinica' },
+  { id: 'pagado',                   label: 'Pagado',             color: 'bg-green-100 text-green-800 border-green-200',    fase: 'clinica' },
+  { id: 'pendiente_cita_tratamiento', label: 'Pendiente cita',   color: 'bg-teal-100 text-teal-800 border-teal-200',       fase: 'clinica' },
+  { id: 'citado_tratamiento',       label: 'Citado',             color: 'bg-cyan-100 text-cyan-800 border-cyan-200',       fase: 'clinica' },
+  { id: 'en_tratamiento',           label: 'En tratamiento',     color: 'bg-emerald-100 text-emerald-800 border-emerald-200', fase: 'clinica', isClosed: true },
 ];
 
 export const TREATMENTS = [

@@ -402,19 +402,51 @@ export default function Pipeline() {
             </div>
           )}
           <div
-            className="flex gap-4 min-w-max pb-4"
+            className="flex gap-4 min-w-max pb-4 items-start"
             style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}
           >
-            {PIPELINE_STATES.map(state => (
-              <div key={state.id} style={{ scrollSnapAlign: 'start' }}>
-                <KanbanColumn
-                  state={state}
-                  patients={patientsByStatus[state.id] || []}
-                  onPatientClick={setSelectedPatient}
-                  config={configValues}
-                />
+            {/* FASE COMERCIAL */}
+            <div className="flex gap-4 items-start">
+              <div className="flex flex-col items-center mr-1">
+                <span className="text-[10px] font-bold tracking-widest text-blue-400 uppercase writing-mode-vertical rotate-180 select-none" style={{ writingMode: 'vertical-rl' }}>
+                  Fase Comercial
+                </span>
               </div>
-            ))}
+              {PIPELINE_STATES.filter(s => ['nuevo_paciente','contactado','cita_agendada','cita_realizada','presupuesto_entregado','rechazado'].includes(s.id)).map(state => (
+                <div key={state.id} style={{ scrollSnapAlign: 'start' }}>
+                  <KanbanColumn
+                    state={state}
+                    patients={patientsByStatus[state.id] || []}
+                    onPatientClick={setSelectedPatient}
+                    config={configValues}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Divisor */}
+            <div className="flex flex-col items-center self-stretch mx-2">
+              <div className="w-px flex-1 bg-gradient-to-b from-blue-200 via-purple-300 to-emerald-200" />
+            </div>
+
+            {/* FASE CLÍNICA */}
+            <div className="flex gap-4 items-start">
+              <div className="flex flex-col items-center mr-1">
+                <span className="text-[10px] font-bold tracking-widest text-emerald-500 uppercase select-none" style={{ writingMode: 'vertical-rl' }}>
+                  Fase Clínica
+                </span>
+              </div>
+              {PIPELINE_STATES.filter(s => ['aceptado_pendiente_pago','pagado_parcialmente','pagado','pendiente_cita_tratamiento','citado_tratamiento','en_tratamiento'].includes(s.id)).map(state => (
+                <div key={state.id} style={{ scrollSnapAlign: 'start' }}>
+                  <KanbanColumn
+                    state={state}
+                    patients={patientsByStatus[state.id] || []}
+                    onPatientClick={setSelectedPatient}
+                    config={configValues}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </DragDropContext>
