@@ -173,6 +173,14 @@
     "next_action_notes": {
       "type": "string",
       "description": "Notas de la pr\u00f3xima acci\u00f3n"
+    },
+    "total_cobrado": {
+      "type": "number",
+      "description": "Suma total de todos los pagos recibidos de este paciente"
+    },
+    "saldo_pendiente": {
+      "type": "number",
+      "description": "Importe pendiente de cobro: importe_aceptado menos total_cobrado"
     }
   },
   "required": [
