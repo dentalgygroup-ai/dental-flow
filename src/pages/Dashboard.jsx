@@ -267,6 +267,11 @@ export default function Dashboard() {
       .reduce((sum, pay) => sum + (pay.amount || 0), 0);
   }, [payments, dateRange]);
 
+  // Cobros pendientes globales (todos los pacientes activos con saldo pendiente)
+  const cobrosPendientes = useMemo(() => {
+    return patients.reduce((sum, p) => sum + (p.saldo_pendiente || 0), 0);
+  }, [patients]);
+
   // Animated counters
   const animatedNew = useAnimatedCounter(kpis.newPatientsCount);
   const animatedBudgetCount = useAnimatedCounter(kpis.budgetDeliveredCount);
@@ -325,14 +330,15 @@ export default function Dashboard() {
         {/* Main KPIs - Period Based */}
         {(() => {
           const mainKpis = [
-            { title: "Nuevos clientes", value: animatedNew, icon: UserPlus, subtitle: "Altas en el período" },
+            { title: "Nuevos pacientes", value: animatedNew, icon: UserPlus, subtitle: "Altas en el período" },
+            { title: "Pacientes activos", value: animatedActiveCount, icon: Users, subtitle: "En pipeline actual" },
             { title: "Presupuestado", value: animatedBudgetCount, icon: FileText, subtitle: formatCurrency(kpis.budgetDeliveredAmount) },
             { title: "Aceptado", value: animatedAcceptedCount, icon: CheckCircle, subtitle: formatCurrency(kpis.acceptedAmount) },
             { title: "Rechazado", value: animatedRejectedCount, icon: XCircle, subtitle: formatCurrency(kpis.rejectedAmount) },
             { title: "En seguimiento", value: animatedFollowUpCount, icon: Clock, subtitle: formatCurrency(kpis.inFollowUpAmount) },
           ];
           return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {mainKpis.map((kpi, index) => (
                 <motion.div
                   key={kpi.title}
@@ -351,12 +357,12 @@ export default function Dashboard() {
         {/* Secondary KPIs */}
         {(() => {
           const secondaryKpis = [
-            { title: "Pacientes activos", value: animatedActiveCount, icon: Users, subtitle: "En pipeline actual" },
             { title: "Ratio de cierre", value: kpis.closeRatio !== '—' ? `${kpis.closeRatio}%` : '—', icon: TrendingUp, subtitle: "Aceptados / Total cerrados" },
             { title: "% Cierre s/ presupuestado", value: kpis.cierreImporteRatio !== '—' ? `${kpis.cierreImporteRatio}%` : '—', icon: TrendingUp, subtitle: `${formatCurrency(kpis.allAcceptedAmount)} / ${formatCurrency(kpis.allBudgetedAmount)}` },
             { title: "Importe potencial activo", value: formatCurrency(kpis.activeAmount), icon: Euro, subtitle: "En pipeline" },
             { title: "Gastos financieros", value: formatCurrency(kpis.gastosFinancierosTotal), icon: CreditCard, subtitle: `${kpis.financedCount} paciente${kpis.financedCount !== 1 ? 's' : ''} financiado${kpis.financedCount !== 1 ? 's' : ''}` },
             { title: "Cobrado en el período", value: formatCurrency(cobradoEnPeriodo), icon: Wallet, subtitle: "Pagos registrados" },
+            { title: "Cobros pendientes", value: formatCurrency(cobrosPendientes), icon: CreditCard, subtitle: "Saldo total pendiente" },
           ];
           return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
