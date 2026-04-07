@@ -11,8 +11,8 @@ export const PIPELINE_STATES = [
   { id: 'aceptado_pendiente_pago',  label: 'Aceptado',           color: 'bg-orange-100 text-orange-800 border-orange-200', fase: 'clinica' },
   { id: 'pagado_parcialmente',      label: 'Pago parcial',       color: 'bg-red-100 text-red-800 border-red-200',          fase: 'clinica' },
   { id: 'pagado',                   label: 'Pagado',             color: 'bg-green-100 text-green-800 border-green-200',    fase: 'clinica' },
-  { id: 'pendiente_cita_tratamiento', label: 'Pendiente cita',   color: 'bg-teal-100 text-teal-800 border-teal-200',       fase: 'clinica' },
-  { id: 'citado_tratamiento',       label: 'Citado',             color: 'bg-cyan-100 text-cyan-800 border-cyan-200',       fase: 'clinica' },
+  { id: 'pendiente_cita_tratamiento', label: 'Pendiente cita tratamiento',   color: 'bg-teal-100 text-teal-800 border-teal-200',       fase: 'clinica' },
+  { id: 'citado_tratamiento',       label: 'Citado tratamiento',             color: 'bg-cyan-100 text-cyan-800 border-cyan-200',       fase: 'clinica' },
   { id: 'en_tratamiento',           label: 'En tratamiento',     color: 'bg-emerald-100 text-emerald-800 border-emerald-200', fase: 'clinica', isClosed: true },
 ];
 
