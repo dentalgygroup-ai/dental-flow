@@ -42,7 +42,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
 
   return (
     <div
-      onClick={onClick}
+      onClick={showAcceptModal ? undefined : onClick}
       className={`
         bg-white rounded-xl p-4 shadow-sm border cursor-pointer 
         transition-all duration-200 hover:shadow-md hover:border-gray-300
@@ -115,9 +115,22 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       {/* Budget */}
       {patient.budget_amount !== null && patient.budget_amount !== undefined && (
         <div className="mb-3 flex items-center justify-between gap-2">
-          <span className="text-sm font-semibold text-emerald-700">
-            {formatCurrency(patient.budget_amount, 'EUR')}
-          </span>
+          <div className="flex flex-col">
+            {patient.importe_aceptado != null && patient.importe_aceptado !== patient.budget_amount ? (
+              <>
+                <span className="text-sm font-semibold text-blue-600">
+                  {formatCurrency(patient.importe_aceptado, 'EUR')}
+                </span>
+                <span className="text-xs text-gray-400 line-through">
+                  {formatCurrency(patient.budget_amount, 'EUR')}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm font-semibold text-emerald-700">
+                {formatCurrency(patient.budget_amount, 'EUR')}
+              </span>
+            )}
+          </div>
           {['presupuesto_entregado', 'en_negociacion'].includes(patient.status) && (
             <button
               onClick={(e) => { e.stopPropagation(); setShowAcceptModal(true); }}
@@ -127,6 +140,15 @@ export default function PatientCard({ patient, onClick, config = {} }) {
               Aceptar
             </button>
           )}
+        </div>
+      )}
+
+      {/* Importe aceptado para estados post-aceptación (sin budget_amount) */}
+      {patient.importe_aceptado != null && (patient.budget_amount === null || patient.budget_amount === undefined) && (
+        <div className="mb-3">
+          <span className="text-sm font-semibold text-blue-600">
+            {formatCurrency(patient.importe_aceptado, 'EUR')}
+          </span>
         </div>
       )}
 
