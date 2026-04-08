@@ -81,10 +81,10 @@ export default function TrialExpiredWall({ currentUser }) {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-3xl font-bold text-gray-900">14,95€</span>
+                <span className="text-3xl font-bold text-gray-900">49€</span>
                 <span className="text-gray-500 text-sm">/mes</span>
               </div>
-              <p className="text-xs text-blue-600 font-medium">Menos de 1€ al día</p>
+              <p className="text-xs text-blue-600 font-medium">Menos de 2€ al día</p>
               <ul className="mt-3 space-y-1 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hasta 4 usuarios</li>
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Acceso completo al CRM</li>
@@ -99,7 +99,7 @@ export default function TrialExpiredWall({ currentUser }) {
             onClick={() => setSelectedPlan('annual')}
           >
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">AHORRA 29,90€</span>
+              <span className="bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">AHORRA 98€</span>
             </div>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -109,10 +109,10 @@ export default function TrialExpiredWall({ currentUser }) {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-3xl font-bold text-gray-900">149,50€</span>
+                <span className="text-3xl font-bold text-gray-900">490€</span>
                 <span className="text-gray-500 text-sm">/año</span>
               </div>
-              <p className="text-xs text-green-600 font-medium">Equivale a 12,45€/mes</p>
+              <p className="text-xs text-green-600 font-medium">Equivale a 40,83€/mes</p>
               <ul className="mt-3 space-y-1 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hasta 4 usuarios</li>
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Acceso completo al CRM</li>
