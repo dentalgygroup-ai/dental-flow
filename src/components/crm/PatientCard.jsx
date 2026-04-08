@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
+import NuevoCobroModal from './NuevoCobroModal';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,7 @@ import {
 export default function PatientCard({ patient, onClick, config = {} }) {
   const { days_no_movement = 7, days_in_negotiation = 14 } = config;
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showCobroModal, setShowCobroModal] = useState(false);
   const queryClient = useQueryClient();
   
   const fullName = `${patient.first_name} ${patient.last_name}`;
@@ -183,17 +185,33 @@ export default function PatientCard({ patient, onClick, config = {} }) {
         </div>
       )}
 
-      {/* Payment status badge */}
+      {/* Payment status badge + Cobro button */}
       {patient.status === 'aceptado_pendiente_pago' && (patient.saldo_pendiente ?? 0) > 0 && (
-        <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-orange-50 border border-orange-200 rounded-lg">
-          <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
-          <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-50 border border-orange-200 rounded-lg flex-1">
+            <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+            <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowCobroModal(true); }}
+            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+          >
+            💰 Cobro
+          </button>
         </div>
       )}
       {patient.status === 'pagado_parcialmente' && (patient.saldo_pendiente ?? 0) > 0 && (
-        <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-lg">
-          <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-          <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-lg flex-1">
+            <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+            <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowCobroModal(true); }}
+            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+          >
+            💰 Cobro
+          </button>
         </div>
       )}
       {patient.status === 'pagado' && (
@@ -231,6 +249,11 @@ export default function PatientCard({ patient, onClick, config = {} }) {
         onClose={() => setShowAcceptModal(false)}
         patient={patient}
         onConfirm={handleAcceptBudget}
+      />
+      <NuevoCobroModal
+        isOpen={showCobroModal}
+        onClose={() => setShowCobroModal(false)}
+        preselectedPatient={patient}
       />
     </div>
   );
