@@ -1,12 +1,12 @@
 export const SUBSCRIPTION_PLANS = {
   monthly: {
     label: 'Mensual',
-    priceLabel: '14,95€',
+    priceLabel: '49€',
     periodLabel: '/mes',
   },
   annual: {
     label: 'Anual',
-    priceLabel: '124,50€',
+    priceLabel: '490€',
     periodLabel: '/año',
   }
 };
