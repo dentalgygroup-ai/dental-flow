@@ -4,6 +4,7 @@ import {
   History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle
 } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
+import NuevoCobroModal from './NuevoCobroModal';
 import { useToast } from '@/components/ui/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,7 @@ export default function PatientDrawer({
   const [nextActionAssignedTo, setNextActionAssignedTo] = useState('');
   const [nextActionAssignedToName, setNextActionAssignedToName] = useState('');
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showCobroModal, setShowCobroModal] = useState(false);
   const { toast } = useToast();
 
   const sendPatientPortalLink = () => {
@@ -478,6 +480,17 @@ export default function PatientDrawer({
                 </div>
               )}
 
+              {/* Botón Cobro - en estados aceptado y pago parcial */}
+              {['aceptado_pendiente_pago', 'pagado_parcialmente'].includes(formData.status) && canEdit && (
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 border-green-300 text-green-700 hover:bg-green-50"
+                  onClick={() => setShowCobroModal(true)}
+                >
+                  💰 Registrar cobro
+                </Button>
+              )}
+
               {/* Botón Aceptar presupuesto - solo en estado presupuesto_entregado */}
               {formData.status === 'presupuesto_entregado' && canEdit && (
                 <Button
@@ -817,6 +830,12 @@ export default function PatientDrawer({
         onClose={() => setShowAcceptModal(false)}
         patient={formData}
         onConfirm={handleAcceptBudget}
+      />
+
+      <NuevoCobroModal
+        isOpen={showCobroModal}
+        onClose={() => setShowCobroModal(false)}
+        preselectedPatient={formData}
       />
     </div>
   );

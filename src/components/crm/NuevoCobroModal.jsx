@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,7 +18,7 @@ const PAYMENT_METHODS = [
   { id: 'otro', label: 'Otro' },
 ];
 
-export default function NuevoCobroModal({ isOpen, onClose }) {
+export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = null }) {
   const [patientId, setPatientId] = useState('');
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('efectivo');
@@ -69,6 +69,16 @@ export default function NuevoCobroModal({ isOpen, onClose }) {
 
   const amountNum = parseFloat(amount) || 0;
   const saldoTrasCobroNum = Math.max(0, saldoPendiente - amountNum);
+
+  // Preselect patient when modal opens with a preselectedPatient
+  React.useEffect(() => {
+    if (isOpen && preselectedPatient) {
+      setPatientId(preselectedPatient.id);
+      setSearch(`${preselectedPatient.last_name}, ${preselectedPatient.first_name}`);
+    } else if (!isOpen) {
+      handleReset();
+    }
+  }, [isOpen, preselectedPatient?.id]);
 
   const handleReset = () => {
     setPatientId('');
