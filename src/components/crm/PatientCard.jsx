@@ -63,7 +63,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
 
   return (
     <div
-      onClick={showAcceptModal ? undefined : onClick}
+      onClick={(showAcceptModal || showCobroModal) ? undefined : onClick}
       className={`
         bg-white rounded-xl p-4 shadow-sm border cursor-pointer 
         transition-all duration-200 hover:shadow-md hover:border-gray-300
@@ -74,7 +74,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       `}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
+      onKeyDown={(e) => e.key === 'Enter' && !showAcceptModal && !showCobroModal && onClick?.()}
     >
       {/* Header with name and alerts */}
       <div className="flex items-start justify-between gap-2 mb-3">

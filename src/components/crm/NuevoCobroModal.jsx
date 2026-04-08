@@ -137,7 +137,7 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             💰 Nuevo Cobro
