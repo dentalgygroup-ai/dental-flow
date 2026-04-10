@@ -285,14 +285,24 @@ export default function Pipeline() {
 
   // Handle new patient
   const handleCreatePatient = async (patientData) => {
-    await base44.entities.Patient.create({
+    const newPatient = await base44.entities.Patient.create({
       ...patientData,
       clinic_id: clinicId,
       last_action_date: new Date().toISOString()
     });
 
+    if (newPatient?.id) {
+      await base44.entities.PatientAction.create({
+        patient_id: newPatient.id,
+        action_type: 'otro',
+        description: `Paciente creado en el pipeline`,
+        performed_by: currentUser?.email,
+        performed_by_name: currentUser?.full_name,
+      });
+    }
+
     refetchPatients();
-    
+
     toast({
       title: "Paciente creado",
       description: `${patientData.first_name} ${patientData.last_name} añadido al pipeline`,

@@ -121,11 +121,21 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
     const updateData = {
       total_cobrado: totalCobrado,
       saldo_pendiente: saldoPendienteNew,
+      last_action_date: new Date().toISOString(),
     };
     if (newStatus !== selectedPatient.status) {
       updateData.status = newStatus;
     }
     await base44.entities.Patient.update(selectedPatient.id, updateData);
+
+    await base44.entities.PatientAction.create({
+      patient_id: selectedPatient.id,
+      action_type: 'otro',
+      description: `Cobro registrado: ${formatCurrency(amountNum)} (${PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label || paymentMethod})${notes ? ' · ' + notes : ''}. Saldo pendiente: ${formatCurrency(saldoPendienteNew)}`,
+      performed_by: currentUser?.email,
+      performed_by_name: currentUser?.full_name,
+      new_value: String(amountNum)
+    });
 
     toast({
       title: `Cobro de ${formatCurrency(amountNum)} registrado correctamente.`,
