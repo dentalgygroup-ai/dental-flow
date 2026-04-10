@@ -87,6 +87,10 @@ export default function CalendarPage() {
     if (viewMode === 'month') {
       startDate.setDate(1);
       const month = startDate.getMonth();
+      // Add null padding for days before the 1st (Mon=0 ... Sun=6)
+      const firstDayOfWeek = startDate.getDay();
+      const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+      for (let i = 0; i < offset; i++) days.push(null);
       
       while (startDate.getMonth() === month) {
         days.push(new Date(startDate));
@@ -209,6 +213,9 @@ export default function CalendarPage() {
             
             {/* Calendar days */}
             {daysToDisplay.map((day, idx) => {
+              if (!day) {
+                return <div key={`empty-${idx}`} className="bg-white p-3 min-h-[120px]" />;
+              }
               const dateKey = day.toDateString();
               const dayActions = actionsByDate[dateKey] || [];
               const isCurrentMonth = day.getMonth() === currentDate.getMonth();
@@ -231,7 +238,6 @@ export default function CalendarPage() {
                     {dayActions.map((event, eIdx) => {
                       const { patient, label, color } = event;
                       const overdue = event.date < new Date();
-                      const borderColor = overdue ? 'border-red-400' : 'border-l-2';
                       
                       return (
                         <button

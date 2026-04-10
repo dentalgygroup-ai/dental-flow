@@ -100,7 +100,11 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
     const totalCobrado = (selectedPatient.total_cobrado || 0) + amountNum;
     const importeAceptado = selectedPatient.importe_aceptado ?? 0;
     const saldoPendienteNew = Math.max(0, importeAceptado - totalCobrado);
-    const newStatus = saldoPendienteNew === 0 ? 'pagado' : selectedPatient.status;
+    const newStatus = saldoPendienteNew === 0 
+      ? 'pagado' 
+      : selectedPatient.status === 'aceptado_pendiente_pago' 
+        ? 'pagado_parcialmente' 
+        : selectedPatient.status;
 
     await base44.entities.Payment.create({
       patient_id: selectedPatient.id,

@@ -30,7 +30,7 @@ export default function StateAmountsChart({ patients }) {
       amount: totalAmount,
       isRejected: state.isRejected
     };
-  }).filter(d => (d.count > 0 || d.amount > 0) && !['contactado', 'cita_agendada', 'cita_realizada'].includes(d.id));
+  }).filter(d => (d.count > 0 || d.amount > 0) && !['contactado', 'cita_agendada', 'cita_realizada', 'nuevo_paciente'].includes(d.id));
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {

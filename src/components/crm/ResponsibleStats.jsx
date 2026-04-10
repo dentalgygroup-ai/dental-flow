@@ -2,27 +2,27 @@ import React from 'react';
 import { User, TrendingUp } from 'lucide-react';
 import { ACTIVE_STATES, formatCurrency } from './constants';
 
+const CLINICAL_STATES = ['aceptado_pendiente_pago', 'pagado_parcialmente', 'pagado', 'pendiente_cita_tratamiento', 'citado_tratamiento', 'en_tratamiento'];
+
 export default function ResponsibleStats({ patients, users }) {
   const stats = users.map(resp => {
     const userPatients = patients.filter(p => p.assigned_to === resp.id);
     const activePatients = userPatients.filter(p => ACTIVE_STATES.includes(p.status));
-    const inNegotiation = userPatients.filter(p => p.status === 'en_negociacion');
-    const paid = userPatients.filter(p => p.status === 'pagado');
+    const inNegotiation = userPatients.filter(p => p.status === 'presupuesto_entregado');
+    const closed = userPatients.filter(p => CLINICAL_STATES.includes(p.status));
     const rejected = userPatients.filter(p => p.status === 'rechazado');
     
     const negotiationAmount = inNegotiation.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
-    const paidAmount = paid.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
     
-    const totalClosed = paid.length + rejected.length;
-    const closeRatio = totalClosed > 0 ? ((paid.length / totalClosed) * 100).toFixed(0) : '—';
+    const totalForRatio = closed.length + rejected.length;
+    const closeRatio = totalForRatio > 0 ? ((closed.length / totalForRatio) * 100).toFixed(0) : '—';
 
     return {
       resp,
       activeCount: activePatients.length,
       negotiationCount: inNegotiation.length,
       negotiationAmount,
-      paidCount: paid.length,
-      paidAmount,
+      paidCount: closed.length,
       closeRatio
     };
   }).filter(s => s.activeCount > 0 || s.paidCount > 0);
