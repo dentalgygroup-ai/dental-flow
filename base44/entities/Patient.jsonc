@@ -181,6 +181,11 @@
     "saldo_pendiente": {
       "type": "number",
       "description": "Importe pendiente de cobro: importe_aceptado menos total_cobrado"
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica si es un paciente de demostraci\u00f3n precargado al crear la cl\u00ednica"
     }
   },
   "required": [

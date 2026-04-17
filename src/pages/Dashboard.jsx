@@ -16,6 +16,7 @@ import DateFilter from '../components/crm/DateFilter';
 import { ACTIVE_STATES, formatCurrency } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 import { usePatientMutations } from '../hooks/usePatientMutations';
+import DemoDataBadge from '../components/crm/DemoDataBadge';
 
 const DATE_RANGE_KEY = 'dental_flow_date_range';
 
@@ -295,7 +296,10 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard Comercial</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard Comercial</h1>
+              <DemoDataBadge patients={patients} clinicId={clinicId} />
+            </div>
             <p className="text-sm text-gray-600 mt-2">
               Resumen ejecutivo de tu pipeline comercial
             </p>

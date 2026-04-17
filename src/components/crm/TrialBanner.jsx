@@ -1,5 +1,6 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function TrialBanner({ trialEndDate }) {
   const now = new Date();
@@ -9,20 +10,25 @@ export default function TrialBanner({ trialEndDate }) {
 
   if (daysLeft <= 0) return null;
 
-  const urgency = daysLeft <= 2;
+  const isUrgent = daysLeft <= 3;
 
   return (
     <div className={`flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium ${
-      urgency
-        ? 'bg-orange-50 text-orange-700 border-b border-orange-100'
+      isUrgent
+        ? 'bg-amber-50 text-amber-700 border-b border-amber-200'
         : 'bg-blue-50 text-blue-600 border-b border-blue-100'
     }`}>
       <Clock className="w-3.5 h-3.5 flex-shrink-0" />
       <span>
-        Período de prueba —{' '}
-        <strong>{daysLeft} {daysLeft === 1 ? 'día' : 'días'}</strong> restante{daysLeft === 1 ? '' : 's'}
-        {urgency && ' · ¡Suscríbete para no perder el acceso!'}
+        Estás en tu período de prueba gratuito.{' '}
+        <strong>{daysLeft} {daysLeft === 1 ? 'día' : 'días'}</strong> restante{daysLeft === 1 ? '' : 's'}.{' '}
       </span>
+      <Link
+        to="/Settings"
+        className={`underline font-semibold hover:opacity-80 transition-opacity ${isUrgent ? 'text-amber-800' : 'text-blue-700'}`}
+      >
+        Activar suscripción →
+      </Link>
     </div>
   );
 }
