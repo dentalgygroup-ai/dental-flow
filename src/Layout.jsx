@@ -15,7 +15,8 @@ import {
   User,
   CheckSquare,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Bot
 } from 'lucide-react';
 import ClinicOnboarding from './components/crm/ClinicOnboarding';
 import TrialBanner from './components/crm/TrialBanner';
@@ -36,6 +37,7 @@ const navigation = [
   { name: 'Pacientes', href: 'Patients', icon: Users },
   { name: 'Tareas', href: 'Tasks', icon: CheckSquare },
   { name: 'Calendario', href: 'Calendar', icon: Calendar },
+  { name: 'Asistente IA', href: 'Asistente', icon: Bot },
   { name: 'Configuración', href: 'Settings', icon: Settings },
 ];
 

@@ -8,6 +8,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import PatientPortal from '@/pages/PatientPortal';
+import Asistente from '@/pages/Asistente';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -26,6 +27,7 @@ const AuthenticatedApp = () => {
     return (
       <Routes>
         <Route path="/patient-portal/:token" element={<PatientPortal />} />
+        <Route path="/Asistente" element={<LayoutWrapper currentPageName="Asistente"><Asistente /></LayoutWrapper>} />
       </Routes>
     );
   }
