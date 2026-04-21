@@ -76,6 +76,13 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && !showAcceptModal && !showCobroModal && onClick?.()}
     >
+      {/* Demo badge */}
+      {patient.is_demo && (
+        <div className="flex items-center gap-1 text-xs font-medium text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full w-fit mb-2">
+          <span>🧪</span> Ejemplo
+        </div>
+      )}
+
       {/* Header with name and alerts */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2">{fullName}</h3>
