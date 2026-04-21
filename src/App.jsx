@@ -27,7 +27,6 @@ const AuthenticatedApp = () => {
     return (
       <Routes>
         <Route path="/patient-portal/:token" element={<PatientPortal />} />
-        <Route path="/Asistente" element={<LayoutWrapper currentPageName="Asistente"><Asistente /></LayoutWrapper>} />
       </Routes>
     );
   }
@@ -71,6 +70,7 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/Asistente" element={<LayoutWrapper currentPageName="Asistente"><Asistente /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
