@@ -37,7 +37,7 @@ const navigation = [
   { name: 'Pacientes', href: 'Patients', icon: Users },
   { name: 'Tareas', href: 'Tasks', icon: CheckSquare },
   { name: 'Calendario', href: 'Calendar', icon: Calendar },
-  { name: 'Asistente IA', href: 'Asistente', icon: Bot },
+  { name: 'Asistente IA', href: 'Asistente', icon: Bot, isNew: true },
   { name: 'Configuración', href: 'Settings', icon: Settings },
 ];
 
@@ -151,7 +151,12 @@ export default function Layout({ children, currentPageName }) {
                 `}
               >
                 <item.icon className="w-5 h-5" />
-                {item.name}
+                <span>{item.name}</span>
+                {item.isNew && (
+                  <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 leading-none">
+                    ✨ Novedad
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -211,7 +216,7 @@ export default function Layout({ children, currentPageName }) {
                   to={createPageUrl(item.href)}
                   title={desktopCollapsed ? item.name : ''}
                   className={`
-                    flex items-center rounded-lg text-sm font-medium transition-all
+                    relative flex items-center rounded-lg text-sm font-medium transition-all
                     ${desktopCollapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5'}
                     ${isActive 
                       ? 'bg-blue-50 text-blue-700 shadow-sm' 
@@ -221,6 +226,14 @@ export default function Layout({ children, currentPageName }) {
                 >
                   <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-blue-600' : ''}`} />
                   {!desktopCollapsed && <span className="truncate">{item.name}</span>}
+                  {!desktopCollapsed && item.isNew && (
+                    <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 leading-none flex-shrink-0">
+                      ✨ Novedad
+                    </span>
+                  )}
+                  {desktopCollapsed && item.isNew && (
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-violet-500" />
+                  )}
                 </Link>
               );
             })}

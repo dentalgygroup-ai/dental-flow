@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,6 +17,7 @@ import { ACTIVE_STATES, formatCurrency } from '../components/crm/constants';
 import { usePermissions } from '../components/crm/usePermissions';
 import { usePatientMutations } from '../hooks/usePatientMutations';
 import DemoDataBadge from '../components/crm/DemoDataBadge';
+import DemoWelcomePopup from '@/components/crm/DemoWelcomePopup';
 
 const DATE_RANGE_KEY = 'dental_flow_date_range';
 
@@ -40,6 +41,7 @@ const getInitialDateRange = () => {
 
 export default function Dashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [showDemoPopup, setShowDemoPopup] = useState(false);
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
     search: '',
@@ -121,6 +123,17 @@ export default function Dashboard() {
   });
 
   const permissions = usePermissions(currentUser);
+
+  // Show demo popup once for new clinics with only demo data
+  const demoPatients = patients.filter(p => p.is_demo);
+  const realPatients = patients.filter(p => !p.is_demo);
+  const onlyDemoData = demoPatients.length > 0 && realPatients.length === 0;
+
+  useEffect(() => {
+    if (currentUser && onlyDemoData && !currentUser.has_seen_demo_popup && patients.length > 0) {
+      setShowDemoPopup(true);
+    }
+  }, [currentUser?.id, onlyDemoData, patients.length]);
 
   // Parse config
   const configValues = useMemo(() => ({
@@ -291,6 +304,13 @@ export default function Dashboard() {
   const handleSavePatient = (updatedPatient) => _handleSave(selectedPatient, updatedPatient);
 
   return (
+    <>
+    <DemoWelcomePopup
+      isOpen={showDemoPopup}
+      currentUser={currentUser}
+      demoPatients={demoPatients}
+      onDismiss={() => setShowDemoPopup(false)}
+    />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
@@ -426,5 +446,6 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }
