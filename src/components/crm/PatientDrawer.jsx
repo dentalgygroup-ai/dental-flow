@@ -134,6 +134,7 @@ export default function PatientDrawer({
       title: `${getActionTypeById(formData.next_action_type)?.label || formData.next_action_type} - ${patient.first_name} ${patient.last_name}`,
       description: formData.next_action_notes || '',
       task_type: formData.next_action_type,
+      clinic_id: patient.clinic_id,
       patient_id: patient.id,
       patient_name: `${patient.first_name} ${patient.last_name}`,
       assigned_to: nextActionAssignedTo || null,

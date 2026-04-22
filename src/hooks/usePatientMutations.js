@@ -13,6 +13,7 @@ import { PIPELINE_STATES } from '../components/crm/constants';
  * @param {Function} [onClose]        - Optional callback called after saving (e.g. close drawer)
  */
 export function usePatientMutations({ currentUser, refetchPatients, selectedPatientId, onClose }) {
+  const clinicId = currentUser?.clinic_id;
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -44,6 +45,7 @@ export function usePatientMutations({ currentUser, refetchPatients, selectedPati
 
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: updatedPatient.id,
+        clinic_id: clinicId,
         action_type: 'cambio_estado',
         description: `Presupuesto aceptado · ${importeAceptado}€ pendientes`,
         performed_by: currentUser?.email,
@@ -61,6 +63,7 @@ export function usePatientMutations({ currentUser, refetchPatients, selectedPati
     if (!isAccepting && oldPatient.status !== finalData.status) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: finalData.id,
+        clinic_id: clinicId,
         action_type: 'cambio_estado',
         description: `Estado cambiado de ${PIPELINE_STATES.find(s => s.id === oldPatient.status)?.label || oldPatient.status} a ${PIPELINE_STATES.find(s => s.id === finalData.status)?.label || finalData.status}`,
         performed_by: currentUser?.email,
@@ -73,6 +76,7 @@ export function usePatientMutations({ currentUser, refetchPatients, selectedPati
     if (oldPatient.budget_amount !== finalData.budget_amount) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: finalData.id,
+        clinic_id: clinicId,
         action_type: 'cambio_presupuesto',
         description: `Presupuesto actualizado`,
         performed_by: currentUser?.email,
@@ -95,6 +99,7 @@ export function usePatientMutations({ currentUser, refetchPatients, selectedPati
   const handleAddAction = async (action) => {
     await base44.entities.PatientAction.create({
       ...action,
+      clinic_id: clinicId,
       performed_by: currentUser?.email,
       performed_by_name: currentUser?.full_name
     });

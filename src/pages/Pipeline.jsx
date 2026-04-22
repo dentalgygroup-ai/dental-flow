@@ -191,6 +191,7 @@ export default function Pipeline() {
     const logPromises = [
       base44.entities.PatientAction.create({
         patient_id: patient.id,
+        clinic_id: patient.clinic_id,
         action_type: 'cambio_estado',
         description: `Estado cambiado de "${PIPELINE_STATES.find(s => s.id === oldStatus)?.label}" a "${PIPELINE_STATES.find(s => s.id === newStatus)?.label}"`,
         performed_by: currentUser?.email,
@@ -204,6 +205,7 @@ export default function Pipeline() {
     if (cleanAdditional.appointment_date) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: patient.id,
+        clinic_id: patient.clinic_id,
         action_type: 'cita',
         description: `Cita agendada para el ${new Date(cleanAdditional.appointment_date).toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
         performed_by: currentUser?.email,
@@ -214,6 +216,7 @@ export default function Pipeline() {
     if (cleanAdditional.follow_up_date) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: patient.id,
+        clinic_id: patient.clinic_id,
         action_type: 'seguimiento',
         description: `Seguimiento programado para el ${new Date(cleanAdditional.follow_up_date).toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
         performed_by: currentUser?.email,
@@ -224,6 +227,7 @@ export default function Pipeline() {
     if (cleanAdditional.treatment_appointment_date) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: patient.id,
+        clinic_id: patient.clinic_id,
         action_type: 'cita',
         description: `Cita de tratamiento programada para el ${new Date(cleanAdditional.treatment_appointment_date).toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
         performed_by: currentUser?.email,
@@ -234,6 +238,7 @@ export default function Pipeline() {
     if (cleanAdditional.budget_amount) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: patient.id,
+        clinic_id: patient.clinic_id,
         action_type: 'cambio_presupuesto',
         description: `Presupuesto registrado: ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(cleanAdditional.budget_amount)}`,
         performed_by: currentUser?.email,
@@ -244,6 +249,7 @@ export default function Pipeline() {
     if (cleanAdditional.rejection_reason) {
       logPromises.push(base44.entities.PatientAction.create({
         patient_id: patient.id,
+        clinic_id: patient.clinic_id,
         action_type: 'nota',
         description: `Motivo de rechazo: ${cleanAdditional.rejection_reason}`,
         performed_by: currentUser?.email,
@@ -294,6 +300,7 @@ export default function Pipeline() {
     if (newPatient?.id) {
       await base44.entities.PatientAction.create({
         patient_id: newPatient.id,
+        clinic_id: clinicId,
         action_type: 'otro',
         description: `Paciente creado en el pipeline`,
         performed_by: currentUser?.email,
@@ -323,6 +330,7 @@ export default function Pipeline() {
     if (oldPatient.status !== updatedPatient.status) {
       await base44.entities.PatientAction.create({
         patient_id: updatedPatient.id,
+        clinic_id: updatedPatient.clinic_id,
         action_type: 'cambio_estado',
         description: `Estado cambiado`,
         performed_by: currentUser?.email,
@@ -335,6 +343,7 @@ export default function Pipeline() {
     if (oldPatient.budget_amount !== updatedPatient.budget_amount) {
       await base44.entities.PatientAction.create({
         patient_id: updatedPatient.id,
+        clinic_id: updatedPatient.clinic_id,
         action_type: 'cambio_presupuesto',
         description: `Presupuesto actualizado`,
         performed_by: currentUser?.email,
@@ -358,6 +367,7 @@ export default function Pipeline() {
   const handleAddAction = async (action) => {
     await base44.entities.PatientAction.create({
       ...action,
+      clinic_id: selectedPatient?.clinic_id || clinicId,
       performed_by: currentUser?.email,
       performed_by_name: currentUser?.full_name
     });

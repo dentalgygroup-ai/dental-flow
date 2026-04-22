@@ -50,6 +50,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
     });
     await base44.entities.PatientAction.create({
       patient_id: patient.id,
+      clinic_id: patient.clinic_id,
       action_type: 'cambio_estado',
       description: `Presupuesto aceptado · ${importe_aceptado}€ pendientes`,
       performed_by: 'sistema',

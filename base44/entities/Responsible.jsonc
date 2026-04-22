@@ -1,31 +1,32 @@
 {
-  "name": "Doctor",
+  "name": "Responsible",
   "type": "object",
   "properties": {
     "clinic_id": {
       "type": "string",
-      "description": "ID de la cl\u00ednica a la que pertenece el doctor"
+      "description": "ID de la cl\u00ednica a la que pertenece el responsable"
     },
     "name": {
       "type": "string",
-      "description": "Nombre del doctor/a"
+      "description": "Nombre del responsable"
     },
-    "specialties": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Especialidades del doctor (ids de tratamientos)"
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del responsable"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono del responsable"
     },
     "is_active": {
       "type": "boolean",
       "default": true,
-      "description": "Si el doctor est\u00e1 activo"
+      "description": "Si el responsable est\u00e1 activo"
     }
   },
   "required": [
-    "name",
-    "clinic_id"
+    "name"
   ],
   "rls": {
     "create": {

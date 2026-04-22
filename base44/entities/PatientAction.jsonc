@@ -1,57 +1,55 @@
 {
-  "name": "Payment",
+  "name": "PatientAction",
   "type": "object",
   "properties": {
     "patient_id": {
       "type": "string",
-      "description": "ID del paciente al que pertenece el pago"
-    },
-    "patient_name": {
-      "type": "string",
-      "description": "Nombre completo del paciente (denormalizado)"
+      "description": "ID del paciente"
     },
     "clinic_id": {
       "type": "string",
-      "description": "ID de la cl\u00ednica"
+      "description": "ID de la cl\u00ednica (para RLS)"
     },
-    "amount": {
-      "type": "number",
-      "description": "Importe cobrado en este pago"
-    },
-    "payment_date": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Fecha y hora del cobro"
-    },
-    "payment_method": {
+    "action_type": {
       "type": "string",
       "enum": [
-        "efectivo",
-        "tarjeta",
-        "transferencia",
-        "financiacion",
+        "llamada",
+        "whatsapp",
+        "email",
+        "cita",
+        "seguimiento",
+        "nota",
+        "cambio_estado",
+        "cambio_presupuesto",
         "otro"
       ],
-      "default": "efectivo",
-      "description": "M\u00e9todo de pago"
+      "description": "Tipo de acci\u00f3n"
     },
-    "notes": {
+    "description": {
       "type": "string",
-      "description": "Notas u observaci\u00f3n opcional del cobro"
+      "description": "Descripci\u00f3n de la acci\u00f3n"
     },
     "performed_by": {
       "type": "string",
-      "description": "Email del usuario que registr\u00f3 el cobro"
+      "description": "Email del usuario que realiz\u00f3 la acci\u00f3n"
     },
     "performed_by_name": {
       "type": "string",
-      "description": "Nombre del usuario que registr\u00f3 el cobro"
+      "description": "Nombre del usuario que realiz\u00f3 la acci\u00f3n"
+    },
+    "old_value": {
+      "type": "string",
+      "description": "Valor anterior (para auditor\u00eda)"
+    },
+    "new_value": {
+      "type": "string",
+      "description": "Valor nuevo (para auditor\u00eda)"
     }
   },
   "required": [
     "patient_id",
-    "amount",
-    "payment_date"
+    "action_type",
+    "performed_by"
   ],
   "rls": {
     "create": {

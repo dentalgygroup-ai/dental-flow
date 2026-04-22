@@ -1,57 +1,43 @@
 {
-  "name": "Payment",
+  "name": "SystemConfig",
   "type": "object",
   "properties": {
-    "patient_id": {
-      "type": "string",
-      "description": "ID del paciente al que pertenece el pago"
-    },
-    "patient_name": {
-      "type": "string",
-      "description": "Nombre completo del paciente (denormalizado)"
-    },
     "clinic_id": {
       "type": "string",
-      "description": "ID de la cl\u00ednica"
+      "description": "ID de la cl\u00ednica a la que pertenece esta configuraci\u00f3n"
     },
-    "amount": {
-      "type": "number",
-      "description": "Importe cobrado en este pago"
-    },
-    "payment_date": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Fecha y hora del cobro"
-    },
-    "payment_method": {
+    "config_type": {
       "type": "string",
       "enum": [
-        "efectivo",
-        "tarjeta",
-        "transferencia",
-        "financiacion",
-        "otro"
+        "treatment",
+        "rejection_reason",
+        "source",
+        "patient_type"
       ],
-      "default": "efectivo",
-      "description": "M\u00e9todo de pago"
+      "description": "Tipo de configuraci\u00f3n"
     },
-    "notes": {
+    "value": {
       "type": "string",
-      "description": "Notas u observaci\u00f3n opcional del cobro"
+      "description": "Valor de la opci\u00f3n"
     },
-    "performed_by": {
+    "label": {
       "type": "string",
-      "description": "Email del usuario que registr\u00f3 el cobro"
+      "description": "Etiqueta para mostrar"
     },
-    "performed_by_name": {
-      "type": "string",
-      "description": "Nombre del usuario que registr\u00f3 el cobro"
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si est\u00e1 activa o no"
+    },
+    "order": {
+      "type": "number",
+      "description": "Orden de visualizaci\u00f3n"
     }
   },
   "required": [
-    "patient_id",
-    "amount",
-    "payment_date"
+    "config_type",
+    "value",
+    "label"
   ],
   "rls": {
     "create": {

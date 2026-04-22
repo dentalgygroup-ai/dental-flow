@@ -1,31 +1,27 @@
 {
-  "name": "Doctor",
+  "name": "AppConfig",
   "type": "object",
   "properties": {
     "clinic_id": {
       "type": "string",
-      "description": "ID de la cl\u00ednica a la que pertenece el doctor"
+      "description": "ID de la cl\u00ednica a la que pertenece esta configuraci\u00f3n"
     },
-    "name": {
+    "config_key": {
       "type": "string",
-      "description": "Nombre del doctor/a"
+      "description": "Clave de configuraci\u00f3n"
     },
-    "specialties": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Especialidades del doctor (ids de tratamientos)"
+    "config_value": {
+      "type": "number",
+      "description": "Valor num\u00e9rico de configuraci\u00f3n"
     },
-    "is_active": {
-      "type": "boolean",
-      "default": true,
-      "description": "Si el doctor est\u00e1 activo"
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n de la configuraci\u00f3n"
     }
   },
   "required": [
-    "name",
-    "clinic_id"
+    "config_key",
+    "config_value"
   ],
   "rls": {
     "create": {
