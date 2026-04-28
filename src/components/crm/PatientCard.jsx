@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle } from 'lucide-react';
+import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle, RotateCcw } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
 import NuevoCobroModal from './NuevoCobroModal';
 import { base44 } from '@/api/base44Client';
@@ -226,6 +226,37 @@ export default function PatientCard({ patient, onClick, config = {} }) {
         <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-lg">
           <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
           <span className="text-xs font-medium text-green-700">✓ Liquidado</span>
+        </div>
+      )}
+
+      {/* Reactivar — solo en rechazado */}
+      {patient.status === 'rechazado' && (
+        <div className="mb-3">
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              await base44.entities.Patient.update(patient.id, {
+                status: 'presupuesto_entregado',
+                rejection_reason: null,
+                last_action_date: new Date().toISOString()
+              });
+              await base44.entities.PatientAction.create({
+                patient_id: patient.id,
+                clinic_id: patient.clinic_id,
+                action_type: 'cambio_estado',
+                description: 'Paciente reactivado: vuelve a estado Presupuesto',
+                performed_by: 'sistema',
+                performed_by_name: 'Sistema',
+                old_value: 'rechazado',
+                new_value: 'presupuesto_entregado'
+              });
+              queryClient.invalidateQueries({ queryKey: ['patients'] });
+            }}
+            className="flex items-center gap-1.5 w-full justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Reactivar
+          </button>
         </div>
       )}
 
