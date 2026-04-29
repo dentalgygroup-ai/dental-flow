@@ -147,8 +147,46 @@ export default function SubscriptionManager({ currentUser }) {
         </CardContent>
       </Card>
 
-      {/* Active subscription: manage billing */}
-      {isActive && (
+      {/* Trialing: offer to subscribe now */}
+      {clinic.subscription_status === 'trialing' && (
+        <div className="space-y-4">
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm font-medium text-blue-800 mb-1">¿Quieres activar tu suscripción ahora?</p>
+            <p className="text-xs text-blue-600 mb-3">Puedes suscribirte antes de que finalice el período de prueba. El cobro comenzará al finalizar el trial.</p>
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                size="sm"
+                onClick={() => { setSelectedPlan('monthly'); handleSubscribe(); }}
+                disabled={loading}
+                className="gap-2"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+                Plan mensual — 49€/mes
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => { setSelectedPlan('annual'); handleSubscribe(); }}
+                disabled={loading}
+                className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+              >
+                Plan anual — 490€/año
+                <span className="text-xs bg-amber-100 px-1.5 py-0.5 rounded-full font-semibold">AHORRA 98€</span>
+              </Button>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500">Gestiona tu facturación, método de pago o cancela desde el portal de Stripe.</p>
+            <Button variant="outline" onClick={handleManageBilling} disabled={loading} className="gap-2">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+              Gestionar facturación
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Active (paid) subscription: manage billing */}
+      {clinic.subscription_status === 'active' && (
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-500">Gestiona tu facturación, método de pago o cancela desde el portal de Stripe.</p>
           <Button variant="outline" onClick={handleManageBilling} disabled={loading} className="gap-2">

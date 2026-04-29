@@ -36,11 +36,11 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
 
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-md w-[calc(100vw-2rem)] mx-auto">
         <AlertDialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <FlaskConical className="w-5 h-5 text-violet-600" />
-            <AlertDialogTitle>¡Bienvenido/a a Dental Flow!</AlertDialogTitle>
+            <FlaskConical className="w-5 h-5 text-violet-600 flex-shrink-0" />
+            <AlertDialogTitle className="text-lg leading-tight">¡Bienvenido/a a Dental Flow!</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-sm text-gray-600 leading-relaxed">
             Hemos precargado <strong>{demoPatients.length} pacientes de ejemplo</strong> para que puedas explorar el pipeline, el dashboard y todas las funcionalidades sin necesidad de introducir datos reales.
@@ -48,10 +48,10 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
             ¿Qué quieres hacer con los datos de prueba?
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+        <AlertDialogFooter className="flex flex-col gap-2 sm:flex-row">
           <Button
             variant="outline"
-            className="w-full sm:w-auto gap-2 border-red-200 text-red-600 hover:bg-red-50"
+            className="w-full gap-2 border-red-200 text-red-600 hover:bg-red-50"
             onClick={handleDeleteDemo}
             disabled={deleting}
           >
@@ -59,7 +59,7 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
             Borrar datos de prueba
           </Button>
           <Button
-            className="w-full sm:w-auto gap-2"
+            className="w-full gap-2"
             onClick={handleKeepDemo}
             disabled={deleting}
           >
