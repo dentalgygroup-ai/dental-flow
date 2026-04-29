@@ -30,9 +30,16 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
 
   const handleDeleteDemo = async () => {
     setDeleting(true);
-    await Promise.all(demoPatients.map(p => base44.entities.Patient.delete(p.id)));
+    const patientIds = demoPatients.map(p => p.id);
+    // Borrar pagos asociados a los pacientes demo
+    const allPayments = await base44.entities.Payment.list();
+    const demoPayments = allPayments.filter(pay => patientIds.includes(pay.patient_id));
+    await Promise.all(demoPayments.map(pay => base44.entities.Payment.delete(pay.id)));
+    // Borrar pacientes demo
+    await Promise.all(patientIds.map(id => base44.entities.Patient.delete(id)));
     await markSeen();
     queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['payments'] });
     setDeleting(false);
     onDismiss();
   };
