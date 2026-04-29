@@ -130,7 +130,10 @@ export default function Dashboard() {
   const onlyDemoData = demoPatients.length > 0 && realPatients.length === 0;
 
   useEffect(() => {
-    if (currentUser && onlyDemoData && !currentUser.has_seen_demo_popup && patients.length > 0) {
+    if (!currentUser || !onlyDemoData || patients.length === 0) return;
+    const localKey = `demo_popup_seen_${currentUser.id || 'user'}`;
+    const seenLocally = localStorage.getItem(localKey) === 'true';
+    if (!seenLocally && !currentUser.has_seen_demo_popup) {
       setShowDemoPopup(true);
     }
   }, [currentUser?.id, onlyDemoData, patients.length]);

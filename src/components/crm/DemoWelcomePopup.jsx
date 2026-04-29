@@ -16,19 +16,22 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
   const [deleting, setDeleting] = useState(false);
   const queryClient = useQueryClient();
 
+  const markSeen = async () => {
+    // Store in localStorage as primary (reliable) mechanism
+    try { localStorage.setItem(`demo_popup_seen_${currentUser?.id || 'user'}`, 'true'); } catch {}
+    // Also try to persist on the user record
+    try { if (currentUser?.id) await base44.auth.updateMe({ has_seen_demo_popup: true }); } catch {}
+  };
+
   const handleKeepDemo = async () => {
-    if (currentUser?.id) {
-      await base44.auth.updateMe({ has_seen_demo_popup: true });
-    }
+    await markSeen();
     onDismiss();
   };
 
   const handleDeleteDemo = async () => {
     setDeleting(true);
     await Promise.all(demoPatients.map(p => base44.entities.Patient.delete(p.id)));
-    if (currentUser?.id) {
-      await base44.auth.updateMe({ has_seen_demo_popup: true });
-    }
+    await markSeen();
     queryClient.invalidateQueries({ queryKey: ['patients'] });
     setDeleting(false);
     onDismiss();
