@@ -31,15 +31,27 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
   const handleDeleteDemo = async () => {
     setDeleting(true);
     const patientIds = demoPatients.map(p => p.id);
-    // Borrar pagos asociados a los pacientes demo
-    const allPayments = await base44.entities.Payment.list();
+    // Borrar todos los datos vinculados en paralelo
+    const [allPayments, allTasks, allActions] = await Promise.all([
+      base44.entities.Payment.list(),
+      base44.entities.Task.list(),
+      base44.entities.PatientAction.list(),
+    ]);
     const demoPayments = allPayments.filter(pay => patientIds.includes(pay.patient_id));
-    await Promise.all(demoPayments.map(pay => base44.entities.Payment.delete(pay.id)));
+    const demoTasks = allTasks.filter(t => patientIds.includes(t.patient_id));
+    const demoActions = allActions.filter(a => patientIds.includes(a.patient_id));
+    await Promise.all([
+      ...demoPayments.map(pay => base44.entities.Payment.delete(pay.id)),
+      ...demoTasks.map(t => base44.entities.Task.delete(t.id)),
+      ...demoActions.map(a => base44.entities.PatientAction.delete(a.id)),
+    ]);
     // Borrar pacientes demo
     await Promise.all(patientIds.map(id => base44.entities.Patient.delete(id)));
     await markSeen();
     queryClient.invalidateQueries({ queryKey: ['patients'] });
     queryClient.invalidateQueries({ queryKey: ['payments'] });
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['patientActions'] });
     setDeleting(false);
     onDismiss();
   };
