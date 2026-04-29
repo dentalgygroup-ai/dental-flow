@@ -49,14 +49,15 @@ export default function SubscriptionManager({ currentUser }) {
     }
   }, []);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (planOverride) => {
+    const plan = planOverride || selectedPlan;
     setLoading(true);
     const returnUrl = window.location.href;
     const cancelUrl = window.location.href;
 
     const res = await base44.functions.invoke('stripeSubscription', {
       action: 'create_checkout',
-      plan: selectedPlan,
+      plan,
       clinic_id: clinicId,
       return_url: returnUrl,
       cancel_url: cancelUrl,
@@ -150,29 +151,29 @@ export default function SubscriptionManager({ currentUser }) {
       {/* Trialing: offer to subscribe now */}
       {clinic.subscription_status === 'trialing' && (
         <div className="space-y-4">
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm font-medium text-blue-800 mb-1">¿Quieres activar tu suscripción ahora?</p>
-            <p className="text-xs text-blue-600 mb-3">Puedes suscribirte antes de que finalice el período de prueba. </p>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                size="sm"
-                onClick={() => { setSelectedPlan('monthly'); handleSubscribe(); }}
+          <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+            <p className="text-sm font-semibold text-blue-900 mb-1">¿Quieres activar tu suscripción ahora?</p>
+            <p className="text-xs text-blue-600 mb-4">Puedes suscribirte antes de que finalice el período de prueba.</p>
+            <div className="flex gap-3 flex-wrap">
+              <button
+                onClick={() => handleSubscribe('monthly')}
                 disabled={loading}
-                className="gap-2"
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-white border-2 border-blue-300 text-blue-800 font-semibold text-sm shadow-sm hover:border-blue-500 hover:bg-blue-50 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-                Plan mensual — 49€/mes
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => { setSelectedPlan('annual'); handleSubscribe(); }}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4 text-blue-500" />}
+                <span>Plan mensual</span>
+                <span className="font-bold text-blue-600">49€/mes</span>
+              </button>
+              <button
+                onClick={() => handleSubscribe('annual')}
                 disabled={loading}
-                className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-white font-semibold text-sm shadow-sm hover:from-amber-500 hover:to-amber-600 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Plan anual — 490€/año
-                <span className="text-xs bg-amber-100 px-1.5 py-0.5 rounded-full font-semibold">AHORRA 98€</span>
-              </Button>
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crown className="w-4 h-4" />}
+                <span>Plan anual</span>
+                <span className="font-bold">490€/año</span>
+                <span className="text-xs bg-white/30 px-2 py-0.5 rounded-full font-bold">AHORRA 98€</span>
+              </button>
             </div>
           </div>
           <div className="flex justify-between items-center">
