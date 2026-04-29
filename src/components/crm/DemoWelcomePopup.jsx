@@ -39,7 +39,7 @@ export default function DemoWelcomePopup({ isOpen, currentUser, demoPatients = [
 
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="max-w-md w-[90vw] mx-auto overflow-hidden">
+      <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-2 mb-1">
             <FlaskConical className="w-5 h-5 text-violet-600 flex-shrink-0" />
