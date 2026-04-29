@@ -152,7 +152,7 @@ export default function SubscriptionManager({ currentUser }) {
         <div className="space-y-4">
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm font-medium text-blue-800 mb-1">¿Quieres activar tu suscripción ahora?</p>
-            <p className="text-xs text-blue-600 mb-3">Puedes suscribirte antes de que finalice el período de prueba. El cobro comenzará al finalizar el trial.</p>
+            <p className="text-xs text-blue-600 mb-3">Puedes suscribirte antes de que finalice el período de prueba. </p>
             <div className="flex gap-2 flex-wrap">
               <Button
                 size="sm"
