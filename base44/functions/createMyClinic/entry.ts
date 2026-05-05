@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
     const sr = base44.asServiceRole;
 
     const trialEndDate = new Date();
-    trialEndDate.setDate(trialEndDate.getDate() + 15);
+    trialEndDate.setDate(trialEndDate.getDate() + 30);
 
     const clinic = await sr.entities.Clinic.create({
       name: clinic_name.trim(),

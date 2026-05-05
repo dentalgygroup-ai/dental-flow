@@ -202,7 +202,7 @@ export default function SubscriptionManager({ currentUser }) {
         <div>
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Elige tu plan</h3>
-            <p className="text-sm text-gray-500">15 días gratis. Hasta 4 usuarios por clínica. Cancela cuando quieras.</p>
+            <p className="text-sm text-gray-500">30 días gratis. Hasta 4 usuarios por clínica. Cancela cuando quieras.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -224,7 +224,7 @@ export default function SubscriptionManager({ currentUser }) {
                 </div>
                 <p className="text-xs text-blue-600 font-medium">Menos de 2€ al día</p>
                 <ul className="mt-3 space-y-1 text-sm text-gray-600">
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> 15 días de prueba gratis</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> 30 días de prueba gratis</li>
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hasta 4 usuarios</li>
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Acceso completo al CRM</li>
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Cancela cuando quieras</li>
@@ -253,7 +253,7 @@ export default function SubscriptionManager({ currentUser }) {
                 </div>
                 <p className="text-xs text-green-600 font-medium">Equivale a 40,83€/mes</p>
                 <ul className="mt-3 space-y-1 text-sm text-gray-600">
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> 15 días de prueba gratis</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> 30 días de prueba gratis</li>
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Hasta 4 usuarios</li>
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Acceso completo al CRM</li>
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> 2 meses gratis vs mensual</li>
@@ -265,7 +265,7 @@ export default function SubscriptionManager({ currentUser }) {
           <Button className="w-full mt-5 h-12 text-base gap-2" onClick={handleSubscribe} disabled={loading}>
             {loading
               ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirigiendo a Stripe...</>
-              : <><CreditCard className="w-4 h-4" /> Empezar prueba gratuita de 15 días</>}
+              : <><CreditCard className="w-4 h-4" /> Empezar prueba gratuita de 30 días</>}
           </Button>
           <p className="text-xs text-center text-gray-400 mt-2">
             Pago gestionado de forma segura a través de Stripe. Sin cargos durante la prueba.
