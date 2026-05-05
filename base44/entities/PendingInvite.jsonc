@@ -1,0 +1,27 @@
+{
+  "name": "PendingInvite",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email del usuario invitado"
+    },
+    "clinic_id": {
+      "type": "string",
+      "description": "ID de la cl\u00ednica a la que se invita"
+    },
+    "clinic_name": {
+      "type": "string",
+      "description": "Nombre de la cl\u00ednica"
+    },
+    "invited_by": {
+      "type": "string",
+      "description": "Email del administrador que invit\u00f3"
+    }
+  },
+  "required": [
+    "email",
+    "clinic_id",
+    "clinic_name"
+  ]
+}

@@ -55,21 +55,34 @@ export default function ClinicManager({ currentUser }) {
 
     setInviting(true);
 
-    // 1. Send invitation
-    await base44.users.inviteUser(inviteEmail.trim(), 'user');
+    const email = inviteEmail.trim().toLowerCase();
 
-    // 2. If user already exists in the system, link them to the clinic immediately via backend function
+    // 1. Send invitation email
+    await base44.users.inviteUser(email, 'user');
+
+    // 2. Check if user already exists → link immediately
     const allUsers = await base44.entities.User.list();
-    const existingUser = allUsers.find(u => u.email?.toLowerCase() === inviteEmail.trim().toLowerCase());
+    const existingUser = allUsers.find(u => u.email?.toLowerCase() === email);
     if (existingUser && !existingUser.clinic_id) {
       await base44.functions.invoke('linkUserToClinic', {
         target_user_id: existingUser.id,
         clinic_id: clinicId,
         clinic_name: clinic.name,
       });
+    } else if (!existingUser) {
+      // 3. User doesn't exist yet → save pending invite so it auto-links on first login
+      // Remove any previous pending invite for this email first
+      const existing = await base44.entities.PendingInvite.filter({ email });
+      await Promise.all(existing.map(i => base44.entities.PendingInvite.delete(i.id)));
+      await base44.entities.PendingInvite.create({
+        email,
+        clinic_id: clinicId,
+        clinic_name: clinic.name,
+        invited_by: currentUser?.email,
+      });
     }
 
-    toast({ title: `Invitación enviada a ${inviteEmail}`, duration: 3000 });
+    toast({ title: `Invitación enviada a ${email}`, duration: 3000 });
     setInviteEmail('');
     refetchUsers();
     setInviting(false);

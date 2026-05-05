@@ -52,6 +52,15 @@ export default function ClinicOnboarding({ currentUser }) {
   const handleRefresh = async () => {
     setLoading(true);
     try {
+      // First try to auto-accept a pending invite for this user
+      const res = await base44.functions.invoke('acceptPendingInvite', {});
+      if (res.data?.found) {
+        queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        toast({ title: '¡Vinculado correctamente!', description: `Te hemos unido a la clínica.`, duration: 3000 });
+        return;
+      }
+
+      // No pending invite — check if already linked
       const freshUser = await base44.auth.me();
       if (freshUser?.clinic_id) {
         queryClient.invalidateQueries({ queryKey: ['currentUser'] });
