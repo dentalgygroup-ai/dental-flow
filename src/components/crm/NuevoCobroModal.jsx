@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,10 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
   const [notes, setNotes] = useState('');
   const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showTratamientoPopup, setShowTratamientoPopup] = useState(false);
+  const [paidPatientId, setPaidPatientId] = useState(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
@@ -144,10 +147,52 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
     });
 
     setSaving(false);
+
+    // Si es el primer cobro (antes era aceptado_pendiente_pago), preguntar si marcar en tratamiento
+    const esPrimerCobro = selectedPatient.status === 'aceptado_pendiente_pago' && !selectedPatient.en_tratamiento;
+    if (esPrimerCobro) {
+      setPaidPatientId(selectedPatient.id);
+      setShowTratamientoPopup(true);
+    } else {
+      handleClose();
+    }
+  };
+
+  const handleMarkEnTratamiento = async (confirm) => {
+    if (confirm && paidPatientId) {
+      await base44.entities.Patient.update(paidPatientId, { en_tratamiento: true });
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
+    }
+    setShowTratamientoPopup(false);
+    setPaidPatientId(null);
     handleClose();
   };
 
   const isValid = selectedPatient && amountNum > 0 && amountNum <= saldoPendiente;
+
+  // Pop-up "¿En tratamiento?"
+  if (showTratamientoPopup) {
+    return (
+      <Dialog open={true} onOpenChange={() => handleMarkEnTratamiento(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">🦷 ¿Marcar en tratamiento?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600 py-2">
+            El cobro ha sido registrado. ¿Deseas marcar a este paciente como <strong>En tratamiento</strong>? Su tarjeta en el pipeline se mostrará con un fondo azulado.
+          </p>
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" className="flex-1" onClick={() => handleMarkEnTratamiento(false)}>
+              No, ahora no
+            </Button>
+            <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={() => handleMarkEnTratamiento(true)}>
+              Sí, marcar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

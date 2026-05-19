@@ -66,8 +66,9 @@ export default function PatientCard({ patient, onClick, config = {} }) {
     <div
       onClick={(showAcceptModal || showCobroModal) ? undefined : onClick}
       className={`
-        bg-white rounded-xl p-4 shadow-sm border cursor-pointer 
+        rounded-xl p-4 shadow-sm border cursor-pointer 
         transition-all duration-200 hover:shadow-md hover:border-gray-300
+        ${patient.en_tratamiento ? 'bg-blue-50/60 border-blue-200' : 'bg-white'}
         ${actionOverdue ? 'border-l-4 border-l-red-500' : ''}
         ${actionToday && !actionOverdue ? 'border-l-4 border-l-blue-500' : ''}
         ${noMovement && !actionOverdue && !actionToday ? 'border-l-4 border-l-amber-400' : ''}

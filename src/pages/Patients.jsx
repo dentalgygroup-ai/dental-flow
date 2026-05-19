@@ -62,7 +62,7 @@ export default function Patients() {
 
   const { data: patients = [], refetch: refetchPatients } = useQuery({
     queryKey: ['patients', clinicId],
-    queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId }, '-created_date') : [],
+    queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId, tratamiento_finalizado: false }, '-created_date') : [],
     enabled: !!clinicId,
   });
 

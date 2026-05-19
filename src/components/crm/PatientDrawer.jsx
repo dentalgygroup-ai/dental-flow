@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, Phone, Mail, Calendar, Clock, User, FileText, 
-  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle
+  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle, FlagOff
 } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
 import NuevoCobroModal from './NuevoCobroModal';
@@ -489,6 +489,33 @@ export default function PatientDrawer({
                   onClick={() => setShowCobroModal(true)}
                 >
                   💰 Registrar cobro
+                </Button>
+              )}
+
+              {/* Botón Fin tratamiento - solo en estado pagado */}
+              {formData.status === 'pagado' && !formData.tratamiento_finalizado && canEdit && (
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                  onClick={async () => {
+                    await base44.entities.Patient.update(patient.id, {
+                      tratamiento_finalizado: true,
+                      tratamiento_finalizado_date: new Date().toISOString(),
+                      last_action_date: new Date().toISOString()
+                    });
+                    await base44.entities.PatientAction.create({
+                      patient_id: patient.id,
+                      clinic_id: patient.clinic_id,
+                      action_type: 'otro',
+                      description: 'Tratamiento marcado como finalizado',
+                      performed_by: 'sistema',
+                      performed_by_name: 'Sistema'
+                    });
+                    onClose();
+                  }}
+                >
+                  <FlagOff className="w-4 h-4" />
+                  Fin tratamiento
                 </Button>
               )}
 
