@@ -140,6 +140,12 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
       new_value: String(amountNum)
     });
 
+    // Invalidar queries inmediatamente tras el pago
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['patientsForCobro'] });
+    queryClient.invalidateQueries({ queryKey: ['payments'] });
+    queryClient.invalidateQueries({ queryKey: ['patientActions', selectedPatient.id] });
+
     toast({
       title: `Cobro de ${formatCurrency(amountNum)} registrado correctamente.`,
       description: `Saldo pendiente: ${formatCurrency(saldoPendienteNew)}`,
@@ -161,8 +167,9 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
   const handleMarkEnTratamiento = async (confirm) => {
     if (confirm && paidPatientId) {
       await base44.entities.Patient.update(paidPatientId, { en_tratamiento: true });
-      queryClient.invalidateQueries({ queryKey: ['patients'] });
     }
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['patientsForCobro'] });
     setShowTratamientoPopup(false);
     setPaidPatientId(null);
     handleClose();

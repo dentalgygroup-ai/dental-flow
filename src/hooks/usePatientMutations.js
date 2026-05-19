@@ -88,6 +88,7 @@ export function usePatientMutations({ currentUser, refetchPatients, selectedPati
 
     if (logPromises.length > 0) await Promise.all(logPromises);
 
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
     queryClient.invalidateQueries({ queryKey: ['patientActions', finalData.id] });
     refetchPatients();
 
@@ -110,6 +111,7 @@ export function usePatientMutations({ currentUser, refetchPatients, selectedPati
       });
     }
 
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
     queryClient.invalidateQueries({ queryKey: ['patientActions', action.patient_id] });
     refetchPatients();
   };

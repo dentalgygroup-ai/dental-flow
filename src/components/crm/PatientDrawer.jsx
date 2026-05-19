@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { 
   X, Phone, Mail, Calendar, Clock, User, FileText, 
   History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle, FlagOff
@@ -53,6 +54,7 @@ export default function PatientDrawer({
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showCobroModal, setShowCobroModal] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const sendPatientPortalLink = () => {
     if (!patient?.phone) {
@@ -500,6 +502,7 @@ export default function PatientDrawer({
                   onClick={async () => {
                     await base44.entities.Patient.update(patient.id, { en_tratamiento: true });
                     handleChange('en_tratamiento', true);
+                    queryClient.invalidateQueries({ queryKey: ['patients'] });
                   }}
                 >
                   🦷 Marcar en tratamiento
@@ -530,6 +533,7 @@ export default function PatientDrawer({
                       performed_by: 'sistema',
                       performed_by_name: 'Sistema'
                     });
+                    queryClient.invalidateQueries({ queryKey: ['patients'] });
                     onClose();
                   }}
                 >
