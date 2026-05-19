@@ -142,6 +142,7 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
 
     // Invalidar queries inmediatamente tras el pago
     queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
     queryClient.invalidateQueries({ queryKey: ['patientsForCobro'] });
     queryClient.invalidateQueries({ queryKey: ['payments'] });
     queryClient.invalidateQueries({ queryKey: ['patientActions', selectedPatient.id] });
@@ -169,6 +170,7 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
       await base44.entities.Patient.update(paidPatientId, { en_tratamiento: true });
     }
     queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
     queryClient.invalidateQueries({ queryKey: ['patientsForCobro'] });
     setShowTratamientoPopup(false);
     setPaidPatientId(null);

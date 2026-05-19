@@ -43,7 +43,7 @@ export default function Pipeline() {
   const clinicId = currentUser?.clinic_id;
 
   const { data: patients = [], refetch: refetchPatients } = useQuery({
-    queryKey: ['patients', clinicId],
+    queryKey: ['pipelinePatients', clinicId],
     queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId, tratamiento_finalizado: false }, '-created_date') : [],
     enabled: !!clinicId,
   });
@@ -260,6 +260,8 @@ export default function Pipeline() {
 
     await Promise.all(logPromises);
 
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
     queryClient.invalidateQueries({ queryKey: ['patientActions', patient.id] });
     refetchPatients();
 

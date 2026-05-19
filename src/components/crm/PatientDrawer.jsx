@@ -503,6 +503,7 @@ export default function PatientDrawer({
                     await base44.entities.Patient.update(patient.id, { en_tratamiento: true });
                     handleChange('en_tratamiento', true);
                     queryClient.invalidateQueries({ queryKey: ['patients'] });
+                    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
                   }}
                 >
                   🦷 Marcar en tratamiento
@@ -534,6 +535,7 @@ export default function PatientDrawer({
                       performed_by_name: 'Sistema'
                     });
                     queryClient.invalidateQueries({ queryKey: ['patients'] });
+                    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
                     onClose();
                   }}
                 >
