@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle, RotateCcw } from 'lucide-react';
+import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle, RotateCcw, FlagOff } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
 import NuevoCobroModal from './NuevoCobroModal';
 import { base44 } from '@/api/base44Client';
@@ -195,38 +195,82 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       )}
 
       {/* Payment status badge + Cobro button */}
-      {patient.status === 'aceptado_pendiente_pago' && (patient.saldo_pendiente ?? 0) > 0 && (
+      {patient.status === 'aceptado_pendiente_pago' && (
         <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-50 border border-orange-200 rounded-lg flex-1">
-            <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
-            <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
-          </div>
+          {(patient.saldo_pendiente ?? 0) > 0 && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-50 border border-orange-200 rounded-lg flex-1">
+              <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+              <span className="text-xs font-medium text-orange-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
+            </div>
+          )}
           <button
             onClick={(e) => { e.stopPropagation(); setShowCobroModal(true); }}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors ml-auto"
           >
             💰 Cobro
           </button>
         </div>
       )}
-      {patient.status === 'pagado_parcialmente' && (patient.saldo_pendiente ?? 0) > 0 && (
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-lg flex-1">
-            <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-            <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
-          </div>
+      {patient.status === 'pagado_parcialmente' && (
+        <div className="mb-2 flex items-center justify-between gap-2">
+          {(patient.saldo_pendiente ?? 0) > 0 && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-lg flex-1">
+              <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+              <span className="text-xs font-medium text-red-700">{formatCurrency(patient.saldo_pendiente)} pendientes</span>
+            </div>
+          )}
           <button
             onClick={(e) => { e.stopPropagation(); setShowCobroModal(true); }}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors ml-auto"
           >
             💰 Cobro
           </button>
         </div>
       )}
-      {patient.status === 'pagado' && (
-        <div className="mb-3 flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-lg">
-          <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-          <span className="text-xs font-medium text-green-700">✓ Liquidado</span>
+      {/* Botón En tratamiento — pagado_parcialmente */}
+      {patient.status === 'pagado_parcialmente' && !patient.en_tratamiento && (
+        <div className="mb-3">
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              await base44.entities.Patient.update(patient.id, { en_tratamiento: true });
+              queryClient.invalidateQueries({ queryKey: ['patients'] });
+            }}
+            className="flex items-center gap-1.5 w-full justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            🦷 En tratamiento
+          </button>
+        </div>
+      )}
+      {patient.status === 'pagado' && !patient.tratamiento_finalizado && (
+        <div className="mb-3 flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-lg flex-1">
+            <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+            <span className="text-xs font-medium text-green-700">✓ Liquidado</span>
+          </div>
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              await base44.entities.Patient.update(patient.id, {
+                tratamiento_finalizado: true,
+                tratamiento_finalizado_date: new Date().toISOString(),
+                last_action_date: new Date().toISOString()
+              });
+              await base44.entities.PatientAction.create({
+                patient_id: patient.id,
+                clinic_id: patient.clinic_id,
+                action_type: 'otro',
+                description: 'Tratamiento marcado como finalizado',
+                performed_by: 'sistema',
+                performed_by_name: 'Sistema'
+              });
+              queryClient.invalidateQueries({ queryKey: ['patients'] });
+            }}
+            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
+          >
+            <FlagOff className="w-3 h-3" />
+            Fin
+          </button>
         </div>
       )}
 
