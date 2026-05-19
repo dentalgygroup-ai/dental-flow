@@ -68,7 +68,16 @@ export default function Patients() {
 
   const { data: responsibles = [] } = useQuery({
     queryKey: ['responsibles', clinicId],
-    queryFn: () => clinicId ? base44.entities.Responsible.filter({ clinic_id: clinicId }, 'name') : [],
+    queryFn: async () => {
+  if (!clinicId) return [];
+
+  const allPatients = await base44.entities.Patient.filter(
+    { clinic_id: clinicId },
+    '-created_date'
+  );
+
+  return allPatients.filter(p => p.tratamiento_finalizado !== true);
+},
     enabled: !!clinicId,
   });
 
