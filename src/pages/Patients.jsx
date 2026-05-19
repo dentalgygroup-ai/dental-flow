@@ -60,26 +60,19 @@ export default function Patients() {
 
   const clinicId = currentUser?.clinic_id;
 
-  const { data: patients = [], refetch: refetchPatients } = useQuery({
-    queryKey: ['patients', clinicId],
-    queryFn: () => clinicId ? base44.entities.Patient.filter({ clinic_id: clinicId, tratamiento_finalizado: false }, '-created_date') : [],
-    enabled: !!clinicId,
-  });
+const { data: patients = [], refetch: refetchPatients } = useQuery({
+  queryKey: ['patients', clinicId],
+  queryFn: () => clinicId
+    ? base44.entities.Patient.filter({ clinic_id: clinicId }, '-created_date')
+    : [],
+  enabled: !!clinicId,
+});
 
-  const { data: responsibles = [] } = useQuery({
-    queryKey: ['responsibles', clinicId],
-    queryFn: async () => {
-  if (!clinicId) return [];
-
-  const allPatients = await base44.entities.Patient.filter(
-    { clinic_id: clinicId },
-    '-created_date'
-  );
-
-  return allPatients.filter(p => p.tratamiento_finalizado !== true);
-},
-    enabled: !!clinicId,
-  });
+const { data: responsibles = [] } = useQuery({
+  queryKey: ['responsibles', clinicId],
+  queryFn: () => clinicId ? base44.entities.Responsible.filter({ clinic_id: clinicId }, 'name') : [],
+  enabled: !!clinicId,
+});
 
   const activeResponsibles = responsibles.filter(r => r.is_active);
 
