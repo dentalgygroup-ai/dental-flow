@@ -44,7 +44,7 @@ export default function NuevoCobroModal({ isOpen, onClose, preselectedPatient = 
 
   const eligiblePatients = useMemo(() =>
     patients.filter(p =>
-      ['aceptado_pendiente_pago', 'en_tratamiento'].includes(p.status) &&
+      ['aceptado_pendiente_pago', 'pagado_parcialmente'].includes(p.status) &&
       (p.saldo_pendiente ?? (p.importe_aceptado ?? 0)) > 0
     ),
     [patients]

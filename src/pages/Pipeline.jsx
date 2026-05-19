@@ -456,7 +456,7 @@ export default function Pipeline() {
                   Fase Clínica
                 </span>
               </div>
-              {PIPELINE_STATES.filter(s => ['aceptado_pendiente_pago','pagado_parcialmente','pagado','pendiente_cita_tratamiento','citado_tratamiento','en_tratamiento'].includes(s.id)).map(state => (
+              {PIPELINE_STATES.filter(s => ['aceptado_pendiente_pago','pagado_parcialmente','pagado'].includes(s.id)).map(state => (
                 <div key={state.id} style={{ scrollSnapAlign: 'start' }}>
                   <KanbanColumn
                     state={state}
