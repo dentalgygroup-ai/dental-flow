@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow — Manual para el equipo de clínica</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #F5F3EE;
+  --cream2: #EDEAE3;
+  --white: #FFFFFF;
+  --teal-dark: #1A7A6E;
+  --teal-hover: #15695E;
+  --teal-light: #2DC7B0;
+  --teal-badge-bg: #E6F7F5;
+  --blue: #2563EB;
+  --blue-light: #EFF6FF;
+  --emerald: #059669;
+  --emerald-light: #ECFDF5;
+  --amber: #D97706;
+  --amber-light: #FFFBEB;
+  --red: #DC2626;
+  --red-light: #FEF2F2;
+  --violet: #7C3AED;
+  --violet-light: #F5F3FF;
+  --text-main: #1A1A2E;
+  --text-sec: #4A5568;
+  --text-muted: #718096;
+  --border: #D9D5CE;
+  --shadow: rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* NAV */
+.nav {
+  background: rgba(245,243,238,0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+.nav-logo {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--teal-dark);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo span { color: var(--text-main); }
+.nav-badge {
+  background: var(--teal-badge-bg);
+  color: var(--teal-dark);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid #b2e8e2;
+}
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+  gap: 0;
+}
+
+/* SIDEBAR */
+.sidebar {
+  padding: 2rem 1rem 2rem 1.5rem;
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+.sidebar-section {
+  margin-bottom: 1.5rem;
+}
+.sidebar-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--text-sec);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.sidebar-link:hover { background: var(--cream2); color: var(--text-main); }
+.sidebar-link.active { background: var(--teal-badge-bg); color: var(--teal-dark); font-weight: 600; }
+.sidebar-link .icon { font-size: 1rem; width: 20px; flex-shrink: 0; }
+
+/* CONTENT */
+.content {
+  padding: 2.5rem 3rem;
+  max-width: 780px;
+}
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* SECTION HEADER */
+.section-header {
+  margin-bottom: 2rem;
+}
+.section-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--teal-light);
+  margin-bottom: 0.4rem;
+}
+.section-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+.section-intro {
+  font-size: 1.05rem;
+  color: var(--text-sec);
+  line-height: 1.7;
+}
+
+/* CARDS */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.card-icon { font-size: 1.75rem; margin-bottom: 0.6rem; }
+.card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.3rem;
+}
+.card-desc { font-size: 0.82rem; color: var(--text-sec); line-height: 1.5; }
+
+/* STEPS */
+.steps { margin: 1.5rem 0; }
+.step {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  align-items: flex-start;
+}
+.step-num {
+  min-width: 32px;
+  height: 32px;
+  background: var(--teal-dark);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.step-body {}
+.step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+.step-desc { font-size: 0.85rem; color: var(--text-sec); line-height: 1.55; }
+
+/* TIP BOX */
+.tip {
+  background: var(--teal-badge-bg);
+  border-left: 4px solid var(--teal-dark);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-size: 0.88rem;
+  color: var(--teal-dark);
+  line-height: 1.6;
+}
+.tip strong { font-weight: 700; }
+
+.warning {
+  background: var(--amber-light);
+  border-left: 4px solid var(--amber);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-size: 0.88rem;
+  color: #92400e;
+  line-height: 1.6;
+}
+
+.info {
+  background: var(--blue-light);
+  border-left: 4px solid var(--blue);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-size: 0.88rem;
+  color: #1e40af;
+  line-height: 1.6;
+}
+
+/* PIPELINE */
+.pipeline-phases {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.phase-block {
+  flex: 1;
+  min-width: 260px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.phase-header {
+  padding: 0.7rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.phase-header.comercial { background: #DBEAFE; color: #1D4ED8; }
+.phase-header.clinica { background: #D1FAE5; color: #065F46; }
+.phase-states { background: white; border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px; }
+.state-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.84rem;
+}
+.state-row:last-child { border-bottom: none; }
+.state-badge {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.state-desc { color: var(--text-sec); line-height: 1.45; font-size: 0.82rem; }
+
+.s-nuevo { background: #DBEAFE; color: #1E40AF; }
+.s-contactado { background: #E0E7FF; color: #3730A3; }
+.s-cita_agendada { background: #EDE9FE; color: #5B21B6; }
+.s-cita_realizada { background: #F3E8FF; color: #6D28D9; }
+.s-presupuesto { background: #FEF3C7; color: #92400E; }
+.s-rechazado { background: #F3F4F6; color: #4B5563; }
+.s-aceptado { background: #FFEDD5; color: #9A3412; }
+.s-pago_parcial { background: #FEE2E2; color: #991B1B; }
+.s-pagado { background: #D1FAE5; color: #065F46; }
+.s-pdte_cita { background: #CCFBF1; color: #0F766E; }
+.s-citado { background: #CFFAFE; color: #155E75; }
+.s-en_tratamiento { background: #A7F3D0; color: #065F46; }
+
+/* TRANSITIONS TABLE */
+.table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+thead th {
+  background: #F8F7F4;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: var(--text-sec);
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #FAFAF9; }
+.arrow { color: #9CA3AF; margin: 0 4px; }
+td strong { color: var(--text-main); font-weight: 600; }
+
+/* TABS */
+.tabs-nav {
+  display: flex;
+  gap: 2px;
+  background: #F3F4F6;
+  border-radius: 10px;
+  padding: 3px;
+  margin: 1.25rem 0 0;
+}
+.tab-btn {
+  flex: 1;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  color: var(--text-sec);
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  background: white;
+  color: var(--text-main);
+  font-weight: 600;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.tab-content { display: none; padding: 1.25rem 0; }
+.tab-content.active { display: block; }
+
+/* FAQ */
+.faq { margin: 1.5rem 0; }
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+  background: white;
+}
+.faq-q {
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.faq-q:hover { background: #FAFAF9; }
+.faq-a {
+  padding: 0 1.25rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-sec);
+  line-height: 1.65;
+  display: none;
+}
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-chevron { transition: transform 0.2s; flex-shrink: 0; }
+
+/* CHULETA */
+.chuleta {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.chuleta-header {
+  background: var(--teal-dark);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.chuleta-body { padding: 1rem 1.25rem; }
+.chuleta-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.84rem;
+}
+.chuleta-row:last-child { border-bottom: none; }
+.chuleta-icon { width: 24px; text-align: center; flex-shrink: 0; font-size: 1rem; }
+.chuleta-text { color: var(--text-sec); line-height: 1.5; }
+.chuleta-text strong { color: var(--text-main); }
+
+/* NAV FOOTER */
+.nav-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--text-sec);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.nav-btn:hover { border-color: var(--teal-dark); color: var(--teal-dark); }
+.nav-btn.primary { background: var(--teal-dark); color: white; border-color: var(--teal-dark); }
+.nav-btn.primary:hover { background: var(--teal-hover); border-color: var(--teal-hover); }
+.page-indicator { font-size: 0.8rem; color: var(--text-muted); }
+
+/* ROLES TABLE */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.role-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.role-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.role-perm {
+  font-size: 0.78rem;
+  color: var(--text-sec);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+.perm-yes { color: var(--emerald); }
+.perm-no { color: #9CA3AF; }
+
+/* HIGHLIGHT */
+h2 { font-family: 'Manrope', sans-serif; font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text-main); }
+h3 { font-size: 1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--text-main); }
+p { font-size: 0.9rem; color: var(--text-sec); line-height: 1.7; margin-bottom: 0.75rem; }
+ul, ol { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+li { font-size: 0.88rem; color: var(--text-sec); line-height: 1.65; margin-bottom: 3px; }
+code {
+  background: #F3F4F6;
+  color: var(--teal-dark);
+  font-size: 0.82rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    top: 60px;
+    width: 260px;
+    height: calc(100vh - 60px);
+    background: var(--cream);
+    z-index: 200;
+    transition: left 0.25s;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+  .sidebar.open { left: 0; }
+  .content { padding: 1.5rem; }
+  .section-title { font-size: 1.5rem; }
+  .pipeline-phases { flex-direction: column; }
+  .roles-grid { grid-template-columns: 1fr 1fr; }
+  .menu-btn { display: flex; }
+}
+.menu-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--text-sec);
+}
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 190;
+}
+.overlay.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    🦷 <span>Flow</span> <span class="nav-badge">Manual de equipo</span>
+  </div>
+  <button class="menu-btn" onclick="toggleSidebar()">☰ Menú</button>
+</nav>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Primeros pasos</div>
+      <button class="sidebar-link active" onclick="showSection('intro', this)"><span class="icon">👋</span> Bienvenida</button>
+      <button class="sidebar-link" onclick="showSection('que-es', this)"><span class="icon">💡</span> ¿Qué es Flow?</button>
+      <button class="sidebar-link" onclick="showSection('roles', this)"><span class="icon">👤</span> Roles y permisos</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">El pipeline</div>
+      <button class="sidebar-link" onclick="showSection('pipeline', this)"><span class="icon">🗂️</span> Las etapas</button>
+      <button class="sidebar-link" onclick="showSection('transiciones', this)"><span class="icon">➡️</span> Cómo moverse</button>
+      <button class="sidebar-link" onclick="showSection('nuevo-paciente', this)"><span class="icon">➕</span> Añadir paciente</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Gestión diaria</div>
+      <button class="sidebar-link" onclick="showSection('ficha', this)"><span class="icon">📋</span> Ficha del paciente</button>
+      <button class="sidebar-link" onclick="showSection('cobros', this)"><span class="icon">💰</span> Cobros</button>
+      <button class="sidebar-link" onclick="showSection('tareas', this)"><span class="icon">✅</span> Tareas</button>
+      <button class="sidebar-link" onclick="showSection('portal', this)"><span class="icon">🔗</span> Portal del paciente</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Referencia</div>
+      <button class="sidebar-link" onclick="showSection('faq', this)"><span class="icon">❓</span> Preguntas frecuentes</button>
+      <button class="sidebar-link" onclick="showSection('chuleta', this)"><span class="icon">📌</span> Chuleta rápida</button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- ══════════ 1. BIENVENIDA ══════════ -->
+    <section id="intro" class="section active">
+      <div class="section-header">
+        <div class="section-num">Sección 1 de 10</div>
+        <h1 class="section-title">Bienvenida a Flow 👋</h1>
+        <p class="section-intro">Este manual está pensado para ti. Sin tecnicismos, sin rodeos. En unos minutos sabrás exactamente cómo usar Flow cada día.</p>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🗂️</div>
+          <div class="card-title">Todo en un sitio</div>
+          <div class="card-desc">Todos los pacientes, en qué fase están y qué falta por hacer, en una sola pantalla.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔔</div>
+          <div class="card-title">Sin olvidar nada</div>
+          <div class="card-desc">Programa tareas y próximas acciones para cada paciente. Flow te recuerda.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💰</div>
+          <div class="card-title">Cobros bajo control</div>
+          <div class="card-desc">Sabes en todo momento cuánto se ha cobrado y cuánto queda pendiente.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔗</div>
+          <div class="card-title">Portal del paciente</div>
+          <div class="card-desc">Envía por WhatsApp un enlace al paciente para que vea su presupuesto.</div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>¿Cómo usar este manual?</strong> Ve sección a sección usando el menú de la izquierda. Al final encontrarás una "chuleta rápida" que puedes tener siempre a mano.
+      </div>
+
+      <div class="nav-footer">
+        <span></span>
+        <span class="page-indicator">1 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('que-es', document.querySelector('[onclick*=que-es]'))">¿Qué es Flow? →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 2. QUÉ ES FLOW ══════════ -->
+    <section id="que-es" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 2 de 10</div>
+        <h1 class="section-title">¿Qué es Flow?</h1>
+        <p class="section-intro">Flow es la herramienta donde controlas qué pasa con cada paciente: desde que contacta por primera vez hasta que termina su tratamiento.</p>
+      </div>
+
+      <div class="info">
+        <strong>Importante:</strong> Flow no reemplaza el software clínico (el que usa el doctor para radiografías y tratamientos). Flow es la capa comercial y de seguimiento: quién viene, qué presupuesto tiene, si ha pagado y qué hay que hacer a continuación.
+      </div>
+
+      <h2>¿Para qué lo uso yo?</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">📞</div>
+          <div class="card-title">Paciente nuevo</div>
+          <div class="card-desc">Lo registras para que no se pierda en un papel o en tu cabeza.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📄</div>
+          <div class="card-title">Presupuesto entregado</div>
+          <div class="card-desc">Lo marcas y Flow te recuerda hacer seguimiento si no responde.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">✅</div>
+          <div class="card-title">Paciente acepta</div>
+          <div class="card-desc">Lo pasas a "Aceptado" y se activa el control de cobros.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💳</div>
+          <div class="card-title">Registrar cobro</div>
+          <div class="card-desc">Anotas el pago y Flow calcula automáticamente lo pendiente.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🦷</div>
+          <div class="card-title">Inicio tratamiento</div>
+          <div class="card-desc">El paciente pasa a "En tratamiento" hasta que termina.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎉</div>
+          <div class="card-title">¡Pagado!</div>
+          <div class="card-desc">Cuando el paciente paga todo, Flow lo celebra con confeti 🎊</div>
+        </div>
+      </div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('intro', document.querySelector('[onclick*=intro]'))">← Bienvenida</button>
+        <span class="page-indicator">2 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('roles', document.querySelector('[onclick*=roles]'))">Roles →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 3. ROLES ══════════ -->
+    <section id="roles" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 3 de 10</div>
+        <h1 class="section-title">Roles y permisos</h1>
+        <p class="section-intro">Cada usuario tiene un rol que determina qué puede hacer. El administrador de la clínica asigna los roles.</p>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-name">🔑 Administrador</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Ver y editar todo</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Crear pacientes</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Mover en pipeline</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Editar presupuestos</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Exportar datos</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Configuración</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">💼 Comercial</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Ver y editar</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Crear pacientes</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Mover en pipeline</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Editar presupuestos</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Exportar datos</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Configuración</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">🏥 Recepción</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Ver y editar</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Crear pacientes</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Mover en pipeline</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Editar presupuestos</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Exportar datos</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Configuración</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">👁️ Solo lectura</div>
+          <div class="role-perm"><span class="perm-yes">✓</span> Ver pacientes</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Crear pacientes</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Mover en pipeline</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Editar nada</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Exportar</div>
+          <div class="role-perm"><span class="perm-no">✗</span> Configuración</div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>¿No ves un botón?</strong> Puede que tu rol no tenga ese permiso. Consulta con el administrador de tu clínica si crees que necesitas acceso a algo que no puedes hacer.
+      </div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('que-es', document.querySelector('[onclick*=que-es]'))">← ¿Qué es Flow?</button>
+        <span class="page-indicator">3 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('pipeline', document.querySelector('[onclick*=pipeline]'))">El pipeline →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 4. PIPELINE ══════════ -->
+    <section id="pipeline" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 4 de 10</div>
+        <h1 class="section-title">Las etapas del pipeline</h1>
+        <p class="section-intro">El pipeline es el recorrido de cada paciente. Está dividido en dos grandes fases: <strong>Fase Comercial</strong> y <strong>Fase Clínica</strong>.</p>
+      </div>
+
+      <div class="pipeline-phases">
+        <!-- FASE COMERCIAL -->
+        <div class="phase-block">
+          <div class="phase-header comercial">📊 Fase Comercial</div>
+          <div class="phase-states">
+            <div class="state-row">
+              <span class="state-badge s-nuevo">Nuevo</span>
+              <span class="state-desc">Ha contactado. Nadie le ha llamado aún. <strong>Toca llamar.</strong></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-contactado">Contactado</span>
+              <span class="state-desc">Ya hemos hablado. Hay que concertar una primera visita.</span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-cita_agendada">Cita agendada</span>
+              <span class="state-desc">Tiene cita fijada. <strong>Requiere fecha de cita.</strong></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-cita_realizada">Cita realizada</span>
+              <span class="state-desc">Vino a la clínica. <strong>Requiere fecha de seguimiento.</strong></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-presupuesto">Presupuesto</span>
+              <span class="state-desc">Se le entregó presupuesto. <strong>Requiere importe y tratamientos.</strong></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-rechazado">Rechazado</span>
+              <span class="state-desc">No quiso seguir adelante. <strong>Requiere motivo del rechazo.</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FASE CLÍNICA -->
+        <div class="phase-block">
+          <div class="phase-header clinica">🦷 Fase Clínica</div>
+          <div class="phase-states">
+            <div class="state-row">
+              <span class="state-badge s-aceptado">Aceptado</span>
+              <span class="state-desc">Aceptó el tratamiento. Pendiente de cobro. <em>Lo asigna el sistema al aceptar el presupuesto.</em></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-pago_parcial">Pago parcial</span>
+              <span class="state-desc">Ha pagado un primer plazo, quedan pagos pendientes. <em>Lo asigna el sistema al registrar un cobro parcial.</em></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-pagado">Pagado ✓</span>
+              <span class="state-desc">El tratamiento está completamente pagado. <em>Lo asigna el sistema automáticamente. ¡Confeti! 🎊</em></span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-pdte_cita">Pendiente cita tratamiento</span>
+              <span class="state-desc">Pago OK, falta agendar primera cita de tratamiento.</span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-citado">Citado tratamiento</span>
+              <span class="state-desc">Ya tiene cita para empezar. Todo listo.</span>
+            </div>
+            <div class="state-row">
+              <span class="state-badge s-en_tratamiento">En tratamiento</span>
+              <span class="state-desc">El tratamiento está activo. Aquí permanece hasta el alta.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ Los estados "Aceptado", "Pago parcial" y "Pagado" los gestiona el sistema automáticamente.</strong> No intentes cambiarlos a mano desde el selector de estado — Flow los actualizará solo cuando registres cobros o uses el botón "Aceptar presupuesto".
+      </div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('roles', document.querySelector('[onclick*=roles]'))">← Roles</button>
+        <span class="page-indicator">4 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('transiciones', document.querySelector('[onclick*=transiciones]'))">Cómo moverse →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 5. TRANSICIONES ══════════ -->
+    <section id="transiciones" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 5 de 10</div>
+        <h1 class="section-title">Cómo moverse entre etapas</h1>
+        <p class="section-intro">No todos los movimientos están permitidos. Flow solo te deja avanzar en el orden correcto — esto evita errores y datos incompletos.</p>
+      </div>
+
+      <h2>Transiciones permitidas</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Desde</th>
+              <th>Puedes ir a</th>
+              <th>¿Qué pide Flow?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Nuevo</strong></td>
+              <td><span class="state-badge s-contactado" style="font-size:0.72rem;padding:2px 8px">Contactado</span></td>
+              <td>Nada extra</td>
+            </tr>
+            <tr>
+              <td><strong>Contactado</strong></td>
+              <td><span class="state-badge s-cita_agendada" style="font-size:0.72rem;padding:2px 8px">Cita agendada</span> · <span class="state-badge s-rechazado" style="font-size:0.72rem;padding:2px 8px">Rechazado</span></td>
+              <td>Fecha de la cita · Motivo rechazo</td>
+            </tr>
+            <tr>
+              <td><strong>Cita agendada</strong></td>
+              <td><span class="state-badge s-cita_realizada" style="font-size:0.72rem;padding:2px 8px">Cita realizada</span> · <span class="state-badge s-rechazado" style="font-size:0.72rem;padding:2px 8px">Rechazado</span></td>
+              <td>Fecha de seguimiento · Motivo rechazo</td>
+            </tr>
+            <tr>
+              <td><strong>Cita realizada</strong></td>
+              <td><span class="state-badge s-presupuesto" style="font-size:0.72rem;padding:2px 8px">Presupuesto</span> · <span class="state-badge s-rechazado" style="font-size:0.72rem;padding:2px 8px">Rechazado</span></td>
+              <td>Importe + tratamientos · Motivo rechazo</td>
+            </tr>
+            <tr>
+              <td><strong>Presupuesto</strong></td>
+              <td><span class="state-badge s-rechazado" style="font-size:0.72rem;padding:2px 8px">Rechazado</span></td>
+              <td>Motivo rechazo</td>
+            </tr>
+            <tr style="background:#ECFDF5">
+              <td><strong>Presupuesto</strong></td>
+              <td><span class="state-badge s-aceptado" style="font-size:0.72rem;padding:2px 8px">Aceptado ⬇</span></td>
+              <td>Usa el botón <code>Aceptar presupuesto</code> en la ficha</td>
+            </tr>
+            <tr>
+              <td><strong>Aceptado / Pago parcial / Pagado</strong></td>
+              <td><span class="state-badge s-pdte_cita" style="font-size:0.72rem;padding:2px 8px">Pendiente cita tratamiento</span></td>
+              <td>Nada extra</td>
+            </tr>
+            <tr>
+              <td><strong>Pendiente cita tratamiento</strong></td>
+              <td><span class="state-badge s-citado" style="font-size:0.72rem;padding:2px 8px">Citado tratamiento</span></td>
+              <td>Nada extra</td>
+            </tr>
+            <tr>
+              <td><strong>Citado tratamiento</strong></td>
+              <td><span class="state-badge s-en_tratamiento" style="font-size:0.72rem;padding:2px 8px">En tratamiento</span></td>
+              <td>Nada extra</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip">
+        <strong>¿Cómo muevo un paciente?</strong> Hay dos formas: arrastrando la tarjeta al pipeline (drag & drop) o abriendo la ficha del paciente y cambiando el desplegable "Estado". Ambas funcionan igual.
+      </div>
+
+      <div class="info">
+        Si intentas hacer un movimiento que no está permitido, Flow te mostrará un aviso y no moverá al paciente. No es un error — es una protección.
+      </div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('pipeline', document.querySelector('[onclick*=pipeline]'))">← Las etapas</button>
+        <span class="page-indicator">5 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('nuevo-paciente', document.querySelector('[onclick*=nuevo-paciente]'))">Añadir paciente →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 6. NUEVO PACIENTE ══════════ -->
+    <section id="nuevo-paciente" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 6 de 10</div>
+        <h1 class="section-title">Añadir un paciente nuevo</h1>
+        <p class="section-intro">Cada vez que alguien contacta por primera vez, lo registras en Flow. Esto evita que se pierda cualquier oportunidad.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Pulsa "Nuevo paciente" en el pipeline</div>
+            <div class="step-desc">El botón está siempre visible en la parte superior de la pantalla del pipeline. También puedes usar el botón "+" si está disponible.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Rellena nombre y teléfono (mínimo obligatorio)</div>
+            <div class="step-desc">Con nombre, apellidos y teléfono es suficiente para empezar. El email y el número de historial los añades después.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Indica cómo ha contactado (fuente)</div>
+            <div class="step-desc">Walk-in, web, referido, campaña, redes sociales u otro. Esto ayuda a saber de dónde vienen los pacientes.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Indica el tipo de paciente</div>
+            <div class="step-desc"><strong>Primera visita</strong> (nuevo contacto), <strong>Old contact</strong> (ya estuvo pero vuelve), <strong>Referencia</strong> (lo recomendó alguien) o <strong>Ampliación</strong> (paciente actual que amplía tratamiento).</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Guarda — aparece en la columna "Nuevo"</div>
+            <div class="step-desc">A partir de aquí, Flow te avisará si pasan días sin que nadie lo contacte.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>¿Ya era paciente antes?</strong> Búscalo primero con el buscador del pipeline antes de crear uno nuevo. Si aparece, actualiza sus datos y reactiva el seguimiento. Así evitamos duplicados.
+      </div>
+
+      <h2>¿Cuándo registrar un paciente?</h2>
+      <ul>
+        <li>Cuando llama por teléfono pidiendo información</li>
+        <li>Cuando viene a preguntar en persona sin cita previa</li>
+        <li>Cuando llega desde el formulario de la web</li>
+        <li>Cuando alguien te pasa un contacto de una recomendación</li>
+        <li>Cuando un paciente antiguo vuelve para un tratamiento nuevo</li>
+      </ul>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('transiciones', document.querySelector('[onclick*=transiciones]'))">← Cómo moverse</button>
+        <span class="page-indicator">6 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('ficha', document.querySelector('[onclick*=ficha]'))">La ficha →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 7. FICHA ══════════ -->
+    <section id="ficha" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 7 de 10</div>
+        <h1 class="section-title">La ficha del paciente</h1>
+        <p class="section-intro">Al hacer clic en cualquier tarjeta del pipeline, se abre un panel lateral con toda la información del paciente organizada en cuatro pestañas.</p>
+      </div>
+
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="showTab('tab-resumen', this)">📋 Resumen</button>
+        <button class="tab-btn" onclick="showTab('tab-acciones', this)">📅 Acciones</button>
+        <button class="tab-btn" onclick="showTab('tab-proxima', this)">🔔 Próxima</button>
+        <button class="tab-btn" onclick="showTab('tab-notas', this)">📝 Notas</button>
+      </div>
+
+      <div id="tab-resumen" class="tab-content active">
+        <h3>Pestaña Resumen — datos principales</h3>
+        <ul>
+          <li><strong>Nº Historial:</strong> número del expediente clínico (si lo tiene).</li>
+          <li><strong>Nombre, teléfono, email:</strong> datos de contacto editables.</li>
+          <li><strong>Estado:</strong> solo muestra las transiciones permitidas. Los estados de cobro aparecen como informativos y no se pueden cambiar a mano.</li>
+          <li><strong>Responsable:</strong> quién lleva el seguimiento de este paciente.</li>
+          <li><strong>Doctor/a asignado/a:</strong> visible desde "Cita agendada" en adelante.</li>
+          <li><strong>Tratamientos:</strong> botones de selección múltiple (Implantes, Ortodoncia, Estética, General).</li>
+          <li><strong>Importe presupuestado / Importe aceptado:</strong> el presupuestado es lo que se propuso, el aceptado es lo que el paciente confirmó.</li>
+          <li><strong>Total cobrado / Saldo pendiente:</strong> se actualizan solos al registrar cobros.</li>
+          <li><strong>Financiación:</strong> si el paciente financia, activa el checkbox y registra los gastos financieros.</li>
+          <li><strong>Tipo de paciente / Fuente:</strong> para estadísticas de captación.</li>
+        </ul>
+        <div class="tip"><strong>Botones rápidos en la cabecera:</strong> Llamar (abre el teléfono), Email (abre el correo) y Portal WA (envía el enlace de presupuesto por WhatsApp).</div>
+      </div>
+
+      <div id="tab-acciones" class="tab-content">
+        <h3>Pestaña Acciones — historial</h3>
+        <p>Aquí se registra todo lo que ha pasado con el paciente: llamadas, emails, cambios de estado, cobros...</p>
+        <p>Flow registra automáticamente los cambios de estado y los cobros. Tú puedes añadir acciones manuales con el botón <strong>"Añadir acción"</strong>.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <div class="step-title">Pulsa "Añadir acción"</div>
+              <div class="step-desc">Aparece un pequeño formulario en la propia pestaña.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <div class="step-title">Selecciona el tipo</div>
+              <div class="step-desc">Llamada, WhatsApp, Email, Cita, Seguimiento u Otro.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <div class="step-title">Escribe una descripción y guarda</div>
+              <div class="step-desc">Ejemplo: "Llamada realizada. El paciente pide una semana más para decidir."</div>
+            </div>
+          </div>
+        </div>
+        <div class="tip">Deja siempre una nota cuando hagas una acción importante. Así cualquier compañero que coja el paciente sabe qué ha pasado y cuándo.</div>
+      </div>
+
+      <div id="tab-proxima" class="tab-content">
+        <h3>Pestaña Próxima acción</h3>
+        <p>Define qué hay que hacer con este paciente a continuación y cuándo. Esto evita que ningún seguimiento se olvide.</p>
+        <ul>
+          <li><strong>Tipo de acción:</strong> llamada, WhatsApp, email, cita, seguimiento, recordatorio u otro.</li>
+          <li><strong>Fecha y hora:</strong> cuándo hay que hacerlo.</li>
+          <li><strong>Responsable asignado:</strong> a quién le toca.</li>
+          <li><strong>Notas:</strong> contexto de la acción.</li>
+        </ul>
+        <h3>Botones disponibles</h3>
+        <ul>
+          <li><strong>"Guardar como tarea":</strong> crea una tarea en el módulo de Tareas asociada a este paciente.</li>
+          <li><strong>"Marcar como completada":</strong> registra la acción en el historial y limpia los campos de próxima acción.</li>
+        </ul>
+        <p>También verás un listado de las últimas tareas vinculadas a este paciente.</p>
+      </div>
+
+      <div id="tab-notas" class="tab-content">
+        <h3>Pestaña Notas internas</h3>
+        <p>Espacio libre para anotaciones que no encajan en ningún otro campo. Solo el equipo las ve — el paciente nunca las verá.</p>
+        <p>Ejemplos útiles: "Tiene miedo al dentista, ser amable", "Prefiere llamadas por la tarde", "Hablar con el Dr. García antes de la cita".</p>
+      </div>
+
+      <div class="tip" style="margin-top:1.5rem"><strong>¡Recuerda guardar!</strong> El botón "Guardar cambios" está siempre al pie del panel. Si cierras sin guardar, los cambios se pierden.</div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('nuevo-paciente', document.querySelector('[onclick*=nuevo-paciente]'))">← Añadir paciente</button>
+        <span class="page-indicator">7 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('cobros', document.querySelector('[onclick*=cobros]'))">Cobros →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 8. COBROS ══════════ -->
+    <section id="cobros" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 8 de 10</div>
+        <h1 class="section-title">Cobros</h1>
+        <p class="section-intro">Flow controla los cobros de forma automática. Tú solo registras lo que entra, y el sistema calcula el saldo pendiente y actualiza el estado.</p>
+      </div>
+
+      <h2>Cómo registrar un cobro</h2>
+      <p>Hay <strong>dos formas</strong> de acceder al formulario de cobro:</p>
+      <ul>
+        <li><strong>Desde el menú lateral:</strong> el botón verde <code>💰 Nuevo Cobro</code> está siempre visible en el menú de la izquierda.</li>
+        <li><strong>Desde la ficha del paciente:</strong> si el paciente está en estado "Aceptado" o "Pago parcial", verás el botón <code>💰 Registrar cobro</code> en la pestaña Resumen.</li>
+      </ul>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Busca al paciente</div>
+            <div class="step-desc">Escribe su nombre en el buscador. Solo aparecen pacientes con saldo pendiente.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Introduce el importe cobrado</div>
+            <div class="step-desc">Flow te muestra el saldo pendiente actual. No puedes introducir un importe mayor que lo que queda pendiente.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Selecciona el método de pago</div>
+            <div class="step-desc">Efectivo, tarjeta, transferencia, financiación u otro.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Añade notas si es necesario y confirma</div>
+            <div class="step-desc">Flow actualiza el saldo, cambia el estado y registra el cobro en el historial del paciente automáticamente.</div>
+          </div>
+        </div>
+      </div>
+
+      <h2>Estados de cobro automáticos</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Lo que pasa</th><th>Estado resultante</th><th>¿Qué ves?</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Paciente acepta el presupuesto</td>
+              <td><span class="state-badge s-aceptado" style="font-size:0.72rem;padding:2px 8px">Aceptado</span></td>
+              <td>Saldo pendiente = importe aceptado</td>
+            </tr>
+            <tr>
+              <td>Registras un cobro parcial</td>
+              <td><span class="state-badge s-pago_parcial" style="font-size:0.72rem;padding:2px 8px">Pago parcial</span></td>
+              <td>Saldo pendiente = lo que queda</td>
+            </tr>
+            <tr>
+              <td>El cobro cubre el total</td>
+              <td><span class="state-badge s-pagado" style="font-size:0.72rem;padding:2px 8px">Pagado ✓</span></td>
+              <td>Saldo = 0 · ¡Confeti! 🎊</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>¿Cómo acepta el presupuesto el paciente?</h2>
+      <p>Cuando el paciente dice que sí, desde la ficha (estando en estado "Presupuesto entregado") pulsa el botón <strong>"Aceptar presupuesto"</strong>. Se abre un modal donde introduces el importe final aceptado (puede diferir del presupuestado si hubo negociación). Al confirmar, el sistema mueve al paciente a "Aceptado" automáticamente.</p>
+
+      <div class="warning">
+        <strong>Nunca cambies el estado de cobro a mano desde el selector.</strong> Los estados "Aceptado", "Pago parcial" y "Pagado" los gestiona el sistema solo. Si ves algo raro, consulta con tu responsable.
+      </div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('ficha', document.querySelector('[onclick*=ficha]'))">← La ficha</button>
+        <span class="page-indicator">8 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('tareas', document.querySelector('[onclick*=tareas]'))">Tareas →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 9. TAREAS ══════════ -->
+    <section id="tareas" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 9 de 10</div>
+        <h1 class="section-title">Tareas y portal del paciente</h1>
+        <p class="section-intro">El módulo de Tareas es tu lista de pendientes. Desde aquí controlas todo lo que hay que hacer, con o sin vínculo a un paciente concreto.</p>
+      </div>
+
+      <h2>Módulo de Tareas</h2>
+      <p>Accede desde el menú lateral → <strong>Tareas</strong>. Verás todas las tareas de la clínica organizadas por estado.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🕐</div>
+          <div class="card-title">Vista Lista</div>
+          <div class="card-desc">Tareas agrupadas por estado: Pendientes, En progreso, Completadas. Vista por defecto.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📅</div>
+          <div class="card-title">Vista Calendario</div>
+          <div class="card-desc">Visualiza las tareas en un calendario mensual según su fecha de vencimiento.</div>
+        </div>
+      </div>
+
+      <h3>Crear una tarea</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Pulsa "Nueva tarea"</div>
+            <div class="step-desc">Botón en la parte superior derecha de la página de Tareas.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Rellena los campos</div>
+            <div class="step-desc">Título, tipo (llamada, WhatsApp, email, cita, seguimiento, recordatorio...), paciente relacionado, responsable, prioridad y fecha límite.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Guarda</div>
+            <div class="step-desc">La tarea aparece en la lista y también dentro de la ficha del paciente si está vinculada.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Desde la ficha del paciente</h3>
+      <p>En la pestaña <strong>"Próxima acción"</strong> de cualquier paciente, puedes pulsar <strong>"Guardar como tarea"</strong> para crear una tarea vinculada a ese paciente directamente.</p>
+
+      <h3>Estados de las tareas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Estado</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pendiente</strong></td><td>No se ha empezado todavía</td></tr>
+            <tr><td><strong>En progreso</strong></td><td>Se está trabajando en ello</td></tr>
+            <tr><td><strong>Completada</strong></td><td>Terminada. Queda visible en el historial.</td></tr>
+            <tr><td><strong>Cancelada</strong></td><td>Ya no es necesaria</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Portal del paciente (WhatsApp)</h2>
+      <p>Flow permite enviar un enlace personalizado al paciente por WhatsApp para que pueda ver su presupuesto y confirmar su cita desde el móvil, sin necesidad de instalar nada.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Abre la ficha del paciente</div>
+            <div class="step-desc">El paciente debe tener teléfono registrado.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Pulsa el botón "Portal WA" en la cabecera</div>
+            <div class="step-desc">Se abre WhatsApp con un mensaje predefinido que incluye el enlace único del paciente.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Envía el mensaje</div>
+            <div class="step-desc">El paciente recibe el enlace con su información personalizada. El enlace es válido durante 7 días.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">El enlace del portal es único para cada paciente y caduca en 7 días. Si pasan más de 7 días, genera uno nuevo desde la ficha.</div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('cobros', document.querySelector('[onclick*=cobros]'))">← Cobros</button>
+        <span class="page-indicator">9 / 10</span>
+        <button class="nav-btn primary" onclick="showSection('faq', document.querySelector('[onclick*=faq]'))">Preguntas →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ PORTAL (redirect to tareas) ══════════ -->
+    <section id="portal" class="section">
+      <div class="section-header">
+        <div class="section-num">Portal del paciente</div>
+        <h1 class="section-title">Portal del paciente (WhatsApp)</h1>
+        <p class="section-intro">Envía un enlace personalizado al paciente por WhatsApp para que pueda ver su presupuesto y confirmar su cita desde el móvil.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Abre la ficha del paciente</div>
+            <div class="step-desc">El paciente debe tener teléfono registrado.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Pulsa "Portal WA" en la cabecera de la ficha</div>
+            <div class="step-desc">Se abre WhatsApp directamente con un mensaje predefinido que incluye el enlace único del paciente.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Envía el mensaje</div>
+            <div class="step-desc">El paciente accede a una página personalizada con su presupuesto. El enlace caduca en 7 días.</div>
+          </div>
+        </div>
+      </div>
+      <div class="tip">Si pasan más de 7 días desde que enviaste el enlace, genera uno nuevo volviendo a pulsar "Portal WA" en la ficha.</div>
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('tareas', document.querySelector('[onclick*=tareas]'))">← Tareas</button>
+        <span class="page-indicator"></span>
+        <button class="nav-btn primary" onclick="showSection('faq', document.querySelector('[onclick*=faq]'))">Preguntas →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 10. FAQ ══════════ -->
+    <section id="faq" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 10 de 11</div>
+        <h1 class="section-title">Preguntas frecuentes</h1>
+        <p class="section-intro">Las dudas más comunes cuando empiezas a usar Flow.</p>
+      </div>
+
+      <div class="faq">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Flow reemplaza al software clínico? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">No. Flow es un complemento. El software clínico (Gesden, Clinic Cloud, etc.) sigue siendo donde el doctor registra tratamientos y radiografías. Flow es la capa de gestión comercial y de seguimiento.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Qué hago si metí mal los datos de un paciente? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Abre la ficha, edita el campo y guarda. Si el error es de estado o de cobros, avisa a tu responsable antes de tocar nada para no descuadrar los registros.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Por qué no puedo mover un paciente a cierto estado? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Flow solo permite movimientos en el orden correcto. Si el destino no aparece en el desplegable o el drag & drop no funciona, es porque ese movimiento no está permitido desde el estado actual. Comprueba en qué etapa está y cuáles son las transiciones permitidas (sección 5 de este manual).</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Puedo borrar un paciente que metí por error? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">No deberías borrarlo tú sola. Si creaste un duplicado o lo registraste por error, avisa a tu responsable. En Flow se prefiere desactivar antes que borrar para no perder el historial.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Qué hago si un paciente rechaza el presupuesto? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Muévelo a "Rechazado" y selecciona el motivo (precio, tiempo, competencia, sin financiación...). Esto es muy valioso para las estadísticas. Si más adelante cambia de opinión, tu responsable puede reactivarlo.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Cómo sé qué pacientes necesitan atención urgente? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Las tarjetas del pipeline muestran alertas visuales cuando un paciente lleva demasiados días sin movimiento o tiene una próxima acción vencida. También puedes revisar el Dashboard para ver el resumen de alertas del día.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Los estados "Aceptado", "Pago parcial" y "Pagado" se cambian solos? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Exacto. Estos tres estados los gestiona el sistema automáticamente. "Aceptado" se activa al pulsar "Aceptar presupuesto". "Pago parcial" y "Pagado" se actualizan al registrar cobros. Nunca los cambies a mano.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Cómo envío el enlace del presupuesto al paciente? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Abre la ficha del paciente y pulsa el botón verde "Portal WA" en la cabecera. Se abre WhatsApp con un mensaje ya preparado que incluye el enlace. Solo tienes que enviarlo. El enlace caduca en 7 días.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Qué diferencia hay entre "Responsable" y "Doctor asignado"? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">El <strong>Responsable</strong> es la persona del equipo que hace el seguimiento comercial del paciente (puede ser recepción, comercial, etc.). El <strong>Doctor</strong> es quien realiza el tratamiento clínico. Son roles distintos y ambos se asignan en la ficha.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">¿Para qué sirven las Tareas si ya hay "Próxima acción" en la ficha? <span class="faq-chevron">▾</span></div>
+          <div class="faq-a">"Próxima acción" es un recordatorio rápido dentro de la ficha del paciente. Las <strong>Tareas</strong> son más completas: tienen prioridad, fecha límite, estado propio y se pueden asignar a personas. Puedes crear una tarea desde la "Próxima acción" con el botón "Guardar como tarea".</div>
+        </div>
+      </div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('tareas', document.querySelector('[onclick*=tareas]'))">← Tareas</button>
+        <span class="page-indicator">10 / 11</span>
+        <button class="nav-btn primary" onclick="showSection('chuleta', document.querySelector('[onclick*=chuleta]'))">Chuleta →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ 11. CHULETA ══════════ -->
+    <section id="chuleta" class="section">
+      <div class="section-header">
+        <div class="section-num">Sección 11 de 11</div>
+        <h1 class="section-title">📌 Chuleta rápida</h1>
+        <p class="section-intro">Imprime esta página y tenla siempre a mano. Las acciones más frecuentes en un vistazo.</p>
+      </div>
+
+      <div class="chuleta">
+        <div class="chuleta-header">⚡ Acciones del día a día</div>
+        <div class="chuleta-body">
+          <div class="chuleta-row">
+            <div class="chuleta-icon">➕</div>
+            <div class="chuleta-text"><strong>Nuevo paciente:</strong> Pipeline → "Nuevo paciente" → nombre + teléfono + fuente + tipo → Guardar.</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">➡️</div>
+            <div class="chuleta-text"><strong>Cambiar estado:</strong> Clic en la tarjeta → desplegable "Estado" → seleccionar destino → Guardar. O arrastrar la tarjeta.</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">✅</div>
+            <div class="chuleta-text"><strong>Aceptar presupuesto:</strong> Ficha del paciente (estado Presupuesto) → botón <code>Aceptar presupuesto</code> → introducir importe aceptado → Confirmar.</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">💰</div>
+            <div class="chuleta-text"><strong>Registrar cobro:</strong> Menú lateral → <code>💰 Nuevo Cobro</code> → buscar paciente → importe → método → Confirmar.</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">🔗</div>
+            <div class="chuleta-text"><strong>Enviar portal al paciente:</strong> Ficha → botón <code>Portal WA</code> → se abre WhatsApp → Enviar.</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">📅</div>
+            <div class="chuleta-text"><strong>Anotar próxima acción:</strong> Ficha → pestaña "Próxima" → tipo + fecha + notas → "Guardar como tarea" o "Marcar como completada".</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">📋</div>
+            <div class="chuleta-text"><strong>Registrar una llamada / WA / email:</strong> Ficha → pestaña "Acciones" → "Añadir acción" → tipo + descripción → Guardar.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chuleta">
+        <div class="chuleta-header">🚦 Estados automáticos (no tocar)</div>
+        <div class="chuleta-body">
+          <div class="chuleta-row">
+            <div class="chuleta-icon">🟠</div>
+            <div class="chuleta-text"><strong>Aceptado:</strong> se activa al pulsar "Aceptar presupuesto".</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">🔴</div>
+            <div class="chuleta-text"><strong>Pago parcial:</strong> se activa automáticamente al registrar un cobro parcial.</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">🟢</div>
+            <div class="chuleta-text"><strong>Pagado:</strong> se activa cuando el cobro cubre el total. ¡Confeti automático! 🎊</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chuleta">
+        <div class="chuleta-header">🔀 Transiciones rápidas permitidas</div>
+        <div class="chuleta-body">
+          <div class="chuleta-row">
+            <div class="chuleta-icon">1</div>
+            <div class="chuleta-text">Nuevo <strong>→</strong> Contactado</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">2</div>
+            <div class="chuleta-text">Contactado <strong>→</strong> Cita agendada (pide fecha) o Rechazado (pide motivo)</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">3</div>
+            <div class="chuleta-text">Cita agendada <strong>→</strong> Cita realizada (pide fecha seguimiento) o Rechazado</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">4</div>
+            <div class="chuleta-text">Cita realizada <strong>→</strong> Presupuesto (pide importe + tratamientos) o Rechazado</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">5</div>
+            <div class="chuleta-text">Presupuesto <strong>→</strong> Aceptado (botón especial) o Rechazado (pide motivo)</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">6</div>
+            <div class="chuleta-text">Aceptado / Pago parcial / Pagado <strong>→</strong> Pendiente cita tratamiento</div>
+          </div>
+          <div class="chuleta-row">
+            <div class="chuleta-icon">7</div>
+            <div class="chuleta-text">Pendiente cita tratamiento <strong>→</strong> Citado tratamiento <strong>→</strong> En tratamiento</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">¿Tienes dudas que no resuelve este manual? Consulta con el administrador de tu clínica o contacta con soporte técnico.</div>
+
+      <div class="nav-footer">
+        <button class="nav-btn" onclick="showSection('faq', document.querySelector('[onclick*=faq]'))">← Preguntas</button>
+        <span class="page-indicator">11 / 11</span>
+        <button class="nav-btn primary" onclick="showSection('intro', document.querySelector('[onclick*=intro]'))">↑ Inicio</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  closeSidebar();
+}
+
+function showTab(id, btn) {
+  const parentSection = btn.closest('.section');
+  parentSection.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  parentSection.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('active');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+}
+</script>
+</body>
+</html>
