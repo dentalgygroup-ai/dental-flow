@@ -492,6 +492,25 @@ export default function PatientDrawer({
                 </Button>
               )}
 
+              {/* Botón En tratamiento - desde pagado_parcialmente y pagado, si no está ya en tratamiento */}
+              {['pagado_parcialmente', 'pagado'].includes(formData.status) && !formData.en_tratamiento && canEdit && (
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 border-blue-300 text-blue-700 hover:bg-blue-50"
+                  onClick={async () => {
+                    await base44.entities.Patient.update(patient.id, { en_tratamiento: true });
+                    handleChange('en_tratamiento', true);
+                  }}
+                >
+                  🦷 Marcar en tratamiento
+                </Button>
+              )}
+              {['pagado_parcialmente', 'pagado'].includes(formData.status) && formData.en_tratamiento && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700 font-medium">
+                  🦷 Paciente en tratamiento activo
+                </div>
+              )}
+
               {/* Botón Fin tratamiento - solo en estado pagado */}
               {formData.status === 'pagado' && !formData.tratamiento_finalizado && canEdit && (
                 <Button
