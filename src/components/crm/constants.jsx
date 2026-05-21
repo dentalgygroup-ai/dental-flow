@@ -7,6 +7,7 @@ export const PIPELINE_STATES = [
   { id: 'cita_realizada',           label: 'Cita realizada',     color: 'bg-violet-100 text-violet-800 border-violet-200', fase: 'comercial' },
   { id: 'presupuesto_entregado',    label: 'Presupuesto',        color: 'bg-amber-100 text-amber-800 border-amber-200',    fase: 'comercial' },
   { id: 'rechazado',                label: 'Rechazado',          color: 'bg-gray-200 text-gray-600 border-gray-300',       fase: 'comercial', isRejected: true },
+  { id: 'erroneo',                  label: 'Erróneo',            color: 'bg-red-100 text-red-700 border-red-200',           fase: 'comercial', isRejected: true },
   // ── FASE CLÍNICA ──
   { id: 'aceptado_pendiente_pago',  label: 'Aceptado',           color: 'bg-orange-100 text-orange-800 border-orange-200', fase: 'clinica' },
   { id: 'pagado_parcialmente',      label: 'Pago parcial',       color: 'bg-red-100 text-red-800 border-red-200',          fase: 'clinica' },

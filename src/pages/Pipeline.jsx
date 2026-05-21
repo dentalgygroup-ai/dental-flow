@@ -47,8 +47,8 @@ export default function Pipeline() {
     queryFn: async () => {
       if (!clinicId) return [];
       const all = await base44.entities.Patient.filter({ clinic_id: clinicId }, '-created_date');
-      // Excluir solo los que tienen tratamiento_finalizado explícitamente en true
-      return all.filter(p => p.tratamiento_finalizado !== true);
+      // Excluir tratamiento finalizado y erróneos
+      return all.filter(p => p.tratamiento_finalizado !== true && p.status !== 'erroneo');
     },
     enabled: !!clinicId,
   });

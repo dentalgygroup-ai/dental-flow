@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle, RotateCcw, FlagOff } from 'lucide-react';
+import { Phone, Mail, Calendar, Clock, AlertTriangle, AlertCircle, User, CheckCircle, RotateCcw, FlagOff, XCircle } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
 import NuevoCobroModal from './NuevoCobroModal';
 import { base44 } from '@/api/base44Client';
@@ -270,6 +270,38 @@ export default function PatientCard({ patient, onClick, config = {} }) {
           >
             <FlagOff className="w-3 h-3" />
             Fin
+          </button>
+        </div>
+      )}
+
+      {/* Botón Erróneo — solo en nuevo_paciente */}
+      {patient.status === 'nuevo_paciente' && (
+        <div className="mb-3">
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              await base44.entities.Patient.update(patient.id, {
+                status: 'erroneo',
+                last_action_date: new Date().toISOString()
+              });
+              await base44.entities.PatientAction.create({
+                patient_id: patient.id,
+                clinic_id: patient.clinic_id,
+                action_type: 'cambio_estado',
+                description: 'Lead marcado como erróneo',
+                performed_by: 'sistema',
+                performed_by_name: 'Sistema',
+                old_value: 'nuevo_paciente',
+                new_value: 'erroneo'
+              });
+              queryClient.invalidateQueries({ queryKey: ['patients'] });
+              queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
+              queryClient.invalidateQueries({ queryKey: ['leadsErroneos'] });
+            }}
+            className="flex items-center gap-1.5 w-full justify-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+          >
+            <XCircle className="w-3.5 h-3.5" />
+            Erróneo
           </button>
         </div>
       )}

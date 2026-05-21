@@ -45,7 +45,8 @@
         "rechazado",
         "aceptado_pendiente_pago",
         "pagado_parcialmente",
-        "pagado"
+        "pagado",
+        "erroneo"
       ],
       "default": "nuevo_paciente",
       "description": "Estado en el pipeline"

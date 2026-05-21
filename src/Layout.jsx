@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Bot,
   CheckCircle2,
-  BookOpen
+  BookOpen,
+  AlertTriangle
 } from 'lucide-react';
 import ClinicOnboarding from './components/crm/ClinicOnboarding';
 import TrialBanner from './components/crm/TrialBanner';
@@ -39,6 +40,7 @@ const navigation = [
   { name: 'Pacientes', href: 'Patients', icon: Users },
   { name: 'Tareas', href: 'Tasks', icon: CheckSquare },
   { name: 'Calendario', href: 'Calendar', icon: Calendar },
+  { name: 'Leads erróneos', href: 'LeadsErroneos', icon: AlertTriangle },
   { name: 'Fin tratamiento', href: 'TratamientoFinalizado', icon: CheckCircle2 },
   { name: 'Asistente IA', href: 'Asistente', icon: Bot, isNew: true },
   { name: 'Configuración', href: 'Settings', icon: Settings },
