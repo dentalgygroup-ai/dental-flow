@@ -207,5 +207,23 @@
     "phone",
     "status",
     "patient_type"
-  ]
+  ],
+  "rls": {
+    "delete": {
+      "$or": [
+        {
+          "data.clinic_id": "{{user.clinic_id}}",
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin",
+            "email": "{{data.created_by}}"
+          }
+        }
+      ]
+    }
+  }
 }
