@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { 
   X, Phone, Mail, Calendar, Clock, User, FileText, 
-  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle, FlagOff
+  History, Bell, Save, Plus, Check, AlertCircle, CreditCard, Link, CheckCircle, FlagOff, Trash2
 } from 'lucide-react';
 import AcceptBudgetModal from './AcceptBudgetModal';
 import NuevoCobroModal from './NuevoCobroModal';
@@ -21,6 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { base44 } from '@/api/base44Client';
 import { 
   PIPELINE_STATES, TREATMENTS, SOURCES, PATIENT_TYPES, 
@@ -53,6 +63,7 @@ export default function PatientDrawer({
   const [nextActionAssignedToName, setNextActionAssignedToName] = useState('');
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showCobroModal, setShowCobroModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -178,6 +189,15 @@ export default function PatientDrawer({
   const currentState = getStateById(formData.status);
   const canEdit = permissions?.canEdit;
   const canEditBudget = permissions?.canEditBudget;
+  const isAdmin = permissions?.isAdmin;
+
+  const handleDeletePatient = async () => {
+    await base44.entities.Patient.delete(patient.id);
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
+    toast({ title: 'Paciente eliminado correctamente', duration: 3000 });
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -199,9 +219,16 @@ export default function PatientDrawer({
               {currentState?.label}
             </Badge>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            {isAdmin && (
+              <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => setShowDeleteConfirm(true)}>
+                <Trash2 className="w-5 h-5" />
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Quick actions */}
@@ -890,6 +917,26 @@ export default function PatientDrawer({
         onClose={() => setShowCobroModal(false)}
         preselectedPatient={formData}
       />
+
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar paciente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente a <strong>{patient.first_name} {patient.last_name}</strong> y todos sus datos asociados. Esta operación no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeletePatient}
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
