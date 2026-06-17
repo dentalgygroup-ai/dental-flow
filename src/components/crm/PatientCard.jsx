@@ -23,8 +23,8 @@ export default function PatientCard({ patient, onClick, config = {} }) {
   const queryClient = useQueryClient();
 
   const invalidateAll = () => {
-    queryClient.invalidateQueries({ queryKey: ['patients'] });
-    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
+    queryClient.invalidateQueries({ queryKey: ['patients'], exact: false });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'], exact: false });
   };
   
   const fullName = `${patient.first_name} ${patient.last_name}`;
