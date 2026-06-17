@@ -361,7 +361,9 @@ export default function Pipeline() {
     }
 
     queryClient.invalidateQueries({ queryKey: ['patientActions', selectedPatient?.id] });
-    refetchPatients();
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
+    await refetchPatients();
     setSelectedPatient(null);
     
     toast({

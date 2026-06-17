@@ -124,10 +124,13 @@ export default function PatientDrawer({
       ...formData,
       importe_aceptado,
       sold_amount: importe_aceptado,
+      status: 'aceptado_pendiente_pago',
     };
     setFormData(updatedData);
     setShowAcceptModal(false);
-    onSave(updatedData);
+    await onSave(updatedData);
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
   };
 
   const handleAddAction = () => {

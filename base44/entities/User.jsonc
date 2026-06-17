@@ -1,0 +1,37 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user",
+      "description": "Rol del usuario"
+    },
+    "clinic_id": {
+      "type": "string",
+      "description": "ID de la cl\u00ednica a la que pertenece el usuario"
+    },
+    "clinic_name": {
+      "type": "string",
+      "description": "Nombre de la cl\u00ednica (denormalizado)"
+    },
+    "is_clinic_owner": {
+      "type": "boolean",
+      "default": false,
+      "description": "Si es el propietario/administrador de la cl\u00ednica"
+    },
+    "has_seen_demo_popup": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica si el usuario ya ha visto el pop-up de bienvenida de datos de demostraci\u00f3n"
+    }
+  },
+  "required": [
+    "clinic_id",
+    "clinic_name"
+  ]
+}
