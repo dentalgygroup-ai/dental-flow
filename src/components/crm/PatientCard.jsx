@@ -19,7 +19,13 @@ export default function PatientCard({ patient, onClick, config = {} }) {
   const { days_no_movement = 7, days_in_negotiation = 14 } = config;
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showCobroModal, setShowCobroModal] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
   const queryClient = useQueryClient();
+
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['patients'] });
+    queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
+  };
   
   const fullName = `${patient.first_name} ${patient.last_name}`;
   const actionOverdue = isOverdue(patient.next_action_date);
@@ -41,6 +47,10 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       newStatus = 'pagado';
     }
     const saldoPendiente = Math.max(0, importe_aceptado - totalCobrado);
+
+    setShowAcceptModal(false);
+    setIsMoving(true);
+
     await base44.entities.Patient.update(patient.id, {
       importe_aceptado,
       sold_amount: importe_aceptado,
@@ -58,8 +68,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       old_value: patient.status,
       new_value: newStatus
     });
-    queryClient.invalidateQueries({ queryKey: ['patients'] });
-    setShowAcceptModal(false);
+    invalidateAll();
   };
 
   return (
@@ -67,7 +76,8 @@ export default function PatientCard({ patient, onClick, config = {} }) {
       onClick={(showAcceptModal || showCobroModal) ? undefined : onClick}
       className={`
         rounded-xl p-4 shadow-sm border cursor-pointer 
-        transition-all duration-200 hover:shadow-md hover:border-gray-300
+        transition-all duration-300 hover:shadow-md hover:border-gray-300
+        ${isMoving ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}
         ${patient.en_tratamiento ? 'bg-blue-50/60 border-blue-200' : 'bg-white'}
         ${actionOverdue ? 'border-l-4 border-l-red-500' : ''}
         ${actionToday && !actionOverdue ? 'border-l-4 border-l-blue-500' : ''}
@@ -234,7 +244,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
             onClick={async (e) => {
               e.stopPropagation();
               await base44.entities.Patient.update(patient.id, { en_tratamiento: true });
-              queryClient.invalidateQueries({ queryKey: ['patients'] });
+              invalidateAll();
             }}
             className="flex items-center gap-1.5 w-full justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
           >
@@ -264,7 +274,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
                 performed_by: 'sistema',
                 performed_by_name: 'Sistema'
               });
-              queryClient.invalidateQueries({ queryKey: ['patients'] });
+              invalidateAll();
             }}
             className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
           >
@@ -294,8 +304,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
                 old_value: 'nuevo_paciente',
                 new_value: 'erroneo'
               });
-              queryClient.invalidateQueries({ queryKey: ['patients'] });
-              queryClient.invalidateQueries({ queryKey: ['pipelinePatients'] });
+              invalidateAll();
               queryClient.invalidateQueries({ queryKey: ['leadsErroneos'] });
             }}
             className="flex items-center gap-1.5 w-full justify-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
@@ -327,7 +336,7 @@ export default function PatientCard({ patient, onClick, config = {} }) {
                 old_value: 'rechazado',
                 new_value: 'presupuesto_entregado'
               });
-              queryClient.invalidateQueries({ queryKey: ['patients'] });
+              invalidateAll();
             }}
             className="flex items-center gap-1.5 w-full justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
           >
